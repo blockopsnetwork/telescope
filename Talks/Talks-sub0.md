@@ -105,9 +105,3 @@ Telescope is a one-stop observability tool for web3 observability, telescope hel
 - Full Application Insight: Gain insights about user behavior and growth trends that are currently unavailable.
 - Seamless Integration: Telescope has a cli and sdk that makes it easy for developers to instruments observability into their dApps and also Node Operators to easily install a one in all observability tooling
 
-Telescope provides you with the data you need, and has the following benefits:
-
-- Collects and surfaces critical information about overall application health, making it easy to catch and solve issues before they balloon.
-- Enables real time error monitoring and alerting, so your team will be the first to know about issues.
-- Gives developers deep and rich analytics to understand application performance and usage, and see in real time how optimizations are affecting these stats.
-- Lets you see where in the world your product is being used, and how adoption is growing in different markets.
