@@ -13,6 +13,8 @@ NC='\033[0m'
 PROJECT_ID=$1
 PROJECT_NAME=$2
 NETWORK=$3
+TELESCOPE_IMAGE=grafana/agent:v0.37.2
+TELESCOPE_DIR="${HOME}/.telescope"
 
 
 function error() {
@@ -97,7 +99,7 @@ fi
 
 function create_config_dir () {
     echo -n "Creating configuration directory...  "
-    mkdir -p "${HOME}/.telescope"
+    mkdir -p "${TELESCOPE_DIR}"
     if [[ 0 -ne $? ]]
     then
         error "Failed to create the configuration directory."
@@ -109,8 +111,9 @@ function create_config_dir () {
 
 # Create agent configuration file
 function create_config_file () {
+    create_config_dir
     echo -n "Creating configuration file...  "
-    TELESCOPE_CONFIG_FILE="${HOME}/.telescope/config.yaml"
+    TELESCOPE_CONFIG_FILE="${HOME}/.telescope/agent.yaml"
     
     if [[ -f "${TELESCOPE_CONFIG_FILE}" ]]; then
         warning "Configuration file already exists. Skipping."
@@ -127,10 +130,10 @@ metrics:
       project_id: ${PROJECT_ID}
       project_name: ${PROJECT_NAME}
     remote_write:
-      - url:
+      - url: ${REMOTE_WRITE_URL}
         basic_auth:
-          username: 
-          password: 
+          username: ${TELESCOPE_USERNAME}
+          password: ${TELESCOPE_PASSWORD}
 
   configs:
 EOF
@@ -199,7 +202,6 @@ EOF
 
 function get_docker_image () {
     echo -n "Pulling docker image...  "
-    TELESCOPE_IMAGE=grafana/agent:v0.37.2
     docker pull --quiet "${TELESCOPE_IMAGE}"
     if [[ 0 -ne $? ]]
     then
@@ -209,41 +211,31 @@ function get_docker_image () {
     info "OK"
 }
 
-function create_docker_volume () {
-    echo -n "Creating docker volume...  "
-    TELESCOPE_VOLUME=telescope
-    docker volume create "${TELESCOPE_VOLUME}" &> /dev/null
-    if [[ 0 -ne $? ]]
-    then
-        warning "Docker volume already exists. Skipping."
-    fi
-
-    info "OK"
-}
-
 function run_telescope () {
     echo -n "Setting up Telescope...  "
-    TELESCOPE_CONTAINER=telescope
-    docker run -d --rm \
-        --name "host" --network="host" --pid="host" --cap-add SYS_TIME \
-        --mount "type=volume,source=${TELESCOPE_VOLUME},destination=/var/lib/grafana-agent" \
+    create_config_file
+    get_docker_image
+    docker run -d  \
+        --name telescope --network="host" --pid="host" --cap-add SYS_TIME \
+        -v "${TELESCOPE_DIR}":/etc/agent-config \
         --restart unless-stopped \
         -e PROJECT_ID=${PROJECT_ID} \
         -e PROJECT_NAME=${PROJECT_NAME} \
-        "${TELESCOPE_IMAGE}" --config.file=/etc/agent-config/agent.yaml -config.expand-env  &> /dev/null
+        -e NETWORK=${NETWORK} \
+        -e NETWORK=${REMOTE_WRITE_URL} \
+        -e NETWORK=${TELESCOPE_USERNAME} \
+        -e NETWORK=${TELESCOPE_PASSWORD} \
+        "${TELESCOPE_IMAGE}" --config.file=/etc/agent-config/agent.yaml -config.expand-env  
     if [[ 0 -ne $? ]]
     then
         error "Failed to create the docker container."
     fi
 
     success_bold "Telescope setup completed successfully for ${NETWORK} network."
+    info "$(docker logs -f telescope)"
 
 }
 
-create_config_dir
-create_config_file
-get_docker_image
-create_docker_volume
 run_telescope
 
 
