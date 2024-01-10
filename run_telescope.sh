@@ -127,10 +127,10 @@ metrics:
       project_id: ${PROJECT_ID}
       project_name: ${PROJECT_NAME}
     remote_write:
-      - url: https://prometheus-us-central1.grafana.net/api/prom/push
+      - url:
         basic_auth:
-          username: 653537
-          password: glc_eyJvIjoiNzQ1MTAwIiwibiI6InN0YWNrLTQ3NjM4Mi1obS13cml0ZS10ZXRzIiwiayI6ImFwaDFPMThqTjI4T0wzSzRoME04SG1mOSIsIm0iOnsiciI6InVzIn19
+          username: 
+          password: 
 
   configs:
 EOF
