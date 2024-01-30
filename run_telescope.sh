@@ -222,9 +222,9 @@ function run_telescope () {
         -e PROJECT_ID=${PROJECT_ID} \
         -e PROJECT_NAME=${PROJECT_NAME} \
         -e NETWORK=${NETWORK} \
-        -e NETWORK=${REMOTE_WRITE_URL} \
-        -e NETWORK=${TELESCOPE_USERNAME} \
-        -e NETWORK=${TELESCOPE_PASSWORD} \
+        -e REMOTE_WRITE_URL=${REMOTE_WRITE_URL} \
+        -e TELESCOPE_USERNAME=${TELESCOPE_USERNAME} \
+        -e TELESCOPE_PASSWORD=${TELESCOPE_PASSWORD} \
         "${TELESCOPE_IMAGE}" --config.file=/etc/agent-config/agent.yaml -config.expand-env  
     if [[ 0 -ne $? ]]
     then
