@@ -9,11 +9,6 @@ AMBER='\033[0;33m'
 BWHITE='\033[1;37m'
 NC='\033[0m'
 
-
-PROJECT_ID=$1
-PROJECT_NAME=$2
-NETWORK=$3
-REMOTE_WRITE_URL=$4
 TELESCOPE_IMAGE=grafana/agent:v0.37.2
 TELESCOPE_DIR="${HOME}/.telescope"
 
@@ -56,6 +51,15 @@ while [[ $# -gt 0 ]]; do
             shift 2;;
         --project-name)
             PROJECT_NAME=$2
+            shift 2;;
+        --telescope-username)
+            TELESCOPE_USERNAME=$2
+            shift 2;;
+        --telescope-password)
+            TELESCOPE_PASSWORD=$2
+            shift 2;;
+        --remote-write-url)
+            REMOTE_WRITE_URL=$2
             shift 2;;
         *)
             break
@@ -196,6 +200,7 @@ integrations:
     enabled: false
   node_exporter:
     enabled: true
+
 EOF
         success "Configuration file created successfully."
     fi
