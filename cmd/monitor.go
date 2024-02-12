@@ -5,36 +5,47 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/blockopsnetwork/telescope/internal/process"
+	"github.com/blockopsnetwork/telescope/pkg/config"
+	"github.com/blockopsnetwork/telescope/pkg/text"
 	"github.com/spf13/cobra"
 )
 
-// monitorCmd represents the monitor command
-var monitorCmd = &cobra.Command{
-	Use:   "monitor",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+var (
+	projectName string
+	projectId   string
+	network     config.Networks
+)
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+var runCmd = &cobra.Command{
+	Use:   "monitor",
+	Short: "Setting up telescope",
+	Long:  text.AdditionalText,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("monitor called")
+		config.CheckConfigs(projectName, projectId, network)
+		config.CreateConfigFile()
+		cl := process.NewDockerClient()
+		cl.PullImage()
+		cl.StartDockerContainer()
+		cl.ContainerLogs()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(monitorCmd)
+	rootCmd.AddCommand(runCmd)
 
-	// Here you will define your flags and configuration settings.
+	runCmd.Flags().StringVarP(&projectName, "projectName", "p", "", "The name of the project")
+	runCmd.Flags().StringVarP(&projectId, "projectId", "i", "", "The Id of the project")
+	runCmd.Flags().VarP(&network, "network", "n", `Network specific configuration. allowed: "arbitrum", "ethereum", "polkadot", "base", "optimism"`)
+	runCmd.RegisterFlagCompletionFunc("network", networkCompletion)
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// monitorCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// monitorCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func networkCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return []string{
+		"arbitrum\thelp text for arbitrum",
+		"ethereum\thelp text for ethereum",
+		"polkadot\thelp text for polkadot",
+		"base\thelp text for base",
+		"optimism\thelp text for optimism",
+	}, cobra.ShellCompDirectiveDefault
 }
