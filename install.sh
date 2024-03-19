@@ -9,13 +9,8 @@ AMBER='\033[0;33m'
 BWHITE='\033[1;37m'
 NC='\033[0m'
 
-
-PROJECT_ID=$1
-PROJECT_NAME=$2
-NETWORK=$3
-REMOTE_WRITE_URL=$4
 TELESCOPE_IMAGE=grafana/agent:v0.37.2
-TELESCOPE_DIR="${HOME}/.telescope"
+TELESCOPE_DIR="/tmp/.telescope"
 
 
 function error() {
@@ -57,9 +52,18 @@ while [[ $# -gt 0 ]]; do
         --project-name)
             PROJECT_NAME=$2
             shift 2;;
+        --telescope-username)
+            TELESCOPE_USERNAME=$2
+            shift 2;;
+        --telescope-password)
+            TELESCOPE_PASSWORD=$2
+            shift 2;;
+        --remote-write-url)
+            REMOTE_WRITE_URL=$2
+            shift 2;;
         *)
-            break
-            ;;
+            echo "Unknown option: $1"
+            exit 1
     esac
 done
 
@@ -114,7 +118,7 @@ function create_config_dir () {
 function create_config_file () {
     create_config_dir
     echo -n "Creating configuration file...  "
-    TELESCOPE_CONFIG_FILE="${HOME}/.telescope/agent.yaml"
+    TELESCOPE_CONFIG_FILE="${TELESCOPE_DIR}/agent.yaml"
     
     if [[ -f "${TELESCOPE_CONFIG_FILE}" ]]; then
         warning "Configuration file already exists. Skipping."
@@ -196,6 +200,7 @@ integrations:
     enabled: false
   node_exporter:
     enabled: true
+
 EOF
         success "Configuration file created successfully."
     fi
@@ -216,9 +221,14 @@ function run_telescope () {
     echo -n "Setting up Telescope...  "
     create_config_file
     get_docker_image
+    sleep 15
     docker run -d  \
-        --name telescope --network="host" --pid="host" --cap-add SYS_TIME \
+        --name telescope --net="host" --pid="host" --cap-add=SYS_TIME \
         -v "${TELESCOPE_DIR}":/etc/agent-config \
+        -v "/:/host/root:ro,rslave" \
+        -v "/sys:/host/sys:ro,rslave" \
+        -v "/proc:/host/proc:ro,rslave" \
+        -v /tmp/agent:/etc/agent \
         --restart unless-stopped \
         -e PROJECT_ID=${PROJECT_ID} \
         -e PROJECT_NAME=${PROJECT_NAME} \
