@@ -2,6 +2,7 @@
 FROM alpine:latest
 
 RUN apk add --no-cache curl  bash 
+RUN apk update && apk add --no-cache docker-cli
 
 # Copy the script into the container
 COPY install.sh /
