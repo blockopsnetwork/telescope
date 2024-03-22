@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+#
+# This script builds and pushes cross-platform Docker containers. Maintainers
+# should *not* run this locally since it pushes the containers.
+#
+# This script expects to be run from the repo root and has checks for running
+# from a Drone trigger.
+set -euxo pipefail
+
+# Environment variables used throughout this script. These must be set
+# otherwise bash will fail with an "unbound variable" error because of the `set
+# -u` flag on the above line.
+#
+# If the environment variables are unset, the variables below default to an
+# empty string.
+export TARGET_CONTAINER=${1:-}
+export DRONE_TAG=${DRONE_TAG:-}
+export DRONE_BRANCH=${DRONE_BRANCH:-}
+
+export AGENT_IMAGE=grafana/agent
+export AGENT_BORINGCRYPTO_IMAGE=grafana/agent-boringcrypto
+export AGENTCTL_IMAGE=grafana/agentctl
+export OPERATOR_IMAGE=grafana/agent-operator
+
+# We need to determine what version to assign to built binaries. If containers
+# are being built from a Drone tag trigger, we force the version to come from the
+# Drone tag name.
+#
+# Otherwise, we use the ./tools/image-tag script to determine the version.
+if [ -n "$DRONE_TAG" ]; then
+  VERSION=$DRONE_TAG
+else
+  VERSION=$(./tools/image-tag)
+fi
+
+# We also need to know which "branch tag" to update. Branch tags are used as a
+# secondary tag for Docker containers. The branch tag is "latest" when being
+# tagged from a stable release (i.e., not a release candidate) or the Drone
+# branch when coming from a Drone job.
+#
+# If we're not running from drone, we'll set the branch tag to match the
+# version. This effectively acts as a no-op because it will tag the same Docker
+# image twice.
+if [ -n "$DRONE_TAG" ] && [[ "$DRONE_TAG" != *"-rc."* ]]; then
+  BRANCH_TAG=latest
+elif [ -n "$DRONE_BRANCH" ]; then
+  BRANCH_TAG=$DRONE_BRANCH
+else
+  BRANCH_TAG=$VERSION
+fi
+
+# Build all of our images.
+
+export BUILD_PLATFORMS=linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
+export BUILD_PLATFORMS_BORINGCRYPTO=linux/amd64,linux/arm64
+
+case "$TARGET_CONTAINER" in
+  agent)
+    docker buildx build --push        \
+      --platform $BUILD_PLATFORMS     \
+      --build-arg RELEASE_BUILD=1     \
+      --build-arg VERSION="$VERSION"  \
+      -t "$AGENT_IMAGE:$VERSION"      \
+      -t "$AGENT_IMAGE:$BRANCH_TAG"   \
+      -f cmd/grafana-agent/Dockerfile \
+      .
+    ;;
+
+  agent-boringcrypto)
+    docker buildx build --push        \
+      --platform $BUILD_PLATFORMS_BORINGCRYPTO     \
+      --build-arg RELEASE_BUILD=1     \
+      --build-arg VERSION="$VERSION"  \
+      --build-arg GOEXPERIMENT=boringcrypto \
+      -t "$AGENT_BORINGCRYPTO_IMAGE:$VERSION"      \
+      -t "$AGENT_BORINGCRYPTO_IMAGE:$BRANCH_TAG"   \
+      -f cmd/grafana-agent/Dockerfile \
+      .
+    ;;
+
+  agentctl)
+    docker buildx build --push           \
+      --platform $BUILD_PLATFORMS        \
+      --build-arg RELEASE_BUILD=1        \
+      --build-arg VERSION="$VERSION"     \
+      -t "$AGENTCTL_IMAGE:$VERSION"      \
+      -t "$AGENTCTL_IMAGE:$BRANCH_TAG"   \
+      -f cmd/grafana-agentctl/Dockerfile \
+      .
+    ;;
+
+  agent-operator)
+    docker buildx build --push                 \
+      --platform $BUILD_PLATFORMS              \
+      --build-arg RELEASE_BUILD=1              \
+      --build-arg VERSION="$VERSION"           \
+      -t "$OPERATOR_IMAGE:$VERSION"            \
+      -t "$OPERATOR_IMAGE:$BRANCH_TAG"         \
+      -f cmd/grafana-agent-operator/Dockerfile \
+      .
+    ;;
+
+  *)
+    echo "Usage: $0 agent|agent-boringcrypto|agentctl|agent-operator"
+    exit 1
+    ;;
+esac
+
