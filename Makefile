@@ -15,9 +15,9 @@ GOEXPERIMENT                            ?= $(shell go env GOEXPERIMENT)
 # List of all environment variables which will propagate to the build
 # container. USE_CONTAINER must _not_ be included to avoid infinite recursion.
 PROPAGATE_VARS := \
-    AGENT_IMAGE AGENTCTL_IMAGE OPERATOR_IMAGE \
+    AGENT_IMAGE OPERATOR_IMAGE \
     BUILD_IMAGE GOOS GOARCH GOARM CGO_ENABLED RELEASE_BUILD \
-    AGENT_BINARY AGENT_BORINGCRYPTO_BINARY FLOW_BINARY AGENTCTL_BINARY OPERATOR_BINARY \
+    AGENT_BINARY OPERATOR_BINARY \
     VERSION GO_TAGS GOEXPERIMENT
 
 #
@@ -77,8 +77,8 @@ integration-test:
 # Targets for building binaries
 #
 
-.PHONY: binaries agent agent-boringcrypto agent-flow agentctl operator
-binaries: agent agent-boringcrypto agent-flow agentctl operator
+.PHONY: binaries agent operator
+binaries: agent operator
 
 agent:
 ifeq ($(USE_CONTAINER),1)
@@ -86,14 +86,6 @@ ifeq ($(USE_CONTAINER),1)
 else
 	$(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BINARY) ./cmd/telescope
 endif
-
-agent-boringcrypto:
-ifeq ($(USE_CONTAINER),1)
-	$(RERUN_IN_CONTAINER)
-else
-	GOEXPERIMENT=boringcrypto $(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BORINGCRYPTO_BINARY) ./cmd/telescope
-endif
-
 
 operator:
 ifeq ($(USE_CONTAINER),1)
@@ -119,17 +111,13 @@ ifneq ($(DOCKER_PLATFORM),)
 DOCKER_FLAGS += --platform=$(DOCKER_PLATFORM)
 endif
 
-.PHONY: images agent-image agentctl-image operator-image
-images: agent-image agentctl-image operator-image agent-boringcrypto-image
+.PHONY: images agent-image operator-image
+images: agent-image operator-image
 
 agent-image:
-	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/grafana-agent/Dockerfile .
-agentctl-image:
-	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(AGENTCTL_IMAGE) -f cmd/grafana-agentctl/Dockerfile .
-agent-boringcrypto-image:
-	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) --build-arg GOEXPERIMENT=boringcrypto -t $(AGENT_BORINGCRYPTO_IMAGE) -f cmd/grafana-agent/Dockerfile .
+	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/telescope/Dockerfile .
 operator-image:
-	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/grafana-agent-operator/Dockerfile .
+	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/telescope-operator/Dockerfile .
 
 #
 # Targets for generating assets
@@ -145,9 +133,6 @@ else
 	bash ./tools/generate-crds.bash
 	gen-crd-api-reference-docs -config tools/gen-crd-docs/config.json -api-dir "github.com/grafana/agent/internal/static/operator/apis/monitoring/" -out-file docs/sources/operator/api.md -template-dir tools/gen-crd-docs/template
 endif
-
-generate-drone:
-	drone jsonnet -V BUILD_IMAGE_VERSION=$(BUILD_IMAGE_VERSION) --stream --format --source .drone/drone.jsonnet --target .drone/drone.yml
 
 generate-helm-docs:
 ifeq ($(USE_CONTAINER),1)
@@ -198,45 +183,3 @@ ifeq ($(USE_CONTAINER),1)
 else
 	go generate ./docs
 endif
-#
-# Other targets
-#
-# build-container-cache and clean-build-container-cache are defined in
-# Makefile.build-container.
-
-# Drone signs the yaml, you will need to specify DRONE_TOKEN, which can be
-# found by logging into your profile in Drone.
-#
-# This will only work for maintainers.
-.PHONY: drone
-drone: generate-drone
-	drone lint .drone/drone.yml --trusted
-	drone --server https://drone.grafana.net sign --save grafana/agent .drone/drone.yml
-
-.PHONY: clean
-clean: clean-dist clean-build-container-cache
-	rm -rf ./build/*
-
-.PHONY: info
-info:
-	@printf "USE_CONTAINER   = $(USE_CONTAINER)\n"
-	@printf "AGENT_IMAGE     = $(AGENT_IMAGE)\n"
-	@printf "AGENTCTL_IMAGE  = $(AGENTCTL_IMAGE)\n"
-	@printf "OPERATOR_IMAGE  = $(OPERATOR_IMAGE)\n"
-	@printf "BUILD_IMAGE     = $(BUILD_IMAGE)\n"
-	@printf "AGENT_BINARY    = $(AGENT_BINARY)\n"
-	@printf "AGENTCTL_BINARY = $(AGENTCTL_BINARY)\n"
-	@printf "OPERATOR_BINARY = $(OPERATOR_BINARY)\n"
-	@printf "GOOS            = $(GOOS)\n"
-	@printf "GOARCH          = $(GOARCH)\n"
-	@printf "GOARM           = $(GOARM)\n"
-	@printf "CGO_ENABLED     = $(CGO_ENABLED)\n"
-	@printf "RELEASE_BUILD   = $(RELEASE_BUILD)\n"
-	@printf "VERSION         = $(VERSION)\n"
-	@printf "GO_TAGS         = $(GO_TAGS)\n"
-	@printf "GOEXPERIMENT    = $(GOEXPERIMENT)\n"
-
-# awk magic to print out the comment block at the top of this file.
-.PHONY: help
-help:
-	@awk 'BEGIN {FS="## "} /^##\s*(.*)/ { print $$2 }' $(MAKEFILE_LIST)
