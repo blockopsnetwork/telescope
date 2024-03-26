@@ -17,10 +17,8 @@ export TARGET_CONTAINER=${1:-}
 export DRONE_TAG=${DRONE_TAG:-}
 export DRONE_BRANCH=${DRONE_BRANCH:-}
 
-export AGENT_IMAGE=grafana/agent
-export AGENT_BORINGCRYPTO_IMAGE=grafana/agent-boringcrypto
-export AGENTCTL_IMAGE=grafana/agentctl
-export OPERATOR_IMAGE=grafana/agent-operator
+export AGENT_IMAGE=blockopsnetwork/telescope
+export OPERATOR_IMAGE=blockopsnetwork/telescope-operator
 
 # We need to determine what version to assign to built binaries. If containers
 # are being built from a Drone tag trigger, we force the version to come from the
@@ -62,30 +60,7 @@ case "$TARGET_CONTAINER" in
       --build-arg VERSION="$VERSION"  \
       -t "$AGENT_IMAGE:$VERSION"      \
       -t "$AGENT_IMAGE:$BRANCH_TAG"   \
-      -f cmd/grafana-agent/Dockerfile \
-      .
-    ;;
-
-  agent-boringcrypto)
-    docker buildx build --push        \
-      --platform $BUILD_PLATFORMS_BORINGCRYPTO     \
-      --build-arg RELEASE_BUILD=1     \
-      --build-arg VERSION="$VERSION"  \
-      --build-arg GOEXPERIMENT=boringcrypto \
-      -t "$AGENT_BORINGCRYPTO_IMAGE:$VERSION"      \
-      -t "$AGENT_BORINGCRYPTO_IMAGE:$BRANCH_TAG"   \
-      -f cmd/grafana-agent/Dockerfile \
-      .
-    ;;
-
-  agentctl)
-    docker buildx build --push           \
-      --platform $BUILD_PLATFORMS        \
-      --build-arg RELEASE_BUILD=1        \
-      --build-arg VERSION="$VERSION"     \
-      -t "$AGENTCTL_IMAGE:$VERSION"      \
-      -t "$AGENTCTL_IMAGE:$BRANCH_TAG"   \
-      -f cmd/grafana-agentctl/Dockerfile \
+      -f cmd/telescope/Dockerfile \
       .
     ;;
 
@@ -96,12 +71,12 @@ case "$TARGET_CONTAINER" in
       --build-arg VERSION="$VERSION"           \
       -t "$OPERATOR_IMAGE:$VERSION"            \
       -t "$OPERATOR_IMAGE:$BRANCH_TAG"         \
-      -f cmd/grafana-agent-operator/Dockerfile \
+      -f cmd/telescope-operator/Dockerfile \
       .
     ;;
 
   *)
-    echo "Usage: $0 agent|agent-boringcrypto|agentctl|agent-operator"
+    echo "Usage: $0 agent|agent-operator"
     exit 1
     ;;
 esac
