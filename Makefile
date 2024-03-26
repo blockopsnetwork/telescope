@@ -84,23 +84,14 @@ agent:
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	$(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BINARY) ./cmd/telescope-agent
+	$(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BINARY) ./cmd/telescope
 endif
 
 agent-boringcrypto:
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	GOEXPERIMENT=boringcrypto $(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BORINGCRYPTO_BINARY) ./cmd/telescope-agent
-endif
-
-
-# agent-service is not included in binaries since it's Windows-only.
-agent-service:
-ifeq ($(USE_CONTAINER),1)
-	$(RERUN_IN_CONTAINER)
-else
-	$(GO_ENV) go build $(GO_FLAGS) -o $(SERVICE_BINARY) ./cmd/telescope-agent-service
+	GOEXPERIMENT=boringcrypto $(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BORINGCRYPTO_BINARY) ./cmd/telescope
 endif
 
 
@@ -108,7 +99,7 @@ operator:
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	$(GO_ENV) go build $(GO_FLAGS) -o $(OPERATOR_BINARY) ./cmd/telescope-agent-operator
+	$(GO_ENV) go build $(GO_FLAGS) -o $(OPERATOR_BINARY) ./cmd/telescope-operator
 endif
 
 agentlint:
