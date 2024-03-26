@@ -9,7 +9,7 @@ AMBER='\033[0;33m'
 BWHITE='\033[1;37m'
 NC='\033[0m'
 
-TELESCOPE_IMAGE=grafana/agent:v0.37.2
+TELESCOPE_IMAGE=blockopsnetwork/telescope:v0.1.0 
 TELESCOPE_DIR="/tmp/.telescope"
 
 
@@ -118,7 +118,7 @@ function create_config_dir () {
 function create_config_file () {
     create_config_dir
     echo -n "Creating configuration file...  "
-    TELESCOPE_CONFIG_FILE="${TELESCOPE_DIR}/agent.yaml"
+    TELESCOPE_CONFIG_FILE="${TELESCOPE_DIR}/telescope.yaml"
     
     if [[ -f "${TELESCOPE_CONFIG_FILE}" ]]; then
         warning "Configuration file already exists. Skipping."
@@ -236,7 +236,7 @@ function run_telescope () {
         -e REMOTE_WRITE_URL=${REMOTE_WRITE_URL} \
         -e TELESCOPE_USERNAME=${TELESCOPE_USERNAME} \
         -e TELESCOPE_PASSWORD=${TELESCOPE_PASSWORD} \
-        "${TELESCOPE_IMAGE}" --config.file=/etc/agent-config/agent.yaml -config.expand-env  
+        "${TELESCOPE_IMAGE}" --config.file=/etc/telescope/telescope.yaml -config.expand-env  
     if [[ 0 -ne $? ]]
     then
         error "Failed to create the docker container."
