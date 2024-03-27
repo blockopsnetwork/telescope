@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/boringcrypto"
+	"github.com/blockopsnetwork/telescope/internal/boringcrypto"
 	"github.com/grafana/agent/internal/build"
 	"github.com/grafana/agent/internal/flowmode"
 	"github.com/grafana/agent/internal/static/config"
@@ -32,24 +32,11 @@ func init() {
 }
 
 func main() {
-	// If Windows is trying to run as a service, go through that
-	// path instead.
-	if IsWindowsService() {
-		err := RunService()
-		if err != nil {
-			log.Fatalln(err)
-		}
-		return
-	}
-
 	runMode, err := getRunMode()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// NOTE(rfratto): Flow when run through the primary Grafana Agent binary does
-	// not support being run as a Windows service. To run Flow mode as a Windows
-	// service, use cmd/grafana-agent-service and cmd/grafana-agent-flow instead.
 	if runMode == runModeFlow {
 		flowmode.Run()
 		return
