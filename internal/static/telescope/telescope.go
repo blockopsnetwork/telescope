@@ -1,4 +1,5 @@
 package telescope
+
 import (
 	"bytes"
 	"flag"
@@ -59,7 +60,7 @@ type NodeExporterConfig struct {
     Enabled bool `yaml:"enabled"`
 }
 
-func prepareConfig(config *Config) Config {
+func PrepareConfig(config *Config) Config {
 	return Config{
 		Server: ServerConfig{
 			LogLevel: "info",
@@ -97,8 +98,8 @@ func prepareConfig(config *Config) Config {
 
 }
 
-func generateConfigFile(config *Config) error {
-	cfg := prepareConfig(config)
+func GenerateConfigFile(config *Config) error {
+	cfg := PrepareConfig(config)
 
 	// Marshal the config to YAML
 	data, err := yaml.Marshal(cfg)
