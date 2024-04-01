@@ -1,4 +1,4 @@
-module github.com/grafana/agent/internal/cmd/agentlint
+module github.com/blockopsnetwork/telescope/internal/cmd/agentlint
 
 go 1.21
 

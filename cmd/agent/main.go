@@ -6,17 +6,16 @@ import (
 	"os"
 	"fmt"
 	"strings"
-
 	"github.com/go-kit/log/level"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/grafana/agent/internal/boringcrypto"
-	"github.com/grafana/agent/internal/build"
-	"github.com/grafana/agent/internal/flowmode"
-	"github.com/grafana/agent/internal/static/config"
-	"github.com/grafana/agent/internal/static/server"
-	tconfig "github.com/blockopsnetwork/telescope/internal/telescope"
-	util_log "github.com/grafana/agent/internal/util/log"
+	"github.com/blockopsnetwork/telescope/internal/boringcrypto"
+	"github.com/blockopsnetwork/telescope/internal/build"
+	"github.com/blockopsnetwork/telescope/internal/flowmode"
+	"github.com/blockopsnetwork/telescope/internal/static/config"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
+	// tconfig "github.com/blockopsnetwork/telescope/internal/telescope"
+	util_log "github.com/blockopsnetwork/telescope/internal/util/log"
 
 	"github.com/prometheus/client_golang/prometheus"
 
@@ -25,7 +24,7 @@ import (
 	_ "github.com/prometheus/prometheus/discovery/install"
 
 	// Register integrations
-	_ "github.com/grafana/agent/internal/static/integrations/install"
+	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/install"
 
 	// Embed a set of fallback X.509 trusted roots
 	// Allows the app to work correctly even when the OS does not provide a verifier or systems roots pool

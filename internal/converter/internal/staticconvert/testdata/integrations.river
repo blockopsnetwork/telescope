@@ -352,7 +352,7 @@ prometheus.scrape "integrations_gcp_exporter" {
 }
 
 prometheus.exporter.github "integrations_github_exporter" {
-	repositories = ["grafana/agent", "grafana/agent-modules"]
+	repositories = ["blockopsnetwork/telescope", "blockopsnetwork/telescope-modules"]
 	api_token    = "ABCDEFGH-1234-ABCD-1234-ABCDEFGHIJKL"
 }
 

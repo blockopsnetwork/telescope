@@ -93,8 +93,8 @@ integrations:
     enabled: true
     api_token: ABCDEFGH-1234-ABCD-1234-ABCDEFGHIJKL
     repositories:
-      - grafana/agent
-      - grafana/agent-modules
+      - blockopsnetwork/telescope
+      - blockopsnetwork/telescope-modules
   kafka_exporter:
     enabled: true
   memcached_exporter:

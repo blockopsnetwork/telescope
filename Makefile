@@ -29,7 +29,7 @@ GO_ENV := GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) CGO_ENABLED=$(CGO_ENABLED
 VERSION      ?= $(shell bash ./tools/image-tag)
 GIT_REVISION := $(shell git rev-parse --short HEAD)
 GIT_BRANCH   := $(shell git rev-parse --abbrev-ref HEAD)
-VPREFIX      := github.com/grafana/agent/internal/build
+VPREFIX      := github.com/blockopsnetwork/telescope/internal/build
 GO_LDFLAGS   := -X $(VPREFIX).Branch=$(GIT_BRANCH)                        \
                 -X $(VPREFIX).Version=$(VERSION)                          \
                 -X $(VPREFIX).Revision=$(GIT_REVISION)                    \
@@ -131,7 +131,7 @@ ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
 	bash ./tools/generate-crds.bash
-	gen-crd-api-reference-docs -config tools/gen-crd-docs/config.json -api-dir "github.com/grafana/agent/internal/static/operator/apis/monitoring/" -out-file docs/sources/operator/api.md -template-dir tools/gen-crd-docs/template
+	gen-crd-api-reference-docs -config tools/gen-crd-docs/config.json -api-dir "github.com/blockopsnetwork/telescope/internal/static/operator/apis/monitoring/" -out-file docs/sources/operator/api.md -template-dir tools/gen-crd-docs/template
 endif
 
 generate-helm-docs:

@@ -3,7 +3,7 @@ package operator
 // Supported versions of the Grafana Agent.
 var (
 	DefaultAgentVersion   = "$AGENT_VERSION"
-	DefaultAgentBaseImage = "grafana/agent"
+	DefaultAgentBaseImage = "blockopsnetwork/telescope"
 	DefaultAgentImage     = DefaultAgentBaseImage + ":" + DefaultAgentVersion
 )
 

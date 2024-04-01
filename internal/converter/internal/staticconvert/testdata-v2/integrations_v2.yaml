@@ -134,8 +134,8 @@ integrations:
   github_configs:
     - api_token: ABCDEFGH-1234-ABCD-1234-ABCDEFGHIJKL
       repositories:
-        - grafana/agent
-        - grafana/agent-modules
+        - blockopsnetwork/telescope
+        - blockopsnetwork/telescope-modules
   kafka_configs:
     - autoscrape:
         metrics_instance: "default"

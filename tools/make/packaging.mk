@@ -68,7 +68,7 @@ dist/grafana-agent-darwin-arm64: generate-ui
 	$(PACKAGING_VARS) AGENT_BINARY=$@ "$(MAKE)" -f $(PARENT_MAKEFILE) agent
 
 # NOTE(rfratto): do not use netgo when building Windows binaries, which
-# prevents DNS short names from being resovable. See grafana/agent#4665.
+# prevents DNS short names from being resovable. See blockopsnetwork/telescope#4665.
 #
 # TODO(rfratto): add netgo back to Windows builds if a version of Go is
 # released which natively supports resolving DNS short names on Windows.
@@ -79,7 +79,7 @@ dist/grafana-agent-windows-amd64.exe: generate-ui
 	$(PACKAGING_VARS) AGENT_BINARY=$@ "$(MAKE)" -f $(PARENT_MAKEFILE) agent
 
 # NOTE(rfratto): do not use netgo when building Windows binaries, which
-# prevents DNS short names from being resovable. See grafana/agent#4665.
+# prevents DNS short names from being resovable. See blockopsnetwork/telescope#4665.
 #
 # TODO(rfratto): add netgo back to Windows builds if a version of Go is
 # released which natively supports resolving DNS short names on Windows.
@@ -250,7 +250,7 @@ define generate_agent_fpm =
 		--log error \
 		--license "Apache 2.0" \
 		--vendor "Grafana Labs" \
-		--url "https://github.com/grafana/agent" \
+		--url "https://github.com/blockopsnetwork/telescope" \
 		--rpm-digest sha256 \
 		-t $(1) \
 		--after-install packaging/grafana-agent/$(1)/control/postinst \
@@ -326,7 +326,7 @@ define generate_flow_fpm =
 		--log error \
 		--license "Apache 2.0" \
 		--vendor "Grafana Labs" \
-		--url "https://github.com/grafana/agent" \
+		--url "https://github.com/blockopsnetwork/telescope" \
 		--rpm-digest sha256 \
 		-t $(1) \
 		--after-install packaging/grafana-agent-flow/$(1)/control/postinst \
@@ -400,7 +400,7 @@ ifeq ($(USE_CONTAINER),1)
 else
 	cp ./dist/grafana-agent-windows-amd64.exe ./packaging/grafana-agent/windows
 	cp LICENSE ./packaging/grafana-agent/windows
-	# quotes around mkdir are mandatory. ref: https://github.com/grafana/agent/pull/5664#discussion_r1378796371
+	# quotes around mkdir are mandatory. ref: https://github.com/blockopsnetwork/telescope/pull/5664#discussion_r1378796371
 	"mkdir" -p dist
 	makensis -V4 -DVERSION=$(VERSION) -DOUT="../../../dist/grafana-agent-installer.exe" ./packaging/grafana-agent/windows/install_script.nsis
 endif
@@ -410,7 +410,7 @@ dist-agent-flow-installer: dist.temp/grafana-agent-flow-windows-amd64.exe dist.t
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	# quotes around mkdir are mandatory. ref: https://github.com/grafana/agent/pull/5664#discussion_r1378796371
+	# quotes around mkdir are mandatory. ref: https://github.com/blockopsnetwork/telescope/pull/5664#discussion_r1378796371
 	"mkdir" -p dist
 	makensis -V4 -DVERSION=$(VERSION) -DOUT="../../../dist/grafana-agent-flow-installer.exe" ./packaging/grafana-agent-flow/windows/install_script.nsis
 endif
