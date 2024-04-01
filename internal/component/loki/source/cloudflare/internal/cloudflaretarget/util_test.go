@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/grafana/cloudflare-go"
+	"github.com/cloudflare/cloudflare-go"
 	"github.com/stretchr/testify/mock"
 )
 
