@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/blockopsnetwork/telescope/internal/agentseed"
-	"github.com/blockopsnetwork/telescope/internal/useragent"
+	"github.com/grafana/agent/internal/agentseed"
+	"github.com/grafana/agent/internal/useragent"
 	"github.com/prometheus/common/version"
 )
 

@@ -33,7 +33,7 @@
       },
       {
         "typeMatchPrefix": "^github\\.com/blockopsnetwork/telescope/internal/static/operator/assets\\.SecretStore$",
-        "docsURLTemplate": "https://pkg.go.dev/github.com/blockopsnetwork/telescope/internal/static/operator/assets#SecretStore"
+        "docsURLTemplate": "https://pkg.go.dev/github.com/grafana/agent/internal/static/operator/assets#SecretStore"
       }
     ],
     "typeDisplayNamePrefixOverrides": {

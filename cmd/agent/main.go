@@ -2,29 +2,30 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
-	"fmt"
 	"strings"
+
 	"github.com/go-kit/log/level"
+	"github.com/grafana/agent/internal/boringcrypto"
+	"github.com/grafana/agent/internal/build"
+	"github.com/grafana/agent/internal/flowmode"
+	"github.com/grafana/agent/internal/static/config"
+	"github.com/grafana/agent/internal/static/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/blockopsnetwork/telescope/internal/boringcrypto"
-	"github.com/blockopsnetwork/telescope/internal/build"
-	"github.com/blockopsnetwork/telescope/internal/flowmode"
-	"github.com/blockopsnetwork/telescope/internal/static/config"
-	"github.com/blockopsnetwork/telescope/internal/static/server"
-	// tconfig "github.com/blockopsnetwork/telescope/internal/telescope"
-	util_log "github.com/blockopsnetwork/telescope/internal/util/log"
+	// tconfig "github.com/grafana/agent/internal/telescope"
+	util_log "github.com/grafana/agent/internal/util/log"
 
 	"github.com/prometheus/client_golang/prometheus"
 
 	// Register Prometheus SD components
-	_ "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
+	_ "github.com/prometheus/prometheus/discovery/consul"
 	_ "github.com/prometheus/prometheus/discovery/install"
 
 	// Register integrations
-	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/install"
+	_ "github.com/grafana/agent/internal/static/integrations/install"
 
 	// Embed a set of fallback X.509 trusted roots
 	// Allows the app to work correctly even when the OS does not provide a verifier or systems roots pool
@@ -33,22 +34,20 @@ import (
 
 var cfgFile string
 
-
 type TelescopeConfig struct {
-	Metrics bool
-	Network string
-	ProjectId string
-	ProjectName string
+	Metrics           bool
+	Network           string
+	ProjectId         string
+	ProjectName       string
 	TelescopeUsername string
 	TelescopePassword string
-	RemoteWriteUrl string
+	RemoteWriteUrl    string
 }
-
 
 var cmd = &cobra.Command{
 	Use:   "metrics",
 	Short: "A Web3 Observability tooling",
-	Long: `Gain insights into your Web3 infrastructure with Telescope.`,
+	Long:  `Gain insights into your Web3 infrastructure with Telescope.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var config TelescopeConfig
 		if err := config.loadConfig(); err != nil {
@@ -56,22 +55,21 @@ var cmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-        fmt.Printf("Telescope Config: %v\n", config)
+		fmt.Printf("Telescope Config: %v\n", config)
 	},
-	
 }
 
 var helperFunction = func(cmd *cobra.Command, args []string) {
 	fmt.Println("Custom Help:")
-    fmt.Println("Usage: app start [flags]")
-    fmt.Println("\nFlags:")
-    fmt.Println("  --metrics\t\tEnable metrics")
-    fmt.Println("  --network\t\tSpecify the network")
-    fmt.Println("  --project-id\t\tSpecify the project ID")
-    fmt.Println("  --project-name\tSpecify the project name")
-    fmt.Println("  --telescope-username\tSpecify the telescope username")
-    fmt.Println("  --telescope-password\tSpecify the telescope password")
-    fmt.Println("  --remote-write-url\tSpecify the remote write URL")
+	fmt.Println("Usage: app start [flags]")
+	fmt.Println("\nFlags:")
+	fmt.Println("  --metrics\t\tEnable metrics")
+	fmt.Println("  --network\t\tSpecify the network")
+	fmt.Println("  --project-id\t\tSpecify the project ID")
+	fmt.Println("  --project-name\tSpecify the project name")
+	fmt.Println("  --telescope-username\tSpecify the telescope username")
+	fmt.Println("  --telescope-password\tSpecify the telescope password")
+	fmt.Println("  --remote-write-url\tSpecify the remote write URL")
 }
 
 func init() {
@@ -79,25 +77,24 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	cmd.SetHelpFunc(helperFunction)
 	cmd.Flags().Bool("metrics", false, "Enable metrics")
-    cmd.Flags().String("network", "", "Specify the network")
-    cmd.Flags().String("project-id", "", "Specify the project ID")
-    cmd.Flags().String("project-name", "", "Specify the project name")
-    cmd.Flags().String("telescope-username", "", "Specify the telescope username")
-    cmd.Flags().String("telescope-password", "", "Specify the telescope password")
-    cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
+	cmd.Flags().String("network", "", "Specify the network")
+	cmd.Flags().String("project-id", "", "Specify the project ID")
+	cmd.Flags().String("project-name", "", "Specify the project name")
+	cmd.Flags().String("telescope-username", "", "Specify the telescope username")
+	cmd.Flags().String("telescope-password", "", "Specify the telescope password")
+	cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
 
-    // Bind flags with viper
-    viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
-    viper.BindPFlag("network", cmd.Flags().Lookup("network"))
-    viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
-    viper.BindPFlag("project-name", cmd.Flags().Lookup("project-name"))
-    viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
-    viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
-    viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
+	// Bind flags with viper
+	viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
+	viper.BindPFlag("network", cmd.Flags().Lookup("network"))
+	viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
+	viper.BindPFlag("project-name", cmd.Flags().Lookup("project-name"))
+	viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
+	viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
+	viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
 
-	tconfig.generateConfigFile(config *TelescopeConfig) 
+	tconfig.generateConfigFile(config * TelescopeConfig)
 
-	
 	// cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cmd.yaml)")
 	// cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
@@ -135,12 +132,11 @@ func (c *TelescopeConfig) loadConfig() error {
 	c.RemoteWriteUrl = viper.GetString("remote-write-url")
 
 	// Check for required fields
-    if err := checkRequiredFlags(); err != nil {
-        return err
-    }
+	if err := checkRequiredFlags(); err != nil {
+		return err
+	}
 
 	return nil
-
 
 }
 
@@ -201,27 +197,26 @@ func main() {
 }
 
 func checkRequiredFlags() error {
-    requiredFlags := []string{"metrics", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
-    missingFlags := []string{}
+	requiredFlags := []string{"metrics", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
+	missingFlags := []string{}
 
-    for _, flag := range requiredFlags {
-        if viper.GetString(flag) == "" {
-            missingFlags = append(missingFlags, flag)
-        }
-    }
+	for _, flag := range requiredFlags {
+		if viper.GetString(flag) == "" {
+			missingFlags = append(missingFlags, flag)
+		}
+	}
 
-    if len(missingFlags) > 0 {
-        return fmt.Errorf("Error: Missing required flags: %s", strings.Join(missingFlags, ", "))
-    }
+	if len(missingFlags) > 0 {
+		return fmt.Errorf("Error: Missing required flags: %s", strings.Join(missingFlags, ", "))
+	}
 
-    return nil
+	return nil
 }
-
 
 func createConfigFIle(config *TelescopeConfig) error {
 	telescopeDir := "/tmp/telescope"
 	telescopeConfigFile := filepath.Join(telescopeDir, "telescope.yaml")
-	
+
 	// Create the configuration directory if it doesn't exist
 	if _, err := os.Stat(telescopeDir); os.IsNotExist(err) {
 		if err := os.Mkdir(telescopeDir, 0755); err != nil {
