@@ -1,9 +1,9 @@
 # include tools/make/*.mk
 
-AGENT_IMAGE                             ?= blockopsnetwork/telescope:latest
-OPERATOR_IMAGE                          ?= blockopsnetwork/telescope:latest
-AGENT_BINARY                            ?= build/telescope
-OPERATOR_BINARY                         ?= build/telescope-operator
+AGENT_IMAGE                             ?= blockopsnetwork/agent:latest
+OPERATOR_IMAGE                          ?= blockopsnetwork/agent:latest
+AGENT_BINARY                            ?= build/agent
+OPERATOR_BINARY                         ?= build/agent-operator
 AGENTLINT_BINARY                        ?= build/agentlint
 GOOS                                    ?= $(shell go env GOOS)
 GOARCH                                  ?= $(shell go env GOARCH)
@@ -84,14 +84,14 @@ agent:
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	$(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BINARY) ./cmd/telescope
+	$(GO_ENV) go build $(GO_FLAGS) -o $(AGENT_BINARY) ./cmd/agent
 endif
 
 operator:
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	$(GO_ENV) go build $(GO_FLAGS) -o $(OPERATOR_BINARY) ./cmd/telescope-operator
+	$(GO_ENV) go build $(GO_FLAGS) -o $(OPERATOR_BINARY) ./cmd/agent-operator
 endif
 
 agentlint:
@@ -115,9 +115,9 @@ endif
 images: agent-image operator-image
 
 agent-image:
-	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/telescope/Dockerfile .
+	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/agent/Dockerfile .
 operator-image:
-	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/telescope-operator/Dockerfile .
+	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/agent-operator/Dockerfile .
 
 #
 # Targets for generating assets
