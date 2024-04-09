@@ -7,15 +7,15 @@ import (
 	"fmt"
 	"strings"
 
+
 	"github.com/go-kit/log/level"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/grafana/agent/internal/boringcrypto"
 	"github.com/grafana/agent/internal/build"
-	"github.com/grafana/agent/internal/flowmode"
+	// "github.com/grafana/agent/internal/flowmode"
 	"github.com/grafana/agent/internal/static/config"
 	"github.com/grafana/agent/internal/static/server"
-	// tconfig "github.com/blockopsnetwork/telescope/internal/telescope"
 	util_log "github.com/grafana/agent/internal/util/log"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -44,7 +44,6 @@ type TelescopeConfig struct {
 	TelescopePassword string
 	RemoteWriteUrl string
 }
-
 
 var cmd = &cobra.Command{
 	Use:   "metrics",
@@ -75,6 +74,24 @@ var helperFunction = func(cmd *cobra.Command, args []string) {
     fmt.Println("  --remote-write-url\tSpecify the remote write URL")
 }
 
+
+func checkRequiredFlags() error {
+    requiredFlags := []string{"metrics", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
+    missingFlags := []string{}
+
+    for _, flag := range requiredFlags {
+        if viper.GetString(flag) == "" {
+            missingFlags = append(missingFlags, flag)
+        }
+    }
+
+    if len(missingFlags) > 0 {
+        return fmt.Errorf("Error: Missing required flags: %s", strings.Join(missingFlags, ", "))
+    }
+
+    return nil
+}
+
 func init() {
 	prometheus.MustRegister(build.NewCollector("agent"))
 	cobra.OnInitialize(initConfig)
@@ -95,8 +112,6 @@ func init() {
     viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
     viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
     viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
-
-	tconfig.generateConfigFile(config *TelescopeConfig) 
 
 	
 	// cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cmd.yaml)")
@@ -150,15 +165,6 @@ func (c *TelescopeConfig) loadConfig() error {
 // }
 
 func agent() {
-	runMode, err := getRunMode()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if runMode == runModeFlow {
-		flowmode.Run()
-		return
-	}
 
 	// Set up logging using default values before loading the config
 	defaultCfg := server.DefaultConfig()
@@ -194,55 +200,10 @@ func agent() {
 }
 
 func main() {
+	
 	err := cmd.Execute()
 	agent()
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func checkRequiredFlags() error {
-    requiredFlags := []string{"metrics", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
-    missingFlags := []string{}
-
-    for _, flag := range requiredFlags {
-        if viper.GetString(flag) == "" {
-            missingFlags = append(missingFlags, flag)
-        }
-    }
-
-    if len(missingFlags) > 0 {
-        return fmt.Errorf("Error: Missing required flags: %s", strings.Join(missingFlags, ", "))
-    }
-
-    return nil
-}
-
-
-func createConfigFIle(config *TelescopeConfig) error {
-	telescopeDir := "/tmp/telescope"
-	telescopeConfigFile := filepath.Join(telescopeDir, "telescope.yaml")
-	
-	// Create the configuration directory if it doesn't exist
-	if _, err := os.Stat(telescopeDir); os.IsNotExist(err) {
-		if err := os.Mkdir(telescopeDir, 0755); err != nil {
-			return fmt.Errorf("Error creating configuration directory: %v", err)
-		}
-	}
-
-	fmt.Print("Creating configuration file...  ")
-
-	// Check if the configuration file already exists
-	if _, err := os.Stat(telescopeConfigFile); err == nil {
-		fmt.Println("Configuration file already exists. Skipping.")
-		return nil
-	}
-
-	// Create the configuration file
-	file, err := os.Create(telescopeConfigFile)
-	if err != nil {
-		return fmt.Errorf("Error creating configuration file: %v", err)
-	}
-	defer file.Close()
-
 }
