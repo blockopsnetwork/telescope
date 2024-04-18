@@ -3,6 +3,7 @@ package build
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/version"
+	
 )
 
 // Version information passed to Prometheus version package.
