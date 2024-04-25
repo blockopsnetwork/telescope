@@ -104,7 +104,7 @@ var networkConfigs = map[string]BlockchainNetworkConfig{
 		Chain:    "sepolia",
 		Network:  "ethereum",
 		NodeType: map[string]int{"execution": 6060, "consensus": 8008},
-		Port:     8545,
+		Port:     6060,
 	},
 	"polkadot": {
 		Chain:    "polkadot",
