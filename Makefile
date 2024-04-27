@@ -121,6 +121,10 @@ agent-image:
 operator-image:
 	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/agent-operator/Dockerfile .
 
+agent-push:
+	docker push $(AGENT_IMAGE)
+
+
 multi-platform-agent-image: 
 	docker buildx create --use --name multiarch --driver docker-container
 	docker buildx build --platform $(PLATFORMS) $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/agent/Dockerfile .
