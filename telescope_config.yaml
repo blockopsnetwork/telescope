@@ -2,7 +2,7 @@ server:
     log_level: info
 metrics:
     global:
-        scrape_interval: 1m
+        scrape_interval: 15s
         external_labels:
             project_id: hyperbridge-nexus-bootnode
             project_name: hyperbridge-nexus
@@ -11,9 +11,10 @@ metrics:
               basic_auth:
                 password: hyperbridge
                 username: hyperbridge
+    wal_directory: /tmp/wal
     configs:
         - name: hyperbridge-nexushyperbridge_metrics
-          host_filter: true
+          host_filter: false
           scrape_configs:
             - job_name: hyperbridge-nexus_hyperbridge_relaychain_job_0
               static_configs:
@@ -23,3 +24,8 @@ metrics:
               static_configs:
                 - targets:
                     - localhost:9616
+integrations:
+    agent:
+        enabled: false
+    node_exporter:
+        enabled: true

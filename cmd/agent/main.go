@@ -38,6 +38,8 @@ var cfgFile string
 type Config struct {
 	Server  ServerConfig  `yaml:"server"`
 	Metrics MetricsConfig `yaml:"metrics"`
+	Integrations       map[string]interface{}  `yaml:"integrations"`
+	
 }
 
 type ServerConfig struct {
@@ -70,6 +72,15 @@ type ScrapeConfig struct {
 type BasicAuth struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+}
+
+type IntegrationsConfig struct {
+    Agent        ToIntegrate `yaml:"agent"`
+    NodeExporter ToIntegrate `yaml:"node_exporter"`
+}
+
+type ToIntegrate struct {
+    Enabled bool `yaml:"enabled"`
 }
 
 type StaticConfig struct {
@@ -238,6 +249,15 @@ func generateNetworkConfig() Config {
 				},
 			},
 		},
+		Integrations: map[string]interface{}{
+			"agent": ToIntegrate{
+				Enabled: false,
+			},
+			"node_exporter": ToIntegrate{
+				Enabled: true,
+			},
+		},
+			
 	}
 }
 
