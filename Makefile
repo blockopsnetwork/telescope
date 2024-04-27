@@ -1,7 +1,7 @@
 # include tools/make/*.mk
 
 AGENT_IMAGE                             ?= blockopsnetwork/telescope:v0.1.5
-OPERATOR_IMAGE                          ?= blockopsnetwork/telescope:latest
+OPERATOR_IMAGE                          ?= blockopsnetwork/telescope-operator:latest
 AGENT_BINARY                            ?= build/agent
 OPERATOR_BINARY                         ?= build/agent-operator
 AGENTLINT_BINARY                        ?= build/agentlint
@@ -123,6 +123,9 @@ operator-image:
 
 agent-push:
 	docker push $(AGENT_IMAGE)
+
+operator-push:
+	docker push $(OPERATOR_IMAGE)
 
 
 multi-platform-agent-image: 
