@@ -46,6 +46,7 @@ type ServerConfig struct {
 
 type MetricsConfig struct {
 	Global   GlobalConfig   `yaml:"global"`
+	Wal_Directory string `yaml:"wal_directory"`
 	Configs  []MetricConfig `yaml:"configs"`
 }
 
@@ -211,6 +212,7 @@ func generateNetworkConfig() Config {
 			LogLevel: "info",
 		},
 		Metrics: MetricsConfig{
+			Wal_Directory: "/tmp/wal",
 			Global: GlobalConfig{
 				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
