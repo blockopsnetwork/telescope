@@ -231,7 +231,7 @@ func generateNetworkConfig() Config {
 			Configs: []MetricConfig{
 				{
 					Name: toLowerAndEscape(cProjectName+cNetwork+"_metrics"),
-					HostFilter: true,
+					HostFilter: false,
 					ScrapeConfigs: scrapeConfigs,
 				},
 			},
