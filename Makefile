@@ -1,7 +1,7 @@
 # include tools/make/*.mk
 
-AGENT_IMAGE                             ?= blockopsnetwork/agent:v0.1.5
-OPERATOR_IMAGE                          ?= blockopsnetwork/agent:latest
+AGENT_IMAGE                             ?= blockopsnetwork/telescope:v0.1.5
+OPERATOR_IMAGE                          ?= blockopsnetwork/telescope:latest
 AGENT_BINARY                            ?= build/agent
 OPERATOR_BINARY                         ?= build/agent-operator
 AGENTLINT_BINARY                        ?= build/agentlint

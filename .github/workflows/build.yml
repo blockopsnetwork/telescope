@@ -22,7 +22,7 @@ jobs:
   golangci:
     strategy:
       fail-fast: false
-    name: Lint
+    name: Build and Push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
