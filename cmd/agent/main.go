@@ -38,6 +38,8 @@ var cfgFile string
 type Config struct {
 	Server  ServerConfig  `yaml:"server"`
 	Metrics MetricsConfig `yaml:"metrics"`
+	Integrations       map[string]interface{}  `yaml:"integrations"`
+	
 }
 
 type ServerConfig struct {
@@ -46,6 +48,7 @@ type ServerConfig struct {
 
 type MetricsConfig struct {
 	Global   GlobalConfig   `yaml:"global"`
+	Wal_Directory string `yaml:"wal_directory"`
 	Configs  []MetricConfig `yaml:"configs"`
 }
 
@@ -69,6 +72,15 @@ type ScrapeConfig struct {
 type BasicAuth struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+}
+
+type IntegrationsConfig struct {
+    Agent        ToIntegrate `yaml:"agent"`
+    NodeExporter ToIntegrate `yaml:"node_exporter"`
+}
+
+type ToIntegrate struct {
+    Enabled bool `yaml:"enabled"`
 }
 
 type StaticConfig struct {
@@ -175,6 +187,7 @@ func generateNetworkConfig() Config {
 	cRemoteWriteUrl := viper.GetString("remote-write-url")
 
 	ports, err := networkDiscovery(cNetwork)
+	
 
 	if err != nil {
 		log.Fatalf("Unable to discover blockchain port: %v", err)
@@ -184,14 +197,35 @@ func generateNetworkConfig() Config {
 		viper.Set("scrape_port", port)
 	}
 
+	networkConfig, ok := networkConfigs[cNetwork]
+    if !ok {
+        log.Fatalf("Invalid network configuration for: %v", cNetwork)
+    }
+
+	var scrapeConfigs []ScrapeConfig
+    idx := 0  // Initialize index for job naming
+    for nodeType, port := range networkConfig.NodeType {
+        jobName := fmt.Sprintf("%s_%s_%s_job_%d", toLowerAndEscape(cProjectName), cNetwork, nodeType, idx)
+        target := fmt.Sprintf("localhost:%d", port)
+        scrapeConfigs = append(scrapeConfigs, ScrapeConfig{
+            JobName: jobName,
+            StaticConfigs: []StaticConfig{
+                {
+                    Targets: []string{target},
+                },
+            },
+        })
+        idx++
+    }
 
 	return Config{
 		Server: ServerConfig{
 			LogLevel: "info",
 		},
 		Metrics: MetricsConfig{
+			Wal_Directory: "/tmp/wal",
 			Global: GlobalConfig{
-				ScrapeInterval: "1m",
+				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
 					"project_id": cProjectId,
 					"project_name": cProjectName,
@@ -210,20 +244,20 @@ func generateNetworkConfig() Config {
 			Configs: []MetricConfig{
 				{
 					Name: toLowerAndEscape(cProjectName+cNetwork+"_metrics"),
-					HostFilter: true,
-					ScrapeConfigs: []ScrapeConfig{
-						{
-							JobName: toLowerAndEscape(cProjectName+cNetwork+"_job"),
-							StaticConfigs: []StaticConfig{
-								{
-									Targets: viper.GetStringSlice("scrape_port"),	
-								},
-							},
-						},
-					},
+					HostFilter: false,
+					ScrapeConfigs: scrapeConfigs,
 				},
 			},
 		},
+		Integrations: map[string]interface{}{
+			"agent": ToIntegrate{
+				Enabled: false,
+			},
+			"node_exporter": ToIntegrate{
+				Enabled: true,
+			},
+		},
+			
 	}
 }
 

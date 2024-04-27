@@ -1,7 +1,7 @@
 # include tools/make/*.mk
 
-AGENT_IMAGE                             ?= blockopsnetwork/agent:latest
-OPERATOR_IMAGE                          ?= blockopsnetwork/agent:latest
+AGENT_IMAGE                             ?= blockopsnetwork/telescope:v0.1.5
+OPERATOR_IMAGE                          ?= blockopsnetwork/telescope:latest
 AGENT_BINARY                            ?= build/agent
 OPERATOR_BINARY                         ?= build/agent-operator
 AGENTLINT_BINARY                        ?= build/agentlint
@@ -39,6 +39,8 @@ GO_LDFLAGS   := -X $(VPREFIX).Branch=$(GIT_BRANCH)                        \
 DEFAULT_FLAGS    := $(GO_FLAGS)
 DEBUG_GO_FLAGS   := -ldflags "$(GO_LDFLAGS)" -tags "$(GO_TAGS)"
 RELEASE_GO_FLAGS := -ldflags "-s -w $(GO_LDFLAGS)" -tags "$(GO_TAGS)"
+PLATFORMS ?= linux/amd64,linux/arm64
+
 
 ifeq ($(RELEASE_BUILD),1)
 GO_FLAGS := $(DEFAULT_FLAGS) $(RELEASE_GO_FLAGS)
@@ -77,8 +79,8 @@ integration-test:
 # Targets for building binaries
 #
 
-.PHONY: binaries agent operator
-binaries: agent operator
+.PHONY: binaries agent operator multi-platform-agent-image
+binaries: agent operator multi-platform-agent-image
 
 agent:
 ifeq ($(USE_CONTAINER),1)
@@ -111,13 +113,22 @@ ifneq ($(DOCKER_PLATFORM),)
 DOCKER_FLAGS += --platform=$(DOCKER_PLATFORM)
 endif
 
-.PHONY: images agent-image operator-image
-images: agent-image operator-image
+.PHONY: images agent-image operator-image 
+images: agent-image operator-image multi-platform-agent-image
 
 agent-image:
 	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/agent/Dockerfile .
 operator-image:
 	DOCKER_BUILDKIT=1 docker build $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/agent-operator/Dockerfile .
+
+agent-push:
+	docker push $(AGENT_IMAGE)
+
+
+multi-platform-agent-image: 
+	docker buildx create --use --name multiarch --driver docker-container
+	docker buildx build --platform $(PLATFORMS) $(DOCKER_FLAGS) -t $(AGENT_IMAGE) -f cmd/agent/Dockerfile .
+    # docker buildx build --push --platform $(PLATFORMS) $(DOCKER_FLAGS) -t $(OPERATOR_IMAGE) -f cmd/agent-operator/Dockerfile .
 
 #
 # Targets for generating assets
@@ -138,7 +149,7 @@ generate-helm-docs:
 ifeq ($(USE_CONTAINER),1)
 	$(RERUN_IN_CONTAINER)
 else
-	cd operations/helm/charts/grafana-agent && helm-docs
+	cd operations/helm/charts/telescope && helm-docs
 endif
 
 generate-helm-tests:
