@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telescope
+  labels:
+    app: telescope
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telescope
+  template:
+    metadata:
+      labels:
+        app: telescope
+    spec:
+      containers:
+      - name: telescope
+        image: blockopsnetwork/telescope:v0.1.5
+        args: ["/bin/sh", "-c", "$TELES_CONFIG"]
+        env:
+        - name: TELESCOPE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: telescope-secrets
+              key: username
+        - name: TELESCOPE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: telescope-secrets
+              key: password
+        volumeMounts:
+        - name: agent-config
+          mountPath: /etc/agent-config
+        - name: agent-data
+          mountPath: /etc/agent
+      volumes:
+      - name: agent-config
+        persistentVolumeClaim:
+          claimName: agent-config
+      - name: agent-data
+        persistentVolumeClaim:
+          claimName: telescope-data
