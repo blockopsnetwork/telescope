@@ -1,0 +1,25 @@
+server:
+    log_level: info
+metrics:
+    global:
+        scrape_interval: 1m
+        external_labels:
+            project_id: hyperbridge-nexus-bootnode
+            project_name: hyperbridge-nexus
+        remote_write:
+            - url: https://hyperbridge-prometheus.blockops.network/api/v1/write
+              basic_auth:
+                password: hyperbridge
+                username: hyperbridge
+    configs:
+        - name: hyperbridge-nexushyperbridge_metrics
+          host_filter: true
+          scrape_configs:
+            - job_name: hyperbridge-nexus_hyperbridge_relaychain_job_0
+              static_configs:
+                - targets:
+                    - localhost:9615
+            - job_name: hyperbridge-nexus_hyperbridge_parachain_job_1
+              static_configs:
+                - targets:
+                    - localhost:9616
