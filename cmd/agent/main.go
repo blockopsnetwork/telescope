@@ -212,7 +212,7 @@ func generateNetworkConfig() Config {
 		},
 		Metrics: MetricsConfig{
 			Global: GlobalConfig{
-				ScrapeInterval: "1m",
+				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
 					"project_id": cProjectId,
 					"project_name": cProjectName,
