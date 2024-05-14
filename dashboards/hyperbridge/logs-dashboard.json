@@ -21,7 +21,7 @@
     "fiscalYearStartMonth": 0,
     "gnetId": 13639,
     "graphTooltip": 0,
-    "id": 42,
+    "id": 339,
     "links": [
       {
         "$$hashKey": "object:59",
@@ -48,7 +48,8 @@
         },
         "fieldConfig": {
           "defaults": {
-            "links": []
+            "links": [],
+            "unitScale": true
           },
           "overrides": []
         },
@@ -78,7 +79,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "10.2.0",
+        "pluginVersion": "10.3.0",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -173,17 +174,27 @@
       }
     ],
     "refresh": "",
-    "schemaVersion": 38,
+    "schemaVersion": 39,
     "tags": [],
     "templating": {
       "list": [
         {
-          "hide": 2,
+          "current": {
+            "selected": false,
+            "text": "Blockops Kusama Loki",
+            "value": "P0DA1E9598CFBC5C8"
+          },
+          "hide": 0,
+          "includeAll": false,
           "label": "Projects",
+          "multi": false,
           "name": "project_id",
-          "query": "hyperbridge",
+          "options": [],
+          "query": "loki",
+          "refresh": 1,
+          "regex": "",
           "skipUrlSync": false,
-          "type": "constant"
+          "type": "datasource"
         },
         {
           "current": {
@@ -207,13 +218,14 @@
         },
         {
           "current": {
-            "selected": true,
-            "text": "hyperbridge-paseo-collator",
-            "value": "hyperbridge-paseo-collator"
+            "isNone": true,
+            "selected": false,
+            "text": "None",
+            "value": ""
           },
           "datasource": {
             "type": "loki",
-            "uid": "f46f3897-d60c-40eb-8e2d-79a53aac2129"
+            "uid": "PD45CC8DF88ADBFD9"
           },
           "definition": "",
           "hide": 0,
@@ -257,6 +269,6 @@
     "timezone": "",
     "title": "Logs",
     "uid": "blockops-telescope-dashboard",
-    "version": 9,
+    "version": 2,
     "weekStart": ""
   }
