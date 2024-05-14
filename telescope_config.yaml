@@ -5,7 +5,7 @@ metrics:
         scrape_interval: 15s
         external_labels:
             project_id: hyperbridge-nexus-bootnode
-            project_name: hyperbridge-nexus
+            project_name: blockops_dvt
         remote_write:
             - url: https://hyperbridge-prometheus.blockops.network/api/v1/write
               basic_auth:
@@ -13,17 +13,29 @@ metrics:
                 username: hyperbridge
     wal_directory: /tmp/wal
     configs:
-        - name: hyperbridge-nexushyperbridge_metrics
+        - name: blockops_dvtobol_metrics
           host_filter: false
           scrape_configs:
-            - job_name: hyperbridge-nexus_hyperbridge_relaychain_job_0
+            - job_name: blockops_dvt_obol_charon_job_0
               static_configs:
                 - targets:
-                    - localhost:9615
-            - job_name: hyperbridge-nexus_hyperbridge_parachain_job_1
+                    - localhost:3620
+            - job_name: blockops_dvt_obol_execution_job_1
               static_configs:
                 - targets:
-                    - localhost:9616
+                    - localhost:6060
+            - job_name: blockops_dvt_obol_consensus_job_2
+              static_configs:
+                - targets:
+                    - localhost:8008
+            - job_name: blockops_dvt_obol_nimbus_job_3
+              static_configs:
+                - targets:
+                    - localhost:8108
+            - job_name: blockops_dvt_obol_lighthouse_job_4
+              static_configs:
+                - targets:
+                    - localhost:5064
 integrations:
     agent:
         enabled: false
