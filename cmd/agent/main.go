@@ -130,6 +130,12 @@ var networkConfigs = map[string]BlockchainNetworkConfig{
 		NodeType: map[string]int{"relaychain": 9615, "parachain": 9616},
 		Port:     9615,
 	},
+	"obol": {
+		Chain:   "testnet",
+		Network: "obol",
+		NodeType: map[string]int{"charon": 3620, "execution": 6060, "consensus": 8008, "nimbus": 8108, "lighthouse": 5064},
+		Port:    3620,
+	},
 }
 
 func toLowerAndEscape(input string) string {
