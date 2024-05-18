@@ -1272,8 +1272,8 @@
       {
         "current": {
           "selected": false,
-          "text": "$project_id-paseo-collator",
-          "value": "$project_id-paseo-collator"
+          "text": "$project_id",
+          "value": "$project_idr"
         },
         "datasource": {
           "type": "prometheus",
