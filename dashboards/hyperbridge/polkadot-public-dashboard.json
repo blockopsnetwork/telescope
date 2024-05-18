@@ -1,0 +1,1561 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "$$hashKey": "object:15",
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "limit": 100,
+          "name": "Annotations & Alerts",
+          "showIn": 0,
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "description": "Telescope | A Node Observability tool by @blockopsnetwork",
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "gnetId": 13840,
+    "graphTooltip": 0,
+    "id": 413,
+    "links": [
+      {
+        "icon": "external link",
+        "tags": [],
+        "targetBlank": true,
+        "title": "Blockops",
+        "tooltip": "",
+        "type": "link",
+        "url": "https://blockops.network"
+      }
+    ],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "e9cd7b44-5a13-45a0-8325-c110f4cb5c5f"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 50,
+        "panels": [],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "e9cd7b44-5a13-45a0-8325-c110f4cb5c5f"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Network & Chain Metrics",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "links": [
+              {
+                "title": "",
+                "url": ""
+              }
+            ],
+            "mappings": [
+              {
+                "options": {
+                  "1492283": {
+                    "text": "Stuck"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "rgb(222, 101, 171)",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 1
+        },
+        "id": 99,
+        "links": [],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "vertical",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {},
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_block_height{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "{{status}}",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Height of the chain $project_id",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "match": "null",
+                  "result": {
+                    "text": "N/A"
+                  }
+                },
+                "type": "special"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "semi-dark-blue",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "bytes",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 1
+        },
+        "id": 115,
+        "links": [],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "vertical",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {},
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "rate(substrate_sub_libp2p_network_bytes_total{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}[5m])",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "{{direction}}",
+            "refId": "A"
+          }
+        ],
+        "title": "Networking bytes per second",
+        "type": "stat"
+      },
+      {
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 9
+        },
+        "id": 104,
+        "libraryPanel": {
+          "name": "Tasks rate",
+          "uid": "bdb9ecc2-6b7a-45fb-a2e9-6c11984d81db"
+        },
+        "title": "Tasks rate"
+      },
+      {
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 9
+        },
+        "id": 105,
+        "libraryPanel": {
+          "name": "Running Tasks",
+          "uid": "c28661cf-30e1-4b4c-9946-46da97a6abf3"
+        },
+        "title": "Running Tasks"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "none",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 17
+        },
+        "id": 106,
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "lastNotNull",
+              "max",
+              "min"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sub_libp2p_peers_count{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "Peers count",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sub_libp2p_peerset_num_discovered{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "Discovered peers",
+            "range": true,
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sub_libp2p_peerset_num_requested{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "Requested peers",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Peers connected, discovered, and requested",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 17
+        },
+        "id": 107,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sync_peers{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Connected peers",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 25
+        },
+        "id": 108,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_state_cache_bytes{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "{{subtype}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "State Cache DB",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 25
+        },
+        "id": 109,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "rate(substrate_finality_grandpa_communication_gossip_validator_messages{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}[5m])",
+            "interval": "",
+            "legendFormat": "{{message}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "GRANDPA Validator Messages",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 33
+        },
+        "id": 110,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_state_cache_bytes{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "State Cache",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 33
+        },
+        "id": 111,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sync_queued_blocks{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Queued Blocks (sync)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 41
+        },
+        "id": 112,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_ready_transactions_number{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "legendFormat": "Number of transactions in the ready queue",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Number of transactions in the ready queue",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 41
+        },
+        "id": 113,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.2.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_number_leaves{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "interval": "",
+            "legendFormat": "",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Number of Leaves",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 0,
+          "y": 49
+        },
+        "id": 101,
+        "links": [],
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "9.3.11",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "rate(substrate_block_height{status=\"finalized\", project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}[10m])*60",
+            "interval": "",
+            "intervalFactor": 10,
+            "legendFormat": "{{instance}}  Blocks / minute",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Block rate",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 12,
+          "y": 49
+        },
+        "id": 103,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sub_libp2p_distinct_peers_connections_closed_total{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "legendFormat": "Closed connections",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "substrate_sub_libp2p_distinct_peers_connections_opened_total{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}",
+            "hide": false,
+            "legendFormat": "Open connections",
+            "range": true,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "telescope6g20Fp06XYmF"
+            },
+            "editorMode": "code",
+            "expr": "(substrate_sub_libp2p_distinct_peers_connections_opened_total{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"}) - (substrate_sub_libp2p_distinct_peers_connections_closed_total{project_id=\"$project_id\", project_name=\"$project_name\", chain=\"$chain\"})",
+            "hide": false,
+            "legendFormat": "Queued connections",
+            "range": true,
+            "refId": "C"
+          }
+        ],
+        "title": "No of Open RPC connections $project_id",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "loki",
+          "uid": "PD45CC8DF88ADBFD9"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 56
+        },
+        "id": 97,
+        "options": {
+          "dedupStrategy": "none",
+          "enableLogDetails": true,
+          "prettifyLogMessage": false,
+          "showCommonLabels": false,
+          "showLabels": false,
+          "showTime": false,
+          "sortOrder": "Descending",
+          "wrapLogMessage": false
+        },
+        "pluginVersion": "9.3.11",
+        "targets": [
+          {
+            "datasource": {
+              "type": "loki",
+              "uid": "PD45CC8DF88ADBFD9"
+            },
+            "expr": "{host=\"$project_name\"}",
+            "queryType": "range",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "loki",
+              "uid": "PD45CC8DF88ADBFD9"
+            },
+            "expr": "{source=\"stderr\", host=\"$project_id\"}",
+            "queryType": "range",
+            "refId": "B"
+          }
+        ],
+        "title": "Chain Logs $project_name",
+        "type": "logs"
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 39,
+    "tags": [
+      "parachain",
+      "hyperbridge"
+    ],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "hyperbridge",
+            "value": "hyperbridge"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "telescope6g20Fp06XYmF"
+          },
+          "definition": "label_values(project_id)",
+          "hide": 2,
+          "includeAll": false,
+          "label": "Projects",
+          "multi": false,
+          "name": "project_id",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(project_id)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 2,
+          "regex": "hyperbridge",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "hyperbridge-paseo-bootnode",
+            "value": "hyperbridge-paseo-bootnode"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "telescope6g20Fp06XYmF"
+          },
+          "definition": "label_values(project_name)",
+          "hide": 2,
+          "includeAll": false,
+          "label": "Network",
+          "multi": false,
+          "name": "project_name",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(project_name)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "rococo",
+            "value": "rococo"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "Chain",
+          "multi": false,
+          "name": "chain",
+          "options": [
+            {
+              "selected": true,
+              "text": "rococo",
+              "value": "rococo"
+            },
+            {
+              "selected": false,
+              "text": "paseo",
+              "value": "paseo"
+            },
+            {
+              "selected": false,
+              "text": "kusama",
+              "value": "kusama"
+            },
+            {
+              "selected": false,
+              "text": "polkadot",
+              "value": "polkadot"
+            }
+          ],
+          "query": "rococo, paseo, kusama, polkadot",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "hyperbridge-paseo-bootnode:12345",
+            "value": "hyperbridge-paseo-bootnode:12345"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "telescope6g20Fp06XYmF"
+          },
+          "definition": "label_values(instance)",
+          "description": "Chain instance server host - default value: localhost:9615",
+          "hide": 2,
+          "includeAll": false,
+          "label": "Chain Instance Host",
+          "multi": false,
+          "name": "instance",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(instance)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "blockops-prometheus",
+            "value": "P34A4F8B48A44AFB3"
+          },
+          "hide": 2,
+          "includeAll": false,
+          "multi": false,
+          "name": "DS_PROMETHEUS",
+          "options": [],
+          "query": "prometheus",
+          "queryValue": "",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "hyperbridge-paseo-bootnode_hyperbridge_parachain_job_1",
+            "value": "hyperbridge-paseo-bootnode_hyperbridge_parachain_job_1"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "telescope6g20Fp06XYmF"
+          },
+          "definition": "label_values(job)",
+          "description": "Node exporter server job - default value: node_exporter",
+          "hide": 2,
+          "includeAll": false,
+          "label": "Server Job",
+          "multi": false,
+          "name": "job",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(job)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {
+            "isNone": true,
+            "selected": false,
+            "text": "None",
+            "value": ""
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "telescope6g20Fp06XYmF"
+          },
+          "definition": "label_values({project_name=\"hyperbridge-gargantua\"},instance)",
+          "description": "Node exporter server host - default value: localhost:9100",
+          "hide": 2,
+          "includeAll": false,
+          "label": "Server Host",
+          "multi": false,
+          "name": "node",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values({project_name=\"hyperbridge-gargantua\"},instance)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "[a-z]+|nvme[0-9]+n[0-9]+",
+            "value": "[a-z]+|nvme[0-9]+n[0-9]+"
+          },
+          "hide": 2,
+          "includeAll": false,
+          "multi": false,
+          "name": "diskdevices",
+          "options": [
+            {
+              "selected": true,
+              "text": "[a-z]+|nvme[0-9]+n[0-9]+",
+              "value": "[a-z]+|nvme[0-9]+n[0-9]+"
+            }
+          ],
+          "query": "[a-z]+|nvme[0-9]+n[0-9]+",
+          "skipUrlSync": false,
+          "type": "custom"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "Polkadot",
+            "value": "Polkadot"
+          },
+          "hide": 2,
+          "includeAll": false,
+          "label": "Network",
+          "multi": false,
+          "name": "network",
+          "options": [
+            {
+              "selected": true,
+              "text": "Polkadot",
+              "value": "Polkadot"
+            }
+          ],
+          "query": "Polkadot",
+          "skipUrlSync": false,
+          "type": "custom"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-5m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ]
+    },
+    "timezone": "",
+    "title": "Polkadot Public Relaychain Dashboard",
+    "uid": "telescope-relaychain",
+    "version": 5,
+    "weekStart": ""
+  }
