@@ -4,26 +4,39 @@ metrics:
     global:
         scrape_interval: 15s
         external_labels:
-            project_id: hyperbridge-nexus-bootnode
-            project_name: hyperbridge-nexus
+            project_id: adedayo123
+            project_name: 0hxNEtwork
         remote_write:
-            - url: https://hyperbridge-prometheus.blockops.network/api/v1/write
+            - url: http://telescope.blockops.network
               basic_auth:
-                password: hyperbridge
-                username: hyperbridge
+                password: pass
+                username: user
     wal_directory: /tmp/wal
     configs:
-        - name: hyperbridge-nexushyperbridge_metrics
+        - name: 0hxnetworkethereum_metrics
           host_filter: false
           scrape_configs:
-            - job_name: hyperbridge-nexus_hyperbridge_relaychain_job_0
+            - job_name: 0hxnetwork_ethereum_execution_job_0
               static_configs:
                 - targets:
-                    - localhost:9615
-            - job_name: hyperbridge-nexus_hyperbridge_parachain_job_1
+                    - localhost:6060
+            - job_name: 0hxnetwork_ethereum_consensus_job_1
               static_configs:
                 - targets:
-                    - localhost:9616
+                    - localhost:8008
+logs:
+    configs:
+        - name: telescope_logs
+          clients:
+            - url: http://localhost:3100
+              basic_auth:
+                username: user
+                password: pass
+              external_labels:
+                project_id: adedayo123
+                project_name: 0hxNEtwork
+          positions:
+            filename: /tmp/telescope_logs
 integrations:
     agent:
         enabled: false
