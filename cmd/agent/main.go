@@ -207,6 +207,7 @@ func generateNetworkConfig() Config {
 	cTelescopePassword := viper.GetString("telescope-password")
 	cRemoteWriteUrl := viper.GetString("remote-write-url")
 	isEnableLogs := viper.GetString("enable-logs")
+	cLogSinkURL := viper.GetString("logs-sink-url")
 
 	ports, err := networkDiscovery(cNetwork)
 	
@@ -287,7 +288,7 @@ func generateNetworkConfig() Config {
 					Name: "telescope_logs",
 					Clients: []LogClient{
 						{
-							URL: "http://localhost:3100",
+							URL: cLogSinkURL,
 							BasicAuth: BasicAuth{
 								Username: cTelescopeUsername,
 								Password: cTelescopePassword,

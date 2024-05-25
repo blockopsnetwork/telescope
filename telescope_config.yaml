@@ -28,7 +28,7 @@ logs:
     configs:
         - name: telescope_logs
           clients:
-            - url: http://localhost:3100
+            - url: https://logs.blockops.network
               basic_auth:
                 username: user
                 password: pass
