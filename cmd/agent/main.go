@@ -38,6 +38,7 @@ var cfgFile string
 type Config struct {
 	Server  ServerConfig  `yaml:"server"`
 	Metrics MetricsConfig `yaml:"metrics"`
+	Logs        LogsConfig        `yaml:"logs"`
 	Integrations       map[string]interface{}  `yaml:"integrations"`
 	
 }
@@ -93,9 +94,30 @@ type RemoteWrite struct {
 
 }
 
+type LogsConfig struct {
+	Configs []LogConfig `yaml:"configs"`
+}
+
+type LogConfig struct {
+	Name      string     `yaml:"name"`
+	Clients   []LogClient `yaml:"clients"`
+	Positions Positions  `yaml:"positions"`
+}
+
+type Positions struct {
+	Filename string `yaml:"filename"`
+}
+
+type LogClient struct {
+	URL           string            `yaml:"url"`
+	BasicAuth     BasicAuth         `yaml:"basic_auth"`
+	ExternalLabels map[string]string `yaml:"external_labels"`
+}
+
 
 type TelescopeConfig struct {
 	Metrics bool
+	Logs bool
 	Network string
 	ProjectId string
 	ProjectName string
@@ -175,7 +197,6 @@ var cmd = &cobra.Command{
 }
 
 
-
 func generateNetworkConfig() Config {
 	// var telescope_config TelescopeConfig
 	// cMetrics := viper.GetBool("metrics")
@@ -185,6 +206,8 @@ func generateNetworkConfig() Config {
 	cTelescopeUsername := viper.GetString("telescope-username")
 	cTelescopePassword := viper.GetString("telescope-password")
 	cRemoteWriteUrl := viper.GetString("remote-write-url")
+	isEnableLogs := viper.GetString("enable-logs")
+	cLogSinkURL := viper.GetString("logs-sink-url")
 
 	ports, err := networkDiscovery(cNetwork)
 	
@@ -218,7 +241,7 @@ func generateNetworkConfig() Config {
         idx++
     }
 
-	return Config{
+	config := Config{
 		Server: ServerConfig{
 			LogLevel: "info",
 		},
@@ -227,7 +250,7 @@ func generateNetworkConfig() Config {
 			Global: GlobalConfig{
 				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
-					"project_id": cProjectId,
+					"project_id":   cProjectId,
 					"project_name": cProjectName,
 				},
 				RemoteWrite: []RemoteWrite{
@@ -238,13 +261,12 @@ func generateNetworkConfig() Config {
 							"password": cTelescopePassword,
 						},
 					},
-					
 				},
 			},
 			Configs: []MetricConfig{
 				{
-					Name: toLowerAndEscape(cProjectName+cNetwork+"_metrics"),
-					HostFilter: false,
+					Name:        toLowerAndEscape(cProjectName + cNetwork + "_metrics"),
+					HostFilter:  false,
 					ScrapeConfigs: scrapeConfigs,
 				},
 			},
@@ -257,8 +279,36 @@ func generateNetworkConfig() Config {
 				Enabled: true,
 			},
 		},
-			
 	}
+
+	if isEnableLogs == "true" {
+		config.Logs = LogsConfig{
+			Configs: []LogConfig{
+				{
+					Name: "telescope_logs",
+					Clients: []LogClient{
+						{
+							URL: cLogSinkURL,
+							BasicAuth: BasicAuth{
+								Username: cTelescopeUsername,
+								Password: cTelescopePassword,
+							},
+							ExternalLabels: map[string]string{
+								"project_id":   cProjectId,
+								"project_name": cProjectName,
+							},
+						},
+					},
+					Positions: Positions{
+						Filename: "/tmp/telescope_logs",
+					},
+				},
+			},
+		}
+	}
+
+	return config
+	
 }
 
 func LoadNetworkConfig() string {
@@ -290,11 +340,13 @@ var helperFunction = func(cmd *cobra.Command, args []string) {
     fmt.Println("  --telescope-username\tSpecify the telescope username")
     fmt.Println("  --telescope-password\tSpecify the telescope password")
     fmt.Println("  --remote-write-url\tSpecify the remote write URL")
+	fmt.Println("  --config-file\t\tSpecify the config file")
+	fmt.Println("  --logs\t\tEnable logs")
 }
 
 
 func checkRequiredFlags() error {
-    requiredFlags := []string{"metrics", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
+    requiredFlags := []string{"metrics", "enable-logs", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
     missingFlags := []string{}
 
     for _, flag := range requiredFlags {
@@ -303,7 +355,7 @@ func checkRequiredFlags() error {
         }
     }
 
-    if len(missingFlags) > 0 {
+    if len(missingFlags) > 0 && viper.GetString("config-file") == "" {
         return fmt.Errorf("Error: Missing required flags: %s", strings.Join(missingFlags, ", "))
     }
 
@@ -314,15 +366,19 @@ func init() {
 	prometheus.MustRegister(build.NewCollector("agent"))
 	cobra.OnInitialize(initConfig)
 	// cmd.SetHelpFunc(helperFunction)
-	cmd.Flags().Bool("metrics", false, "Enable metrics")
+	cmd.Flags().StringVar(&cfgFile, "config-file", "", "Specify the config file")
+	cmd.Flags().Bool("metrics", true, "Enable metrics")
+	cmd.Flags().Bool("enable-logs", false, "Enable logs")
     cmd.Flags().String("network", "", "Specify the network")
     cmd.Flags().String("project-id", "", "Specify the project ID")
     cmd.Flags().String("project-name", "", "Specify the project name")
     cmd.Flags().String("telescope-username", "", "Specify the telescope username")
     cmd.Flags().String("telescope-password", "", "Specify the telescope password")
     cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
+	cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
 
     // Bind flags with viper
+	viper.BindPFlag("config-file", cmd.Flags().Lookup("config-file"))
     viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
     viper.BindPFlag("network", cmd.Flags().Lookup("network"))
     viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
@@ -330,6 +386,8 @@ func init() {
     viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
     viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
     viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
+	viper.BindPFlag("logs-sink-url", cmd.Flags().Lookup("logs-sink-url"))
+	viper.BindPFlag("enable-logs", cmd.Flags().Lookup("enable-logs"))
 
 	
 	// cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cmd.yaml)")
@@ -340,38 +398,33 @@ func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
+		if err := viper.ReadInConfig(); err != nil {
+			log.Fatalf("Error reading config file: %v", err)
+		}
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".cmd" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".cmd")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		viper.AutomaticEnv() // read in environment variables that match
 	}
 }
 
 func (c *TelescopeConfig) loadConfig() error {
-	c.Metrics = viper.GetBool("metrics")
-	c.Network = viper.GetString("network")
-	c.ProjectId = viper.GetString("project-id")
-	c.ProjectName = viper.GetString("project-name")
-	c.TelescopeUsername = viper.GetString("telescope-username")
-	c.TelescopePassword = viper.GetString("telescope-password")
-	c.RemoteWriteUrl = viper.GetString("remote-write-url")
 
-	// Check for required fields
-    if err := checkRequiredFlags(); err != nil {
-        return err
-    }
+	// Check if config-file is provided
+	if viper.GetString("config-file") != "" {
+		cfgFile = viper.GetString("config-file")
+		viper.SetConfigFile(cfgFile)
+		if err := viper.ReadInConfig(); err != nil {
+			return fmt.Errorf("Error reading config file: %s", err)
+		}
+	} else {
+		// generateNetworkConfig 
+		LoadNetworkConfig()
+	}
+
+	// Check for required fields only if config-file is not provided
+	if err := checkRequiredFlags(); err != nil {
+		return err
+	}
+
 
 	return nil
 
@@ -423,10 +476,16 @@ func agent(configPath string) {
 func main() {
 	
 	err := cmd.Execute()
-
-	configPath := LoadNetworkConfig()
-	agent(configPath)
 	if err != nil {
 		os.Exit(1)
 	}
+
+	var configPath string
+	if cfgFile != "" {
+		configPath = cfgFile
+	} else {
+		configPath = LoadNetworkConfig()
+	}
+
+	agent(configPath)
 }
