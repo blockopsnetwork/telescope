@@ -1,6 +1,6 @@
 # include tools/make/*.mk
 
-AGENT_IMAGE                             ?= blockopsnetwork/telescope:v0.1.5
+AGENT_IMAGE                             ?= blockopsnetwork/telescope:v0.1.6
 OPERATOR_IMAGE                          ?= blockopsnetwork/telescope-operator:latest
 AGENT_BINARY                            ?= build/agent
 OPERATOR_BINARY                         ?= build/agent-operator
