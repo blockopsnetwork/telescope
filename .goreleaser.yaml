@@ -30,6 +30,7 @@ builds:
     goarm:
       - 6
       - 7
+    main: ./cmd/agent/main.go 
     ldflags:
       - -s -w -X main.version={{.Version}}
     binary: "{{.ProjectName}}_{{.Os}}_{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}"
@@ -50,6 +51,7 @@ archives:
         format: zip
     files:
       - LICENSE
+      - README.md
 
 changelog:
   sort: asc
