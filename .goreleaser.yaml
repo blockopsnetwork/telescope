@@ -13,7 +13,7 @@ before:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
-    - go generate ./...
+    - go test ./internal/static/integrations/node_exporter ./internal/static/logs ./internal/static/operator ./internal/util/k8s ./internal/component/otelcol/processor/tail_sampling ./internal/component/loki/source/file ./internal/component/loki/source/docker
 
 builds:
   - env:
@@ -22,7 +22,17 @@ builds:
       - linux
       - windows
       - darwin
-
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+    goarm:
+      - 6
+      - 7
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    binary: "{{.ProjectName}}_{{.Os}}_{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}"
 
 archives:
   - format: tar.gz
@@ -38,6 +48,8 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - LICENSE
 
 changelog:
   sort: asc
