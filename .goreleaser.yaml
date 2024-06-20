@@ -50,3 +50,10 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+# release:
+#   github:
+#     owner: your-github-username-or-org  
+#     name: your-repo-name                
+#   prerelease: auto
+#   name_template: "v{{.Version}}"
