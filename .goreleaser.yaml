@@ -8,11 +8,13 @@
 
 version: 2
 
+project_name: telescope
+
 before:
   hooks:
-    # You may remove this if you don't use go modules.
+    # Ensures dependencies are tidy before building.
     - go mod tidy
-    # you may remove this if you don't need go generate
+    # Runs tests on specific packages before building.
     - go test ./internal/static/integrations/node_exporter ./internal/static/logs ./internal/static/operator ./internal/util/k8s ./internal/component/otelcol/processor/tail_sampling ./internal/component/loki/source/file ./internal/component/loki/source/docker
 
 builds:
@@ -20,16 +22,10 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
-      - windows
       - darwin
     goarch:
       - amd64
-      - 386
-      - arm
       - arm64
-    goarm:
-      - 6
-      - 7
     main: ./cmd/agent/main.go 
     ldflags:
       - -s -w -X main.version={{.Version}}
@@ -37,18 +33,13 @@ builds:
 
 archives:
   - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of `uname`.
+    # This name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        format: zip
     files:
       - LICENSE
       - README.md

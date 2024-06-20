@@ -7,11 +7,18 @@ on:
   pull_request:
         branches:
             - main
-  workflow_dispatch:    
+  workflow_dispatch:  
+
+permissions:
+  contents: read  
+
 jobs:
   # the workflow can contain other jobs, such as linting, testing, etc.
   release:
     runs-on: ubuntu-latest
+    permissions:
+      # This enables the job to create and/or update GitHub releases
+      contents: write
     steps:
       # run git checkout
       - name: Checkout
