@@ -29,3 +29,5 @@ cover*.out
 node_modules
 
 /docs/variables.mk.local
+
+dist/
