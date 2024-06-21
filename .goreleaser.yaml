@@ -18,6 +18,7 @@ builds:
       - CC=cc
       - CXX=c++
     goos:
+      - linux
       - darwin
     goarch:
       - amd64
