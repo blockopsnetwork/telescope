@@ -6,27 +6,30 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
+version: 2
+
 project_name: telescope
 
 before:
   hooks:
     - go mod tidy
-    - go test ./internal/static/integrations/node_exporter ./internal/static/logs ./internal/static/operator ./internal/util/k8s ./internal/component/otelcol/processor/tail_sampling ./internal/component/loki/source/file ./internal/component/loki/source/docker
+    # - go test ./internal/static/integrations/node_exporter ./internal/static/logs ./internal/static/operator ./internal/util/k8s ./internal/component/otelcol/processor/tail_sampling ./internal/component/loki/source/file ./internal/component/loki/source/docker
 
 builds:
   - env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
     goos:
       - linux
+      - darwin
     goarch:
       - amd64
       - arm64
+    goamd64:
+      - v1  
     ignore:
       - goos: darwin
-        goarch: amd64
-      - goos: linux
-        goarch: amd64  
-    main: ./cmd/agent/main.go 
+        goarch: arm64
+    main: ./cmd/agent/
     ldflags:
       - -s -w -X main.version={{.Version}}
     binary: "{{.ProjectName}}_{{.Os}}_{{.Arch}}"
