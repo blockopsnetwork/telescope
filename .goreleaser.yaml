@@ -15,17 +15,15 @@ before:
 builds:
   - env:
       - CGO_ENABLED=1
+      - CC=cc
+      - CXX=c++
     goos:
-      - linux
       - darwin
     goarch:
       - amd64
       - arm64
-    ignore:
-      - goos: darwin
-        goarch: arm64
-      - goos: linux
-        goarch: arm64 
+    goamd64:
+      - v1 
     main: ./cmd/agent/
     ldflags:
       - -s -w -X main.version={{.Version}}
