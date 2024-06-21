@@ -6,8 +6,6 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
-version: 2
-
 project_name: telescope
 
 before:
@@ -50,10 +48,3 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
-
-release:
-  github:
-    owner: your-github-username-or-org  # Change this to your GitHub username or organization
-    name: your-repo-name                 # Change this to your repository name
-  prerelease: auto
-  name_template: "v{{.Version}}"
