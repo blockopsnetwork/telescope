@@ -12,7 +12,9 @@ project_name: telescope
 
 before:
   hooks:
+    # Ensures dependencies are tidy before building.
     - go mod tidy
+    # Runs tests on specific packages before building.
     - go test ./internal/static/integrations/node_exporter ./internal/static/logs ./internal/static/operator ./internal/util/k8s ./internal/component/otelcol/processor/tail_sampling ./internal/component/loki/source/file ./internal/component/loki/source/docker
 
 builds:
@@ -31,11 +33,13 @@ builds:
 
 archives:
   - format: tar.gz
+    # This name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
     files:
       - LICENSE
       - README.md
@@ -46,3 +50,10 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+release:
+  github:
+    owner: your-github-username-or-org  # Change this to your GitHub username or organization
+    name: your-repo-name                 # Change this to your repository name
+  prerelease: auto
+  name_template: "v{{.Version}}"
