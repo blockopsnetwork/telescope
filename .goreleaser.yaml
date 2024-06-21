@@ -10,9 +10,7 @@ project_name: telescope
 
 before:
   hooks:
-    # Ensures dependencies are tidy before building.
     - go mod tidy
-    # Runs tests on specific packages before building.
     - go test ./internal/static/integrations/node_exporter ./internal/static/logs ./internal/static/operator ./internal/util/k8s ./internal/component/otelcol/processor/tail_sampling ./internal/component/loki/source/file ./internal/component/loki/source/docker
 
 builds:
@@ -24,6 +22,9 @@ builds:
     goarch:
       - amd64
       - arm64
+    ignore:
+      - goos: linux
+        goarch: arm64  
     main: ./cmd/agent/main.go 
     ldflags:
       - -s -w -X main.version={{.Version}}
@@ -31,7 +32,6 @@ builds:
 
 archives:
   - format: tar.gz
-    # This name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
