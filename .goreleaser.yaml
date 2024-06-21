@@ -14,9 +14,7 @@ before:
 
 builds:
   - env:
-      - CGO_ENABLED=1
-      - CC=cc
-      - CXX=c++
+      - CGO_ENABLED=0
     goos:
       - linux
     goarch:
