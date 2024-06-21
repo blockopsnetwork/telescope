@@ -48,7 +48,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Docker Meta fat
+      - name: Docker Meta
         id: meta
         uses: docker/metadata-action@v5
         with:

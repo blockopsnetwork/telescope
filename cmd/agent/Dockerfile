@@ -46,7 +46,7 @@ RUN <<EOF
 EOF
 
 COPY --from=build /src/agent/build/agent /bin/agent
-COPY cmd/agent/agent-local-config.yaml /etc/agent/agent.yaml
+COPY ./cmd/agent/agent-local-config.yaml /etc/agent/agent.yaml
 
 # Create telescope agent user in container, but do not set it as default
 RUN groupadd --gid $UID $USERNAME
