@@ -44,4 +44,5 @@ jobs:
 
       - name: Push image
         run: |
+          docker images
           docker push blockopsnetwork/telescope:edge
