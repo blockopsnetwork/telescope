@@ -46,7 +46,7 @@ jobs:
       - name: Re-tag image
         run: |
           docker pull blockopsnetwork/telescope:2024-06-24-1d0217f
-          docker tag blockopsnetwork/telescope:2024-06-24-1d0217f docker tag blockopsnetwork/telescope:edge
+          docker tag blockopsnetwork/telescope:2024-06-24-1d0217f blockopsnetwork/telescope:edge
       - name: Push image
         # if: ${{ !fromJSON(github.event.inputs.dry_run) }}
         run: |
