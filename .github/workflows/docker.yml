@@ -20,9 +20,12 @@ on:
     # run when moved out of draft.
     # types: [opened, synchronize, reopened, ready_for_review]
 
+
 jobs:
-  build-and-push-docker-image-amd64:
-    name: Build and push docker image for amd64
+  build-and-push-docker-image:
+    # This is done to limit the runner cost.
+    # if: github.event.pull_request.draft == false
+    name: Build images and push to docker hub
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -31,7 +34,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-
+        
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -58,94 +61,18 @@ jobs:
             type=ref,event=tag
             type=edge
 
-      - name: Free disk space
+      - name: free disk space
         run: |
-            sudo swapoff -a
-            sudo rm -f /swapfile
-            sudo apt clean
-            docker rmi $(docker image ls -aq) || true
-            df -h
+            bash ./script/action-ci-clean-up.bash
 
-      - name: Build and push telescope image for amd64
+      - name: Build telescope image and push to DockerHub
         uses: docker/build-push-action@v6
         with:
           file: ./cmd/agent/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
-          platforms: 'linux/amd64'
+        #   push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+          platforms: 'linux/amd64,linux/arm64'
 
-  build-and-push-docker-image-arm64:
-    name: Build and push docker image for arm64
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: List cached docker images
-        run: docker image ls
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-            platforms: all
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Docker Meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: blockopsnetwork/telescope
-          flavor: |
-            latest=false
-          tags: |
-            type=raw,value={{date 'YYYY-MM-DD'}}-{{sha}}
-            type=ref,event=tag
-            type=edge
-
-      - name: Free disk space
-        run: |
-            sudo swapoff -a
-            sudo rm -f /swapfile
-            sudo apt clean
-            docker rmi $(docker image ls -aq) || true
-            df -h
-
-      - name: Build and push telescope image for arm64
-        uses: docker/build-push-action@v6
-        with:
-          file: ./cmd/agent/Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          push: true
-          platforms: 'linux/arm64'
-
-  create-manifest:
-    name: Create and push Docker manifest list
-    runs-on: ubuntu-latest
-    needs: [build-and-push-docker-image-amd64, build-and-push-docker-image-arm64]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Create and push manifest list
-        run: |
-          docker manifest create blockopsnetwork/telescope:${{ steps.meta.outputs.tags }} \
-            --amend blockopsnetwork/telescope:linux-amd64 \
-            --amend blockopsnetwork/telescope:linux-arm64
-          docker manifest push blockopsnetwork/telescope:${{ steps.meta.outputs.tags }}
