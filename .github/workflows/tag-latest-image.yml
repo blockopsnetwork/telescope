@@ -2,23 +2,35 @@
 # Preserves the old tag.
 name: Docker Latest tag For Releases
 
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       tag:
+#         description: 'Tag of the base image to use'
+#         required: true
+#         type: string
+#       new_tag:
+#         description: 'New tag to use'
+#         default: 'latest'
+#         required: true
+#         type: string
+#       dry_run:
+#         description: "Don't push the tag to Docker"
+#         required: true
+#         type: boolean
+#         default: false
+
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag of the base image to use'
-        required: true
-        type: string
-      new_tag:
-        description: 'New tag to use'
-        default: 'latest'
-        required: true
-        type: string
-      dry_run:
-        description: "Don't push the tag to Docker"
-        required: true
-        type: boolean
-        default: false
+    push:
+      branches: [main]
+      tags:
+        - "*"
+    merge_group:
+    pull_request:
+      branches:
+        - main
+        - 'feature/**'
+        - 'v[0-9]+.[0-9]+'
 
 jobs:
   tag-docker-image:
