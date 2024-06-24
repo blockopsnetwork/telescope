@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# A simple bash script for cleaning Github Action runner to free up storage.
+
 set -eux
 
 if [ "${GITHUB_ACTIONS}" = "true" ]; then
@@ -77,5 +79,7 @@ if [ "${GITHUB_ACTIONS}" = "true" ]; then
     firefox \
     google-chrome-stable \
     microsoft-edge-stable
+  # remove docker images  
+  docker rmi $(docker image ls -aq) || true  
   df -h
 fi
