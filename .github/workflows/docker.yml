@@ -60,7 +60,15 @@ jobs:
             type=raw,value={{date 'YYYY-MM-DD'}}-{{sha}}
             type=ref,event=tag
             type=edge
-      
+            
+      - name: free disk space
+        run: |
+            sudo swapoff -a
+            sudo rm -f /swapfile
+            sudo apt clean
+            docker rmi $(docker image ls -aq)
+            df -h      
+
       - name: Build telescope image and push to DockerHub
         uses: docker/build-push-action@v6
         with:
