@@ -1,4 +1,4 @@
-# Re-tag the given image and push it to the ghcr.io
+# Re-tag the given image and push it to the DockerHub
 # Preserves the old tag.
 name: Docker Latest tag For Releases
 
