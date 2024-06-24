@@ -1,16 +1,22 @@
 name: Docker Latest tag For Releases
 
 on:
-  push:
-    branches: [main]
-    tags:
-      - "*"
-  merge_group:
-  pull_request:
-    branches:
-      - main
-      - 'feature/**'
-      - 'v[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag of the base image to use'
+        required: true
+        type: string
+      new_tag:
+        description: 'New tag to use'
+        default: 'latest'
+        required: true
+        type: string
+      dry_run:
+        description: "Don't push the tag to GHCR"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   tag-docker-image:
@@ -38,10 +44,7 @@ jobs:
         run: docker buildx inspect --bootstrap
 
       - name: Pull the original image
-        run: docker pull blockopsnetwork/telescope:2024-06-24-1d0217f
+        run: docker pull blockopsnetwork/telescope:${{ github.event.inputs.tag }}
 
       - name: Create new multi-arch image with new tag
-        run: docker buildx imagetools create --tag blockopsnetwork/telescope:edge blockopsnetwork/telescope:2024-06-24-1d0217f
-
-      - name: Push the newly tagged image
-        run: docker push blockopsnetwork/telescope:edge
+        run: docker buildx imagetools create --tag blockopsnetwork/telescope:${{ github.event.inputs.new_tag }} blockopsnetwork/telescope:${{ github.event.inputs.tag }}
