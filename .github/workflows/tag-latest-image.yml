@@ -37,12 +37,11 @@ jobs:
       - name: Inspect builder
         run: docker buildx inspect --bootstrap
 
-      - name: Pull and retag image
-        run: |
-            docker pull blockopsnetwork/telescope:2024-06-24-1d0217f
-            docker buildx imagetools create --tag blockopsnetwork/telescope:2024-06-24-1d0217f blockopsnetwork/telescope:edge 
+      - name: Pull the original image
+        run: docker pull blockopsnetwork/telescope:2024-06-24-1d0217f
 
-      - name: Push image
-        run: |
-          docker images
-          docker push blockopsnetwork/telescope:edge
+      - name: Create new multi-arch image with new tag
+        run: docker buildx imagetools create --tag blockopsnetwork/telescope:edge blockopsnetwork/telescope:2024-06-24-1d0217f
+
+      - name: Push the newly tagged image
+        run: docker push blockopsnetwork/telescope:edge
