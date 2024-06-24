@@ -63,7 +63,7 @@ jobs:
 
       - name: free disk space
         run: |
-            bash ./script/action-ci-clean-up.bash
+            make cleanup-action
 
       - name: Build telescope image and push to DockerHub
         uses: docker/build-push-action@v6
@@ -73,6 +73,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
           # Compile Docker image only for AMD64 for a regular PR to save some CI time.
-          platforms: ${{ (github.ref == 'refs/heads/master') && 'linux/amd64,linux/arm64' || 'linux/arm64' }}
+          platforms: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
 
 

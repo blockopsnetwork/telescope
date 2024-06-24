@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: "Don't push the tag to GHCR"
+        description: "Don't push the tag to DockerHub"
         required: true
         type: boolean
         default: false

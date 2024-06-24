@@ -197,3 +197,7 @@ ifeq ($(USE_CONTAINER),1)
 else
 	go generate ./docs
 endif
+
+.PHONY: cleanup-action
+cleanup-action:
+	bash ./script/action-ci-clean-up.bash
