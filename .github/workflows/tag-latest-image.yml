@@ -33,10 +33,9 @@ jobs:
 
       - name: Re-tag image
         run: |
-          docker pull blockopsnetwork/telescope:${{ github.event.inputs.tag }}
-          docker tag blockopsnetwork/telescope:${{ github.event.inputs.tag }}
+          docker pull blockopsnetwork/telescope:2024-06-24-1d0217f
+          docker tag blockopsnetwork/telescope:2024-06-24-1d0217f docker tag blockopsnetwork/telescope:edge
       - name: Push image
-        if: ${{ !fromJSON(github.event.inputs.dry_run) }}
+        # if: ${{ !fromJSON(github.event.inputs.dry_run) }}
         run: |
-          docker push blockopsnetwork/telescope:${{ github.event.inputs.new_tag }}
-          docker push blockopsnetwork/telescope:${{ github.event.inputs.new_tag }}
+          docker push blockopsnetwork/telescope:edge
