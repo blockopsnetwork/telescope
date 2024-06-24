@@ -40,7 +40,7 @@ jobs:
       - name: Pull and retag image
         run: |
             docker pull blockopsnetwork/telescope:2024-06-24-1d0217f
-            docker buildx imagetools create --tag blockopsnetwork/telescope:edge blockopsnetwork/telescope:2024-06-24-1d0217f
+            docker buildx imagetools create --tag blockopsnetwork/telescope:2024-06-24-1d0217f blockopsnetwork/telescope:edge 
 
       - name: Push image
         run: |
