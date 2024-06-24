@@ -1,0 +1,42 @@
+# Re-tag the given image and push it to the ghcr.io
+# Preserves the old tag.
+name: Docker Latest tag For Releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag of the base image to use'
+        required: true
+        type: string
+      new_tag:
+        description: 'New tag to use'
+        default: 'latest'
+        required: true
+        type: string
+      dry_run:
+        description: "Don't push the tag to Docker"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  tag-docker-image:
+    name: Retag image and push to DockerHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Re-tag image
+        run: |
+          docker pull blockopsnetwork/telescope:${{ github.event.inputs.tag }}
+          docker tag blockopsnetwork/telescope:${{ github.event.inputs.tag }}
+      - name: Push image
+        if: ${{ !fromJSON(github.event.inputs.dry_run) }}
+        run: |
+          docker push blockopsnetwork/telescope:${{ github.event.inputs.new_tag }}
+          docker push blockopsnetwork/telescope:${{ github.event.inputs.new_tag }}
