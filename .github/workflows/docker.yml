@@ -18,7 +18,7 @@ on:
       - 'v[0-9]+.[0-9]+'
     # This needs to be declared explicitly so that the job is actually
     # run when moved out of draft.
-    # types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 
 jobs:
