@@ -1,0 +1,78 @@
+name: Telescope Docker
+
+# Cancel workflow if there is a new change to the branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "*"
+  merge_group:
+  pull_request:
+    branches:
+      - main
+      - 'feature/**'
+      - 'v[0-9]+.[0-9]+'
+    # This needs to be declared explicitly so that the job is actually
+    # run when moved out of draft.
+    types: [opened, synchronize, reopened, ready_for_review]
+
+
+jobs:
+  build-and-push-docker-image:
+    # This is done to limit the runner cost.
+    # if: github.event.pull_request.draft == false
+    name: Build images and push to docker hub
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: List cached docker images
+        run: docker image ls
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+            platforms: all
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Docker Meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: blockopsnetwork/telescope
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value={{date 'YYYY-MM-DD'}}-{{sha}}
+            type=ref,event=tag
+            type=edge
+
+      - name: free disk space
+        run: |
+            make cleanup-action
+
+      - name: Build telescope image and push to DockerHub
+        uses: docker/build-push-action@v6
+        with:
+          file: ./cmd/agent/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+          # Compile Docker image only for AMD64 for a regular PR to save some CI time.
+          platforms: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
+
+
