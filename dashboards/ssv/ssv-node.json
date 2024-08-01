@@ -1,0 +1,2506 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 506,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 20,
+        "panels": [],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Node Health",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Current status of the beacon, ETH1 and SSV operator node",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "index": 0,
+                    "text": "Unknown"
+                  },
+                  "1": {
+                    "index": 1,
+                    "text": "Syncing"
+                  },
+                  "2": {
+                    "index": 2,
+                    "text": "OK"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 1
+                },
+                {
+                  "color": "green",
+                  "value": 2
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "SSV Operator"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "color": "red",
+                          "index": 2,
+                          "text": "Down"
+                        },
+                        "1": {
+                          "color": "yellow",
+                          "index": 1,
+                          "text": "Error"
+                        },
+                        "2": {
+                          "color": "green",
+                          "index": 0,
+                          "text": "Up"
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "red",
+                        "value": null
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 1
+                      },
+                      {
+                        "color": "green",
+                        "value": 2
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 0,
+          "y": 1
+        },
+        "id": 42,
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto",
+          "text": {}
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv_beacon_status{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Beacon",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv_eth1_status{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "ETH1",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(ssv_node_status{project_id=\"$project_id\", project_name=\"$project_name\"} + 1) or (absent(ssv_node_status{project_id=\"$project_id\", project_name=\"$project_name\"}) * 0)",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "SSV Operator",
+            "refId": "C"
+          }
+        ],
+        "title": "Current Health Status",
+        "type": "gauge"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Health status of the beacon node",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 8,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "red",
+                    "index": 0,
+                    "text": "Unknown"
+                  },
+                  "1": {
+                    "color": "yellow",
+                    "index": 1,
+                    "text": "Syncing"
+                  },
+                  "2": {
+                    "color": "green",
+                    "index": 2,
+                    "text": "OK"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "max": 2,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 1
+                },
+                {
+                  "color": "green",
+                  "value": 2
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 4,
+          "x": 12,
+          "y": 1
+        },
+        "id": 48,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.0.4",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "ssv_beacon_status{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "interval": "",
+            "legendFormat": "",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Beacon Node Health",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Health status of the ETH1 node",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 8,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "super-light-red",
+                    "index": 0,
+                    "text": "Unknown"
+                  },
+                  "1": {
+                    "color": "yellow",
+                    "index": 1,
+                    "text": "Syncing"
+                  },
+                  "2": {
+                    "color": "green",
+                    "index": 2,
+                    "text": "OK"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "max": 2,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 1
+                },
+                {
+                  "color": "green",
+                  "value": 2
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 4,
+          "x": 16,
+          "y": 1
+        },
+        "id": 46,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.0.4",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "ssv_eth1_status{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "interval": "",
+            "legendFormat": "",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "ETH1 Node Health",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Health status of the SSV operator node",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 8,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "red",
+                    "index": 2,
+                    "text": "Down"
+                  },
+                  "1": {
+                    "color": "yellow",
+                    "index": 1,
+                    "text": "Error"
+                  },
+                  "2": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "Up"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "max": 2,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 4,
+          "x": 20,
+          "y": 1
+        },
+        "id": 44,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.0.4",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "ssv_node_status{project_id=\"$project_id\", project_name=\"$project_name\"} + 1",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "{{pod}}",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "absent(ssv_node_status{project_id=\"$project_id\", project_name=\"$project_name\"}) * 0",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "SSV Operator Node Health",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 6
+        },
+        "id": 12,
+        "panels": [],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Network Discovery",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Number of connected peers to the SSV operator node",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "noValue": "No Peers",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 2
+                },
+                {
+                  "color": "green",
+                  "value": 3
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 4,
+          "x": 0,
+          "y": 7
+        },
+        "id": 52,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {},
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "ssv_p2p_all_connected_peers{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "interval": "",
+            "legendFormat": "{{pubKey}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Connected Peers",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Subnet peer distribution based on topic",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "short",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 20,
+          "x": 4,
+          "y": 7
+        },
+        "id": 57,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull",
+              "max",
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "ssv_p2p_connected_peers{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "interval": "",
+            "legendFormat": "{{pubKey}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Subnet Peers Distribution ",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Subnet peers breakdown table of the SSV operator node",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "center",
+              "cellOptions": {
+                "type": "color-text"
+              },
+              "inspect": false,
+              "width": 150
+            },
+            "mappings": [],
+            "max": 15,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "#ccccdc",
+                  "value": null
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "subnet"
+              },
+              "properties": [
+                {
+                  "id": "custom.cellOptions",
+                  "value": {
+                    "type": "auto"
+                  }
+                },
+                {
+                  "id": "unit",
+                  "value": "short"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value #C"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 100
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "#ccccdc",
+                        "value": null
+                      },
+                      {
+                        "color": "#ccccdc",
+                        "value": 1
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "index": 0,
+                          "text": "False"
+                        },
+                        "1": {
+                          "index": 1,
+                          "text": "True"
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 8,
+          "x": 0,
+          "y": 18
+        },
+        "id": 54,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:network:subnets:known{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:network:subnets:connected{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:network:subnets:my{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "C"
+          }
+        ],
+        "title": "Subnets Peers Count",
+        "transformations": [
+          {
+            "id": "seriesToColumns",
+            "options": {
+              "byField": "subnet"
+            }
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time 1": true,
+                "Time 2": true,
+                "Time 3": true,
+                "Value #C": false,
+                "__name__ 1": true,
+                "__name__ 2": true,
+                "__name__ 3": true,
+                "instance 1": true,
+                "instance 2": true,
+                "instance 3": true,
+                "job 1": true,
+                "job 2": true,
+                "job 3": true
+              },
+              "indexByName": {
+                "Time 1": 2,
+                "Time 2": 7,
+                "Time 3": 12,
+                "Value #A": 6,
+                "Value #B": 11,
+                "Value #C": 1,
+                "__name__ 1": 3,
+                "__name__ 2": 8,
+                "__name__ 3": 13,
+                "instance 1": 4,
+                "instance 2": 9,
+                "instance 3": 14,
+                "job 1": 5,
+                "job 2": 10,
+                "job 3": 15,
+                "subnet": 0
+              },
+              "renameByName": {
+                "Time 2": "",
+                "Value #A": "Known Peers (DHT)",
+                "Value #B": "Connected Peers",
+                "Value #C": "Subscribed",
+                "__name__ 3": "",
+                "subnet": "Subnet"
+              }
+            }
+          }
+        ],
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "The discovery rate of the subnet peers.\nFound is rate per second of nodes that were found with discovery. Rejected is rate per second of nodes that were found with discovery but rejected because of limit or subnet",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 16,
+          "x": 8,
+          "y": 18
+        },
+        "id": 59,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:network:discovery:found{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "interval": "",
+            "legendFormat": "Found",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:network:discovery:rejected{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "Rejected",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Peers Discovery Rate",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Table breakdown of all the SSV operator nodes",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "center",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "filterable": true,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "index",
+            "unitScale": true
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Index (last)"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 83
+                },
+                {
+                  "id": "displayName",
+                  "value": "Operator Id's"
+                },
+                {
+                  "id": "unit",
+                  "value": "short"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Last Seen (last)"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 189
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Name (last)"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 159
+                },
+                {
+                  "id": "displayName",
+                  "value": "Name"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Node Version (last)"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 153
+                },
+                {
+                  "id": "displayName",
+                  "value": "Node Version"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Node Type (last)"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 159
+                },
+                {
+                  "id": "displayName",
+                  "value": "Node Type"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Peer ID (last)"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Peer ID"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Last Seen (last)"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Last Seen"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Operator Id's"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 137
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Peer ID"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 841
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 13,
+          "w": 24,
+          "x": 0,
+          "y": 27
+        },
+        "id": 64,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "frameIndex": 1,
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:network:peers_identity{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "format": "table",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Node Info",
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time 1": false,
+                "Time 2": true,
+                "Value": true,
+                "Value #A": true,
+                "Value #B": false,
+                "__name__": true,
+                "__name__ 1": true,
+                "__name__ 2": true,
+                "instance": true,
+                "instance 1": true,
+                "instance 2": true,
+                "job": true,
+                "job 1": true,
+                "job 2": true,
+                "pubKey": true
+              },
+              "indexByName": {
+                "Time": 6,
+                "Value": 9,
+                "instance": 7,
+                "job": 8,
+                "operatorID": 0,
+                "operatorName": 1,
+                "pid": 5,
+                "pubKey": 4,
+                "type": 3,
+                "v": 2
+              },
+              "renameByName": {
+                "Time": "Last Seen",
+                "Time 1": "Last Seen",
+                "Time 2": "",
+                "Value #B": "Index",
+                "__name__ 1": "",
+                "job 2": "",
+                "name": "Name",
+                "operatorID": "Index",
+                "operatorName": "Name",
+                "pid": "Peer ID",
+                "pubKey": "Public Key (Hash)",
+                "type": "Node Type",
+                "v": "Node Version"
+              }
+            }
+          },
+          {
+            "id": "groupBy",
+            "options": {
+              "fields": {
+                "Index": {
+                  "aggregations": [
+                    "last"
+                  ],
+                  "operation": "aggregate"
+                },
+                "Last Seen": {
+                  "aggregations": [
+                    "last"
+                  ],
+                  "operation": "aggregate"
+                },
+                "Name": {
+                  "aggregations": [
+                    "last"
+                  ],
+                  "operation": "aggregate"
+                },
+                "Node Type": {
+                  "aggregations": [
+                    "last"
+                  ],
+                  "operation": "aggregate"
+                },
+                "Node Version": {
+                  "aggregations": [
+                    "last"
+                  ],
+                  "operation": "aggregate"
+                },
+                "Peer ID": {
+                  "aggregations": [
+                    "last"
+                  ],
+                  "operation": "groupby"
+                }
+              }
+            }
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {},
+              "indexByName": {
+                "Index (last)": 1,
+                "Last Seen (last)": 5,
+                "Name (last)": 0,
+                "Node Type (last)": 3,
+                "Node Version (last)": 2,
+                "Peer ID": 4
+              },
+              "renameByName": {}
+            }
+          },
+          {
+            "id": "sortBy",
+            "options": {
+              "fields": {},
+              "sort": [
+                {
+                  "field": "Index (last)"
+                }
+              ]
+            }
+          }
+        ],
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 40
+        },
+        "id": 2,
+        "panels": [],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Network Messaging",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Rate per second of inbound / outbound topic messages over the last 5 minutes",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 600
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 12,
+          "w": 8,
+          "x": 0,
+          "y": 41
+        },
+        "id": 32,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.3.4",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "sum (rate(ssv:p2p:pubsub:msg:in{project_id=\"$project_id\", project_name=\"$project_name\"}[5m]))",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "inbound",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "sum (rate(ssv:p2p:pubsub:msg:in{project_id=\"$project_id\", project_name=\"$project_name\", msg_type=\"0\"}[5m]))",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "inbound SSVConsensusMsgType",
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "sum (rate(ssv:p2p:pubsub:msg:in{project_id=\"$project_id\", project_name=\"$project_name\", msg_type=\"1\"}[5m]))",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "inbound SSVPartialSignatureMsgType",
+            "refId": "D"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "sum (rate(ssv:p2p:pubsub:msg:in{project_id=\"$project_id\", project_name=\"$project_name\", msg_type=\"2\"}[5m]))",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "inbound DKGMsgType",
+            "refId": "E"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "sum (rate(ssv:p2p:pubsub:msg:out{project_id=\"$project_id\", project_name=\"$project_name\"}[5m]))",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "outbound",
+            "refId": "B"
+          }
+        ],
+        "title": "Pubsub Messages RPS (5m rate)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Rate per second of incoming topic messages for every topic over the last 5 minutes",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "none",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 12,
+          "w": 8,
+          "x": 8,
+          "y": 41
+        },
+        "id": 34,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull",
+              "max",
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate (ssv:p2p:pubsub:msg:in{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "interval": "",
+            "legendFormat": "{{topic}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Incoming Pubsub Messages RPS (5m rate)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Rate per second of outgoing topic messages for every topic over the last 5 minutes.\nResponses are outgoing, for incoming requests.\nSuccessful Requests are outgoing.\nActive are outgoing requests.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "none",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 12,
+          "w": 8,
+          "x": 16,
+          "y": 41
+        },
+        "id": 36,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull",
+              "max",
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate (ssv:p2p:pubsub:msg:out{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "interval": "",
+            "legendFormat": "{{topic}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Outgoing Pubsub Messages RPS (5m rate)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Table breakdown for each stream protocol.\nResponses are outgoing, for incoming requests.\nSuccessful Requests are outgoing.\nActive Requests are outgoing.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Protocol"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 227
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Responses"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 105
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 53
+        },
+        "id": 61,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": true
+          },
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:p2p:streams:res{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Outgoing Responses",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:p2p:streams:req:count{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Requests",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:p2p:streams:req:success{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Successful Outgoing Requests",
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "ssv:p2p:streams:req:active{project_id=\"$project_id\", project_name=\"$project_name\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Active Outgoing Requests",
+            "refId": "D"
+          }
+        ],
+        "title": "Stream Protocols (table)",
+        "transformations": [
+          {
+            "id": "seriesToColumns",
+            "options": {
+              "byField": "pid"
+            }
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time 1": true,
+                "Time 2": true,
+                "Time 3": true,
+                "__name__ 1": true,
+                "__name__ 2": true,
+                "__name__ 3": true,
+                "instance 1": true,
+                "instance 2": true,
+                "instance 3": true,
+                "job 1": true,
+                "job 2": true,
+                "job 3": true
+              },
+              "indexByName": {},
+              "renameByName": {
+                "Time 1": "",
+                "Time 2": "",
+                "Time 3": "",
+                "Value #A": "Responses",
+                "Value #C": "Successful Requests",
+                "Value #D": "Active Requests",
+                "instance 3": "",
+                "job 2": "",
+                "pid": "Protocol"
+              }
+            }
+          }
+        ],
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Rate per second of requests,  responses and active requests.\nResponses are outgoing, for incoming requests.\nSuccessful Requests are outgoing.\nActive are outgoing requests.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 53
+        },
+        "id": 63,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "8.3.4",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:p2p:streams:res{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "Responses {{pid}}",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:p2p:streams:req:count{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "Requests {{pid}}",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:p2p:streams:req:success{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "Successful Requests {{pid}}",
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "exemplar": true,
+            "expr": "rate(ssv:p2p:streams:req:active{project_id=\"$project_id\", project_name=\"$project_name\"}[5m])",
+            "format": "time_series",
+            "hide": false,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "Active {{pid}}",
+            "refId": "D"
+          }
+        ],
+        "title": "Stream Protocols (time-series)",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 61
+        },
+        "id": 67,
+        "panels": [],
+        "title": "Peer Messages ",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 62
+        },
+        "id": 65,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "expr": "increase(ssv_messages_received_total{project_id=\"$project_id\", project_name=\"$project_name\"}[2m])",
+            "instant": false,
+            "legendFormat": "{{pod}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Total messages received (instance per 2m)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "telescope6g20Fp06XYmF"
+        },
+        "description": "Number of message received from each of the connected peer",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 70
+        },
+        "id": 66,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max",
+              "min",
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "blockops-thanos"
+            },
+            "editorMode": "code",
+            "expr": "increase(ssv_messages_received_from_peer{project_id=\"$project_id\", project_name=\"$project_name\"}[2m])",
+            "instant": false,
+            "legendFormat": "{{peer_id}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Message from peer (increase per 2m) ",
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "blockops",
+            "value": "blockops"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "blockops-thanos"
+          },
+          "definition": "label_values(project_id)",
+          "description": "",
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "project_id",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(project_id)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 2,
+          "regex": "blockops",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "blockops-prometheus",
+            "value": "P34A4F8B48A44AFB3"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "datasource",
+          "options": [],
+          "query": "prometheus",
+          "queryValue": "",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "blockops-ssv-node",
+            "value": "blockops-ssv-node"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "blockops-thanos"
+          },
+          "definition": "label_values({project_id=\"$project_id\"},project_name)",
+          "description": "",
+          "hide": 0,
+          "includeAll": false,
+          "label": "project_name",
+          "multi": false,
+          "name": "project_name",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values({project_id=\"$project_id\"},project_name)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 2,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "SSV Node Dashboard",
+    "uid": "node_dashboard",
+    "version": 7,
+    "weekStart": ""
+  }
