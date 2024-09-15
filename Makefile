@@ -1,6 +1,6 @@
 # include tools/make/*.mk
 
-AGENT_IMAGE                             ?= blockopsnetwork/telescope:v0.1.5
+AGENT_IMAGE                             ?= blockopsnetwork/telescope:$(shell git describe --tags --abbrev=0)
 OPERATOR_IMAGE                          ?= blockopsnetwork/telescope-operator:latest
 AGENT_BINARY                            ?= build/agent
 OPERATOR_BINARY                         ?= build/agent-operator
@@ -26,7 +26,7 @@ PROPAGATE_VARS := \
 
 GO_ENV := GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) CGO_ENABLED=$(CGO_ENABLED)
 
-VERSION      ?= $(shell bash ./tools/image-tag)
+VERSION      := $(shell git describe --tags --abbrev=0)
 GIT_REVISION := $(shell git rev-parse --short HEAD)
 GIT_BRANCH   := $(shell git rev-parse --abbrev-ref HEAD)
 VPREFIX      := github.com/grafana/agent/internal/build
