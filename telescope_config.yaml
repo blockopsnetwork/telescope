@@ -11,23 +11,83 @@ metrics:
         basic_auth:
           password: blockops
           username: blockops
-  wal_directory: /var/lib/telescope
+  wal_directory: /tmp/telescope
   configs:
     - name: blockops-ssv_ssv_metrics
       host_filter: false
       scrape_configs:
-        - job_name: blockops-ssv_ssv_ssv_job_0
-          static_configs:
-            - targets:
-                - localhost:15000
-        - job_name: blockops-ssv_ssv_execution_job_1
+        - job_name: blockops-ssv_ssv_execution_geth
           static_configs:
             - targets:
                 - localhost:6060
-        - job_name: blockops-ssv_ssv_consensus_job_2
+        - job_name: blockops-ssv_ssv_execution_nethermind
+          static_configs:
+            - targets:
+                - localhost:6060
+        - job_name: blockops-ssv_ssv_execution_besu
+          static_configs:
+            - targets:
+                - localhost:9545
+        - job_name: blockops-ssv_ssv_execution_erigon
+          static_configs:
+            - targets:
+                - localhost:6060
+        - job_name: blockops-ssv_ssv_execution_reth
+          static_configs:
+            - targets:
+                - localhost:9090
+        - job_name: blockops-ssv_ssv_consensus_prysm
+          static_configs:
+            - targets:
+                - localhost:8080
+        - job_name: blockops-ssv_ssv_consensus_lighthouse
+          static_configs:
+            - targets:
+                - localhost:5054
+        - job_name: blockops-ssv_ssv_consensus_teku
           static_configs:
             - targets:
                 - localhost:8008
+        - job_name: blockops-ssv_ssv_consensus_nimbus
+          static_configs:
+            - targets:
+                - localhost:8008
+        - job_name: blockops-ssv_ssv_consensus_lodestar
+          static_configs:
+            - targets:
+                - localhost:8008
+        - job_name: blockops-ssv_ssv_validator_prysm
+          static_configs:
+            - targets:
+                - localhost:8081
+        - job_name: blockops-ssv_ssv_validator_lighthouse
+          static_configs:
+            - targets:
+                - localhost:5064
+        - job_name: blockops-ssv_ssv_validator_teku
+          static_configs:
+            - targets:
+                - localhost:8008
+        - job_name: blockops-ssv_ssv_validator_nimbus
+          static_configs:
+            - targets:
+                - localhost:8008
+        - job_name: blockops-ssv_ssv_validator_lodestar
+          static_configs:
+            - targets:
+                - localhost:5064
+        - job_name: blockops-ssv_ssv_ssv
+          static_configs:
+            - targets:
+                - localhost:13000
+        - job_name: blockops-ssv_ssv_mevboost
+          static_configs:
+            - targets:
+                - localhost:18550
+        - job_name: blockops-ssv_ssv_ssvdkg
+          static_configs:
+            - targets:
+                - localhost:3030
 logs:
   configs: []
 integrations:

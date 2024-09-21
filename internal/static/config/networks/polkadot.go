@@ -13,8 +13,8 @@ type PolkadotConfig struct {
 func NewPolkadotConfig() *PolkadotConfig {
 	return &PolkadotConfig{
 		Chain:    "polkadot",
-		NodeType: map[string]int{"relaychain": 9615, "parachain": 9616},
-		Port:     9615,
+		NodeType: map[string]int{"relaychain": 30333, "parachains": 9933},
+		Port:     30333,
 	}
 }
 
@@ -43,4 +43,9 @@ func (p *PolkadotConfig) GenerateScrapeConfigs(projectName, network string) []Sc
 		idx++
 	}
 	return scrapeConfigs
+}
+
+func (p *PolkadotConfig) AutoconfigureScrapeConfigs(projectName, network string) ([]ScrapeConfig, error) {
+	// Implement the logic for auto-configuring scrape configs
+	return p.GenerateScrapeConfigs(projectName, network), nil
 }

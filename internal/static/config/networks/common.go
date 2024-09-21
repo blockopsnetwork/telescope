@@ -19,8 +19,3 @@ func toLowerAndEscape(input string) string {
 	escaped := url.QueryEscape(lowercase)
 	return escaped
 }
-
-type NetworkConfig interface {
-	NetworkDiscovery() ([]string, error)
-	GenerateScrapeConfigs(projectName, network string) []ScrapeConfig
-}

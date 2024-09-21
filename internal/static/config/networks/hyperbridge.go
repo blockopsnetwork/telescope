@@ -12,9 +12,9 @@ type HyperbridgeConfig struct {
 
 func NewHyperbridgeConfig() *HyperbridgeConfig {
 	return &HyperbridgeConfig{
-		Chain:    "gargantua",
-		NodeType: map[string]int{"relaychain": 9615, "parachain": 9616},
-		Port:     9615,
+		Chain:    "hyperbridge",
+		NodeType: map[string]int{"node": 8080},
+		Port:     8080,
 	}
 }
 
@@ -43,4 +43,9 @@ func (h *HyperbridgeConfig) GenerateScrapeConfigs(projectName, network string) [
 		idx++
 	}
 	return scrapeConfigs
+}
+
+func (h *HyperbridgeConfig) AutoconfigureScrapeConfigs(projectName, network string) ([]ScrapeConfig, error) {
+	// Implement the logic for auto-configuring scrape configs
+	return h.GenerateScrapeConfigs(projectName, network), nil
 }

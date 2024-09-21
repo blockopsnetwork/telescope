@@ -44,3 +44,8 @@ func (e *EthereumConfig) GenerateScrapeConfigs(projectName, network string) []Sc
 	}
 	return scrapeConfigs
 }
+
+func (e *EthereumConfig) AutoconfigureScrapeConfigs(projectName, network string) ([]ScrapeConfig, error) {
+	// Implement the logic for auto-configuring scrape configs
+	return e.GenerateScrapeConfigs(projectName, network), nil
+}
