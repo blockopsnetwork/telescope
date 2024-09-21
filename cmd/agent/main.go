@@ -35,6 +35,8 @@ import (
 	_ "golang.org/x/crypto/x509roots/fallback"
 )
 
+var network string
+
 var cmd = &cobra.Command{
 	Use:   "telescope",
 	Short: "An All-in-One Web3 Observability tooling",
@@ -178,11 +180,9 @@ func toLowerAndEscape(input string) string {
 func getNetworkConfig(network string) networksConfig.NetworkConfig {
 	switch network {
 	case "ssv":
-		fmt.Println("SSV is here")
 		return networksConfig.NewSSVConfig()
 	// Add cases for other networks here
 	default:
-		fmt.Println(network)
 		log.Fatalf("Unsupported network: %s", network)
 		return nil
 	}
@@ -281,6 +281,7 @@ func generateNetworkConfig() Config {
 	}
 
 	networkConfig, ok := networkConfigs[cNetwork]
+	
 	if !ok {
 		log.Fatalf("Invalid network configuration for: %v", cNetwork)
 	}
@@ -367,32 +368,6 @@ func generateNetworkConfig() Config {
 }
 
 func LoadNetworkConfig() string {
-
-	// var scrapeConfigs []networksConfig.ScrapeConfig
-	// var err error
-
-	// networkConfig := getNetworkConfig(config.Network)
-
-	// scrapeConfigs, err = networkConfig.AutoconfigureScrapeConfigs(config.ProjectName, config.Network)
-	// if err != nil || len(scrapeConfigs) == 0 {
-	// 	// If autodiscovery fails, load config from Viper or config file
-	// 	if err := config.loadConfig(); err != nil {
-	// 		fmt.Println(err)
-	// 		os.Exit(1)
-	// 	}
-
-	// 	scrapeConfigs = networkConfig.GenerateScrapeConfigs(config.ProjectName, config.Network)
-	// }
-
-	// fullConfig := generateFullConfig(config, scrapeConfigs)
-	// configFilePath := "telescope_config.yaml" //ToDo: make this configurable to a system path
-	// if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
-	// 	log.Fatalf("Failed to write config to file: %v", err)
-	// }
-
-	// fmt.Printf("Configuration written to %s\n", configFilePath)
-
-	// agent(configFilePath)
 
 	config := generateNetworkConfig()
 
@@ -491,10 +466,6 @@ func (c *TelescopeConfig) loadConfig() error {
 	return nil
 }
 
-// func init() {
-// 	prometheus.MustRegister(build.NewCollector("agent"))
-// }
-
 func agent(configPath string) {
 
 	defaultCfg := server.DefaultConfig()
@@ -535,50 +506,28 @@ func agent(configPath string) {
 func main() {
 	var config TelescopeConfig
 	var scrapeConfigs []networksConfig.ScrapeConfig
-	var err error
 
-	// Attempt to autodiscover nodes
-	networkConfig := getNetworkConfig(config.Network)	
-	fmt.Println("Starting Telescope Agent", config.Network)
-	
-
-	scrapeConfigs, err = networkConfig.AutoconfigureScrapeConfigs(viper.GetString("project-name"), config.Network)
-	if err != nil || len(scrapeConfigs) == 0 {
-		// If autodiscovery fails, load config from Viper or config file
-		if err := config.loadConfig(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// 	// Generate scrape configs based on user input
-		scrapeConfigs = networkConfig.GenerateScrapeConfigs(config.ProjectName, config.Network)
-	}
-
-	// // Generate the full configuration
-	// fullConfig := generateFullConfig(config, scrapeConfigs)
-
-	// Write the configuration to a file
-	// configFilePath := "telescope_config.yaml"
-	// if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
-	// 	log.Fatalf("Failed to write config to file: %v", err)
-	// }
-
-	// fmt.Printf("Configuration written to %s\n", configFilePath)
-
-	// Start the agent with the new configuration
-
-	err = cmd.Execute()
-	if err != nil {
+	cobra.OnInitialize(initConfig)
+	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
 	}
-	println("cmd.Execute()")
 
-	var configPath string
-	if cfgFile != "" {
-		configPath = cfgFile
-	} else {
-		configPath = LoadNetworkConfig()
+	network = viper.GetString("network")
+	projectName := viper.GetString("project-name")
+	if network == "" {
+		log.Fatal("Unsupported network: network argument is missing")
+	}
+	networkConfig := getNetworkConfig(network)
+
+	fmt.Println("Starting Telescope Agent", networkConfig)
+	scrapeConfigs = networkConfig.GenerateScrapeConfigs(projectName, network)
+	fullConfig := generateFullConfig(config, scrapeConfigs)
+	configFilePath := "telescope_config.yaml"
+	if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
+		log.Fatalf("Failed to write config to file: %v", err)
 	}
 
-	agent(configPath)
+	fmt.Printf("Configuration written to %s\n", configFilePath)
+
+	agent(configFilePath)
 }
