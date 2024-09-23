@@ -21,7 +21,7 @@ PROPAGATE_VARS := \
     VERSION GO_TAGS GOEXPERIMENT
 
 #
-# Constants for targets
+# Constants for targets.
 #
 
 GO_ENV := GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) CGO_ENABLED=$(CGO_ENABLED)
