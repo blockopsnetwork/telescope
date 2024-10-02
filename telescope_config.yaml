@@ -1,0 +1,45 @@
+server:
+  log_level: info
+metrics:
+  global:
+    scrape_interval: 15s
+    external_labels:
+      project_id: ""
+      project_name: ""
+    remote_write:
+      - url: ""
+        basic_auth:
+          password: ""
+          username: ""
+  wal_directory: /tmp/telescope
+  configs:
+    - name: __metrics
+      host_filter: false
+      scrape_configs:
+        - job_name: ssv_client_execution
+          static_configs:
+            - targets:
+                - localhost:6060
+        - job_name: ssv_client_consensus
+          static_configs:
+            - targets:
+                - localhost:8008
+        - job_name: ssv_client_mevboost
+          static_configs:
+            - targets:
+                - localhost:18550
+        - job_name: ssv_client_ssvdkg
+          static_configs:
+            - targets:
+                - localhost:3030
+        - job_name: ssv_client_ssv
+          static_configs:
+            - targets:
+                - localhost:13000
+logs:
+  configs: []
+integrations:
+  agent:
+    enabled: false
+  node_exporter:
+    enabled: true

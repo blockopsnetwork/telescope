@@ -1,23 +1,25 @@
 package main
 
 import (
+	"bytes"
 	"flag"
-	"log"
-	"os"
 	"fmt"
-	"strings"
+	"log"
 	"net/url"
+	"os"
+	"strings"
 
+	networksConfig "github.com/grafana/agent/internal/static/config/networks"
 
 	"github.com/go-kit/log/level"
-	"gopkg.in/yaml.v3"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/grafana/agent/internal/boringcrypto"
 	"github.com/grafana/agent/internal/build"
 	"github.com/grafana/agent/internal/static/config"
 	"github.com/grafana/agent/internal/static/server"
 	util_log "github.com/grafana/agent/internal/util/log"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 
 	"github.com/prometheus/client_golang/prometheus"
 
@@ -33,14 +35,53 @@ import (
 	_ "golang.org/x/crypto/x509roots/fallback"
 )
 
+var network string
+
+var cmd = &cobra.Command{
+	Use:   "telescope",
+	Short: "An All-in-One Web3 Observability tooling",
+	Long:  `Gain full insights into the performance of your dApps, nodes and onchain events with Telescope.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		var config TelescopeConfig
+		fmt.Println(config)
+
+		if err := config.loadConfig(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+	},
+}
+
+var helperFunction = func(cmd *cobra.Command, args []string) {
+	fmt.Println("Custom Help:")
+	fmt.Println("Usage: app start [flags]")
+	fmt.Println("\nFlags:")
+	fmt.Println("  --metrics\t\tEnable metrics")
+	fmt.Println("  --network\t\tSpecify the network")
+	fmt.Println("  --project-id\t\tSpecify the project ID")
+	fmt.Println("  --project-name\tSpecify the project name")
+	fmt.Println("  --telescope-username\tSpecify the telescope username")
+	fmt.Println("  --telescope-password\tSpecify the telescope password")
+	fmt.Println("  --remote-write-url\tSpecify the remote write URL")
+	fmt.Println("  --config-file\t\tSpecify the config file")
+	fmt.Println("  --logs\t\tEnable logs")
+}
+
 var cfgFile string
 
+var networkConfigs = map[string]networksConfig.NetworkConfig{
+	"ethereum":    networksConfig.NewEthereumConfig(),
+	"polkadot":    networksConfig.NewPolkadotConfig(),
+	"hyperbridge": networksConfig.NewHyperbridgeConfig(),
+	"ssv":         networksConfig.NewSSVConfig(),
+}
+
 type Config struct {
-	Server  ServerConfig  `yaml:"server"`
-	Metrics MetricsConfig `yaml:"metrics"`
-	Logs        LogsConfig        `yaml:"logs"`
-	Integrations       map[string]interface{}  `yaml:"integrations"`
-	
+	Server       ServerConfig           `yaml:"server"`
+	Metrics      MetricsConfig          `yaml:"metrics"`
+	Logs         LogsConfig             `yaml:"logs"`
+	Integrations map[string]interface{} `yaml:"integrations"`
 }
 
 type ServerConfig struct {
@@ -48,26 +89,26 @@ type ServerConfig struct {
 }
 
 type MetricsConfig struct {
-	Global   GlobalConfig   `yaml:"global"`
-	Wal_Directory string `yaml:"wal_directory"`
-	Configs  []MetricConfig `yaml:"configs"`
+	Global        GlobalConfig   `yaml:"global"`
+	Wal_Directory string         `yaml:"wal_directory"`
+	Configs       []MetricConfig `yaml:"configs"`
 }
 
 type GlobalConfig struct {
-	ScrapeInterval string `yaml:"scrape_interval"`
-	ExternalLabels      map[string]string  `yaml:"external_labels"`
-	RemoteWrite    []RemoteWrite `yaml:"remote_write"`
+	ScrapeInterval string            `yaml:"scrape_interval"`
+	ExternalLabels map[string]string `yaml:"external_labels"`
+	RemoteWrite    []RemoteWrite     `yaml:"remote_write"`
 }
 
 type MetricConfig struct {
-	Name           string         `yaml:"name"`
-	HostFilter     bool           `yaml:"host_filter"`
-	ScrapeConfigs  []ScrapeConfig `yaml:"scrape_configs"`
+	Name          string         `yaml:"name"`
+	HostFilter    bool           `yaml:"host_filter"`
+	ScrapeConfigs []ScrapeConfig `yaml:"scrape_configs"`
 }
 
 type ScrapeConfig struct {
-	JobName       string          `yaml:"job_name"`
-	StaticConfigs []StaticConfig  `yaml:"static_configs"`
+	JobName       string         `yaml:"job_name"`
+	StaticConfigs []StaticConfig `yaml:"static_configs"`
 }
 
 type BasicAuth struct {
@@ -76,22 +117,21 @@ type BasicAuth struct {
 }
 
 type IntegrationsConfig struct {
-    Agent        ToIntegrate `yaml:"agent"`
-    NodeExporter ToIntegrate `yaml:"node_exporter"`
+	Agent        ToIntegrate `yaml:"agent"`
+	NodeExporter ToIntegrate `yaml:"node_exporter"`
 }
 
 type ToIntegrate struct {
-    Enabled bool `yaml:"enabled"`
+	Enabled bool `yaml:"enabled"`
 }
 
 type StaticConfig struct {
-	Targets []string           `yaml:"targets"`
+	Targets []string `yaml:"targets"`
 }
 
 type RemoteWrite struct {
-	URL string `yaml:"url"`
-	BasicAuth      map[string]string  `yaml:"basic_auth"`
-
+	URL       string            `yaml:"url"`
+	BasicAuth map[string]string `yaml:"basic_auth"`
 }
 
 type LogsConfig struct {
@@ -99,9 +139,9 @@ type LogsConfig struct {
 }
 
 type LogConfig struct {
-	Name      string     `yaml:"name"`
+	Name      string      `yaml:"name"`
 	Clients   []LogClient `yaml:"clients"`
-	Positions Positions  `yaml:"positions"`
+	Positions Positions   `yaml:"positions"`
 }
 
 type Positions struct {
@@ -109,97 +149,121 @@ type Positions struct {
 }
 
 type LogClient struct {
-	URL           string            `yaml:"url"`
-	BasicAuth     BasicAuth         `yaml:"basic_auth"`
+	URL            string            `yaml:"url"`
+	BasicAuth      BasicAuth         `yaml:"basic_auth"`
 	ExternalLabels map[string]string `yaml:"external_labels"`
 }
 
-
 type TelescopeConfig struct {
-	Metrics bool
-	Logs bool
-	Network string
-	ProjectId string
-	ProjectName string
+	Metrics           bool
+	Logs              bool
+	Network           string
+	ProjectId         string
+	ProjectName       string
 	TelescopeUsername string
 	TelescopePassword string
-	RemoteWriteUrl string
+	RemoteWriteUrl    string
 }
 
-type BlockchainNetworkConfig struct {
-	Chain string //or env e.g testnet
-	Network string
-	NodeType map[string]int
-	Port int
-}
-
-var networkConfigs = map[string]BlockchainNetworkConfig{
-	"ethereum": {
-		Chain:    "sepolia",
-		Network:  "ethereum",
-		NodeType: map[string]int{"execution": 6060, "consensus": 8008},
-		Port:     6060,
-	},
-	"polkadot": {
-		Chain:    "polkadot",
-		Network:  "polkadot",
-		NodeType: map[string]int{"relaychain": 9615, "parachain": 9616},
-		Port:     9615,
-	},
-	"hyperbridge": {
-		Chain:    "gargantua",
-		Network:  "hyperbridge",
-		NodeType: map[string]int{"relaychain": 9615, "parachain": 9616},
-		Port:     9615,
-	},
+func handleErr(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %v", msg, err)
+	}
 }
 
 func toLowerAndEscape(input string) string {
-	lowercase := strings.ToLower(input) // Convert to lowercase
-	escaped := url.QueryEscape(lowercase) // Escape special characters for URL
+	lowercase := strings.ToLower(input)
+	escaped := url.QueryEscape(lowercase)
 	return escaped
 }
 
+func getNetworkConfig(network string) networksConfig.NetworkConfig {
+	switch network {
+	case "ssv":
+		return networksConfig.NewSSVConfig()
+	// Add cases for other networks here
+	default:
+		log.Fatalf("Unsupported network: %s", network)
+		return nil
+	}
+}
+
+func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksConfig.ScrapeConfig) Config {
+	// Convert networksConfig.ScrapeConfig to local ScrapeConfig
+	scrapeConfigs := make([]ScrapeConfig, len(networkScrapeConfigs))
+	for i, nsc := range networkScrapeConfigs {
+		scrapeConfigs[i] = ScrapeConfig{
+			JobName: nsc.JobName,
+			StaticConfigs: []StaticConfig{
+				{
+					Targets: nsc.StaticConfigs[0].Targets,
+				},
+			},
+		}
+	}
+
+	return Config{
+		Server: ServerConfig{
+			LogLevel: "info",
+		},
+		Metrics: MetricsConfig{
+			Wal_Directory: "/tmp/telescope", // TODO: make this configurable
+			Global: GlobalConfig{
+				ScrapeInterval: "15s",
+				ExternalLabels: map[string]string{
+					"project_id":   config.ProjectId,
+					"project_name": config.ProjectName,
+				},
+				RemoteWrite: []RemoteWrite{
+					{
+						URL: config.RemoteWriteUrl,
+						BasicAuth: map[string]string{
+							"username": config.TelescopeUsername,
+							"password": config.TelescopePassword,
+						},
+					},
+				},
+			},
+			Configs: []MetricConfig{
+				{
+					Name:          toLowerAndEscape(config.ProjectName + "_" + config.Network + "_metrics"),
+					HostFilter:    false,
+					ScrapeConfigs: scrapeConfigs,
+				},
+			},
+		},
+		Integrations: map[string]interface{}{
+			"agent":         map[string]bool{"enabled": false},
+			"node_exporter": map[string]bool{"enabled": true},
+		},
+	}
+}
+
+func writeConfigToFile(config Config, filePath string) error {
+	var buf strings.Builder
+	encoder := yaml.NewEncoder(&buf)
+	encoder.SetIndent(2)
+
+	if err := encoder.Encode(&config); err != nil {
+		return fmt.Errorf("error marshaling to YAML: %v", err)
+	}
+
+	data := buf.String()
+	fixedData := strings.ReplaceAll(data, "job_name", "job_name")
+	fixedData = strings.ReplaceAll(fixedData, "static_configs", "static_configs")
+
+	return os.WriteFile(filePath, []byte(fixedData), 0644)
+}
 
 func networkDiscovery(network string) ([]string, error) {
 	scrapeConfig, ok := networkConfigs[network]
-
 	if !ok {
 		return nil, fmt.Errorf("invalid network. Please choose from: ethereum, polkadot, hyperbridge")
 	}
-
-	ports := []string{}
-	for _, port := range scrapeConfig.NodeType {
-		ports = append(ports, fmt.Sprintf("localhost:%d", port))
-	}
-
-	if len(ports) == 0 {
-		return []string{fmt.Sprintf("default port: %d", scrapeConfig.Port)}, nil
-	}
-
-	return ports, nil
+	return scrapeConfig.NetworkDiscovery()
 }
-
-
-var cmd = &cobra.Command{
-	Use:   "metrics",
-	Short: "A Web3 Observability tooling",
-	Long: `Gain insights into your Web3 infrastructure with Telescope.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		var config TelescopeConfig
-		if err := config.loadConfig(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-	},
-	
-}
-
 
 func generateNetworkConfig() Config {
-	// var telescope_config TelescopeConfig
-	// cMetrics := viper.GetBool("metrics")
 	cNetwork := viper.GetString("network")
 	cProjectId := viper.GetString("project-id")
 	cProjectName := viper.GetString("project-name")
@@ -210,43 +274,39 @@ func generateNetworkConfig() Config {
 	cLogSinkURL := viper.GetString("logs-sink-url")
 
 	ports, err := networkDiscovery(cNetwork)
-	
-
-	if err != nil {
-		log.Fatalf("Unable to discover blockchain port: %v", err)
-	}
+	handleErr(err, "Failed to discover blockchain port")
 
 	for _, port := range ports {
 		viper.Set("scrape_port", port)
 	}
 
 	networkConfig, ok := networkConfigs[cNetwork]
-    if !ok {
-        log.Fatalf("Invalid network configuration for: %v", cNetwork)
-    }
+	
+	if !ok {
+		log.Fatalf("Invalid network configuration for: %v", cNetwork)
+	}
 
-	var scrapeConfigs []ScrapeConfig
-    idx := 0  // Initialize index for job naming
-    for nodeType, port := range networkConfig.NodeType {
-        jobName := fmt.Sprintf("%s_%s_%s_job_%d", toLowerAndEscape(cProjectName), cNetwork, nodeType, idx)
-        target := fmt.Sprintf("localhost:%d", port)
-        scrapeConfigs = append(scrapeConfigs, ScrapeConfig{
-            JobName: jobName,
-            StaticConfigs: []StaticConfig{
-                {
-                    Targets: []string{target},
-                },
-            },
-        })
-        idx++
-    }
+	networkScrapeConfigs := networkConfig.GenerateScrapeConfigs(cProjectName, cNetwork)
+
+	// Convert networksConfig.ScrapeConfig to local ScrapeConfig
+	scrapeConfigs := make([]ScrapeConfig, len(networkScrapeConfigs))
+	for i, nsc := range networkScrapeConfigs {
+		scrapeConfigs[i] = ScrapeConfig{
+			JobName: nsc.JobName,
+			StaticConfigs: []StaticConfig{
+				{
+					Targets: nsc.StaticConfigs[0].Targets,
+				},
+			},
+		}
+	}
 
 	config := Config{
 		Server: ServerConfig{
 			LogLevel: "info",
 		},
 		Metrics: MetricsConfig{
-			Wal_Directory: "/tmp/wal",
+			Wal_Directory: "/tmp/telescope", //TODO: make this configurable
 			Global: GlobalConfig{
 				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
@@ -265,19 +325,15 @@ func generateNetworkConfig() Config {
 			},
 			Configs: []MetricConfig{
 				{
-					Name:        toLowerAndEscape(cProjectName + cNetwork + "_metrics"),
-					HostFilter:  false,
+					Name:          toLowerAndEscape(cProjectName + "_" + cNetwork + "_metrics"),
+					HostFilter:    false,
 					ScrapeConfigs: scrapeConfigs,
 				},
 			},
 		},
 		Integrations: map[string]interface{}{
-			"agent": ToIntegrate{
-				Enabled: false,
-			},
-			"node_exporter": ToIntegrate{
-				Enabled: true,
-			},
+			"agent":         ToIntegrate{Enabled: false},
+			"node_exporter": ToIntegrate{Enabled: true},
 		},
 	}
 
@@ -308,107 +364,90 @@ func generateNetworkConfig() Config {
 	}
 
 	return config
-	
+
 }
 
 func LoadNetworkConfig() string {
-	config := generateNetworkConfig() // Assuming this function returns a `Config` object correctly populated
 
-	data, err := yaml.Marshal(&config)
-	if err != nil {
+	config := generateNetworkConfig()
+
+	// Create a custom marshaler
+	var buf bytes.Buffer
+	encoder := yaml.NewEncoder(&buf)
+	encoder.SetIndent(2)
+
+	if err := encoder.Encode(&config); err != nil {
 		log.Fatalf("error marshaling to YAML: %v", err)
 	}
 
+	data := buf.String()
+	// fixedData := strings.ReplaceAll(string(data), "job_name", "job_name")
+	// fixedData = strings.ReplaceAll(fixedData, "static_configs", "static_configs")
+
 	configFilePath := "telescope_config.yaml"
-	if err := os.WriteFile(configFilePath, data, 0644); err != nil {
+	if err := os.WriteFile(configFilePath, []byte(data), 0644); err != nil {
 		log.Fatalf("error writing to file: %v", err)
 	}
 
 	return configFilePath
 }
 
-
-
-var helperFunction = func(cmd *cobra.Command, args []string) {
-	fmt.Println("Custom Help:")
-    fmt.Println("Usage: app start [flags]")
-    fmt.Println("\nFlags:")
-    fmt.Println("  --metrics\t\tEnable metrics")
-    fmt.Println("  --network\t\tSpecify the network")
-    fmt.Println("  --project-id\t\tSpecify the project ID")
-    fmt.Println("  --project-name\tSpecify the project name")
-    fmt.Println("  --telescope-username\tSpecify the telescope username")
-    fmt.Println("  --telescope-password\tSpecify the telescope password")
-    fmt.Println("  --remote-write-url\tSpecify the remote write URL")
-	fmt.Println("  --config-file\t\tSpecify the config file")
-	fmt.Println("  --logs\t\tEnable logs")
-}
-
-
 func checkRequiredFlags() error {
-    requiredFlags := []string{"metrics", "enable-logs", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
-    missingFlags := []string{}
+	requiredFlags := []string{"metrics", "enable-logs", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
+	missingFlags := []string{}
 
-    for _, flag := range requiredFlags {
-        if viper.GetString(flag) == "" {
-            missingFlags = append(missingFlags, flag)
-        }
-    }
+	for _, flag := range requiredFlags {
+		if viper.GetString(flag) == "" {
+			missingFlags = append(missingFlags, flag)
+		}
+	}
 
-    if len(missingFlags) > 0 && viper.GetString("config-file") == "" {
-        return fmt.Errorf("Error: Missing required flags: %s", strings.Join(missingFlags, ", "))
-    }
+	if len(missingFlags) > 0 && viper.GetString("config-file") == "" {
+		return fmt.Errorf("error: missing required flags: %s", strings.Join(missingFlags, ", "))
+	}
 
-    return nil
+	return nil
 }
 
 func init() {
 	prometheus.MustRegister(build.NewCollector("agent"))
 	cobra.OnInitialize(initConfig)
-	// cmd.SetHelpFunc(helperFunction)
+	cmd.SetHelpFunc(helperFunction)
 	cmd.Flags().StringVar(&cfgFile, "config-file", "", "Specify the config file")
 	cmd.Flags().Bool("metrics", true, "Enable metrics")
 	cmd.Flags().Bool("enable-logs", false, "Enable logs")
-    cmd.Flags().String("network", "", "Specify the network")
-    cmd.Flags().String("project-id", "", "Specify the project ID")
-    cmd.Flags().String("project-name", "", "Specify the project name")
-    cmd.Flags().String("telescope-username", "", "Specify the telescope username")
-    cmd.Flags().String("telescope-password", "", "Specify the telescope password")
-    cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
+	cmd.Flags().String("network", "", "Specify the network")
+	cmd.Flags().String("project-id", "", "Specify the project ID")
+	cmd.Flags().String("project-name", "", "Specify the project name")
+	cmd.Flags().String("telescope-username", "", "Specify the telescope username")
+	cmd.Flags().String("telescope-password", "", "Specify the telescope password")
+	cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
 	cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
 
-    // Bind flags with viper
+	// Bind flags with viper
 	viper.BindPFlag("config-file", cmd.Flags().Lookup("config-file"))
-    viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
-    viper.BindPFlag("network", cmd.Flags().Lookup("network"))
-    viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
-    viper.BindPFlag("project-name", cmd.Flags().Lookup("project-name"))
-    viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
-    viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
-    viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
+	viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
+	viper.BindPFlag("network", cmd.Flags().Lookup("network"))
+	viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
+	viper.BindPFlag("project-name", cmd.Flags().Lookup("project-name"))
+	viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
+	viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
+	viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
 	viper.BindPFlag("logs-sink-url", cmd.Flags().Lookup("logs-sink-url"))
 	viper.BindPFlag("enable-logs", cmd.Flags().Lookup("enable-logs"))
-
-	
-	// cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cmd.yaml)")
-	// cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
-		if err := viper.ReadInConfig(); err != nil {
-			log.Fatalf("Error reading config file: %v", err)
-		}
+		handleErr(viper.ReadInConfig(), "Failed to read config file")
 	} else {
 		viper.AutomaticEnv() // read in environment variables that match
 	}
 }
 
 func (c *TelescopeConfig) loadConfig() error {
-
-	// Check if config-file is provided
 	if viper.GetString("config-file") != "" {
 		cfgFile = viper.GetString("config-file")
 		viper.SetConfigFile(cfgFile)
@@ -416,7 +455,6 @@ func (c *TelescopeConfig) loadConfig() error {
 			return fmt.Errorf("Error reading config file: %s", err)
 		}
 	} else {
-		// generateNetworkConfig 
 		LoadNetworkConfig()
 	}
 
@@ -425,19 +463,11 @@ func (c *TelescopeConfig) loadConfig() error {
 		return err
 	}
 
-
 	return nil
-
-
 }
 
-
-// func init() {
-// 	prometheus.MustRegister(build.NewCollector("agent"))
-// }
-
 func agent(configPath string) {
-	
+
 	defaultCfg := server.DefaultConfig()
 	logger := server.NewLogger(&defaultCfg)
 
@@ -474,18 +504,30 @@ func agent(configPath string) {
 }
 
 func main() {
-	
-	err := cmd.Execute()
-	if err != nil {
+	var config TelescopeConfig
+	var scrapeConfigs []networksConfig.ScrapeConfig
+
+	cobra.OnInitialize(initConfig)
+	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 
-	var configPath string
-	if cfgFile != "" {
-		configPath = cfgFile
-	} else {
-		configPath = LoadNetworkConfig()
+	network = viper.GetString("network")
+	projectName := viper.GetString("project-name")
+	if network == "" {
+		log.Fatal("Unsupported network: network argument is missing")
+	}
+	networkConfig := getNetworkConfig(network)
+
+	fmt.Println("Starting Telescope Agent", networkConfig)
+	scrapeConfigs = networkConfig.GenerateScrapeConfigs(projectName, network)
+	fullConfig := generateFullConfig(config, scrapeConfigs)
+	configFilePath := "telescope_config.yaml"
+	if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
+		log.Fatalf("Failed to write config to file: %v", err)
 	}
 
-	agent(configPath)
+	fmt.Printf("Configuration written to %s\n", configFilePath)
+
+	agent(configFilePath)
 }
