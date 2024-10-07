@@ -4,16 +4,16 @@ metrics:
   global:
     scrape_interval: 15s
     external_labels:
-      project_id: ""
-      project_name: ""
+      project_id: calvin-454
+      project_name: frtejd6
     remote_write:
-      - url: ""
+      - url: https://thanos-receiver.blockops.network/api/v1/receive
         basic_auth:
-          password: ""
-          username: ""
+          password: test
+          username: dsssds
   wal_directory: /tmp/telescope
   configs:
-    - name: __metrics
+    - name: frtejd6_ssv_metrics
       host_filter: false
       scrape_configs:
         - job_name: ssv_client_execution
