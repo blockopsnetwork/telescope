@@ -183,12 +183,23 @@ func getNetworkConfig(network string) networksConfig.NetworkConfig {
 		return networksConfig.NewSSVConfig()
 	// Add cases for other networks here
 	default:
-		log.Fatalf("Unsupported network: %s", network)
+		LoadNetworkConfig()
 		return nil
+		// log.Fatalf("Unsupported network: %s", network)
+		// return nil
 	}
 }
 
 func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksConfig.ScrapeConfig) Config {
+	cNetwork := viper.GetString("network")
+	cProjectId := viper.GetString("project-id")
+	cProjectName := viper.GetString("project-name")
+	cTelescopeUsername := viper.GetString("telescope-username")
+	cTelescopePassword := viper.GetString("telescope-password")
+	cRemoteWriteUrl := viper.GetString("remote-write-url")
+	// isEnableLogs := viper.GetString("enable-logs")
+	// cLogSinkURL := viper.GetString("logs-sink-url")
+
 	// Convert networksConfig.ScrapeConfig to local ScrapeConfig
 	scrapeConfigs := make([]ScrapeConfig, len(networkScrapeConfigs))
 	for i, nsc := range networkScrapeConfigs {
@@ -211,22 +222,22 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 			Global: GlobalConfig{
 				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
-					"project_id":   config.ProjectId,
-					"project_name": config.ProjectName,
+					"project_id":   cProjectId,
+					"project_name": cProjectName,
 				},
 				RemoteWrite: []RemoteWrite{
 					{
-						URL: config.RemoteWriteUrl,
+						URL: cRemoteWriteUrl,
 						BasicAuth: map[string]string{
-							"username": config.TelescopeUsername,
-							"password": config.TelescopePassword,
+							"username": cTelescopeUsername,
+							"password": cTelescopePassword,
 						},
 					},
 				},
 			},
 			Configs: []MetricConfig{
 				{
-					Name:          toLowerAndEscape(config.ProjectName + "_" + config.Network + "_metrics"),
+					Name:          toLowerAndEscape(cProjectName + "_" + cNetwork + "_metrics"),
 					HostFilter:    false,
 					ScrapeConfigs: scrapeConfigs,
 				},
@@ -514,9 +525,9 @@ func main() {
 
 	network = viper.GetString("network")
 	projectName := viper.GetString("project-name")
-	if network == "" {
-		log.Fatal("Unsupported network: network argument is missing")
-	}
+	// if network == "" {
+	// 	log.Fatal("Unsupported network: network argument is missing")
+	// }
 	networkConfig := getNetworkConfig(network)
 
 	fmt.Println("Starting Telescope Agent", networkConfig)

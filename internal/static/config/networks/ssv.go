@@ -2,10 +2,10 @@ package networks
 
 import (
 	"fmt"
-	"github.com/ethpandaops/beacon/pkg/beacon"
-	"github.com/ethpandaops/ethereum-metrics-exporter/pkg/exporter/execution"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/sirupsen/logrus"
+	// "github.com/ethpandaops/beacon/pkg/beacon"
+	// "github.com/ethpandaops/ethereum-metrics-exporter/pkg/exporter/execution"
+	// "github.com/prometheus/client_golang/prometheus/promhttp"
+	// "github.com/sirupsen/logrus"
 
 )
 
