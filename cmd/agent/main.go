@@ -1,38 +1,39 @@
 package main
 
 import (
-	"bytes"
-	"flag"
-	"fmt"
-	"log"
-	"net/url"
-	"os"
-	"strings"
 
-	networksConfig "github.com/grafana/agent/internal/static/config/networks"
+    "bytes"
+    "flag"
+    "fmt"
+    "log"
+    "net/url"
+    "os"
+    "strings"
 
-	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/boringcrypto"
-	"github.com/grafana/agent/internal/build"
-	"github.com/grafana/agent/internal/static/config"
-	"github.com/grafana/agent/internal/static/server"
-	util_log "github.com/grafana/agent/internal/util/log"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
+    networksConfig "github.com/grafana/agent/internal/static/config/networks"
 
-	"github.com/prometheus/client_golang/prometheus"
+    "github.com/go-kit/log/level"
+    "github.com/grafana/agent/internal/boringcrypto"
+    "github.com/grafana/agent/internal/build"
+    "github.com/grafana/agent/internal/static/config"
+    "github.com/grafana/agent/internal/static/server"
+    util_log "github.com/grafana/agent/internal/util/log"
+    "github.com/spf13/cobra"
+    "github.com/spf13/viper"
+    "gopkg.in/yaml.v3"
 
-	// Register Prometheus SD components
-	_ "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
-	_ "github.com/prometheus/prometheus/discovery/install"
+    "github.com/prometheus/client_golang/prometheus"
 
-	// Register integrations
-	_ "github.com/grafana/agent/internal/static/integrations/install"
+    // Register Prometheus SD components
+    _ "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
+    _ "github.com/prometheus/prometheus/discovery/install"
 
-	// Embed a set of fallback X.509 trusted roots
-	// Allows the app to work correctly even when the OS does not provide a verifier or systems roots pool
-	_ "golang.org/x/crypto/x509roots/fallback"
+    // Register integrations
+    _ "github.com/grafana/agent/internal/static/integrations/install"
+
+    // Embed a set of fallback X.509 trusted roots
+    // Allows the app to work correctly even when the OS does not provide a verifier or systems roots pool
+    _ "golang.org/x/crypto/x509roots/fallback"
 )
 
 var network string
@@ -43,19 +44,34 @@ var cmd = &cobra.Command{
 	Long:  `Gain full insights into the performance of your dApps, nodes and onchain events with Telescope.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var config TelescopeConfig
-		fmt.Println(config)
 
 		if err := config.loadConfig(); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
+		// Proceed to generate and write configuration, then start the agent
+		network = viper.GetString("network")
+		projectName := viper.GetString("project-name")
+		networkConfig := getNetworkConfig(network)
+
+		fmt.Println("Starting Telescope Agent", networkConfig)
+		scrapeConfigs := networkConfig.GenerateScrapeConfigs(projectName, network)
+		fullConfig := generateFullConfig(config, scrapeConfigs)
+		configFilePath := "telescope_config.yaml"
+		if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
+			log.Fatalf("Failed to write config to file: %v", err)
+		}
+
+		fmt.Printf("Configuration written to %s\n", configFilePath)
+
+		agent(configFilePath)
 	},
 }
 
 var helperFunction = func(cmd *cobra.Command, args []string) {
 	fmt.Println("Custom Help:")
-	fmt.Println("Usage: app start [flags]")
+	fmt.Println("Usage: telescope start [flags]")
 	fmt.Println("\nFlags:")
 	fmt.Println("  --metrics\t\tEnable metrics")
 	fmt.Println("  --network\t\tSpecify the network")
@@ -65,7 +81,10 @@ var helperFunction = func(cmd *cobra.Command, args []string) {
 	fmt.Println("  --telescope-password\tSpecify the telescope password")
 	fmt.Println("  --remote-write-url\tSpecify the remote write URL")
 	fmt.Println("  --config-file\t\tSpecify the config file")
-	fmt.Println("  --logs\t\tEnable logs")
+	fmt.Println("  --enable-logs\t\tEnable logs")
+	fmt.Println("  --logs-sink-url\tSpecify the Log Sink URL")
+	fmt.Println("  --telescope-loki-username\tSpecify the Loki username")
+	fmt.Println("  --telescope-loki-password\tSpecify the Loki password")
 }
 
 var cfgFile string
@@ -163,6 +182,9 @@ type TelescopeConfig struct {
 	TelescopeUsername string
 	TelescopePassword string
 	RemoteWriteUrl    string
+	LokiUsername      string
+	LokiPassword      string
+	LogsSinkURL       string
 }
 
 func handleErr(err error, msg string) {
@@ -185,8 +207,6 @@ func getNetworkConfig(network string) networksConfig.NetworkConfig {
 	default:
 		LoadNetworkConfig()
 		return nil
-		// log.Fatalf("Unsupported network: %s", network)
-		// return nil
 	}
 }
 
@@ -197,8 +217,10 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 	cTelescopeUsername := viper.GetString("telescope-username")
 	cTelescopePassword := viper.GetString("telescope-password")
 	cRemoteWriteUrl := viper.GetString("remote-write-url")
-	// isEnableLogs := viper.GetString("enable-logs")
-	// cLogSinkURL := viper.GetString("logs-sink-url")
+	// isEnableLogs := viper.GetBool("enable-logs")
+	// cLogsSinkURL := viper.GetString("logs-sink-url")
+	// cLokiUsername := viper.GetString("telescope-loki-username")
+	// cLokiPassword := viper.GetString("telescope-loki-password")
 
 	// Convert networksConfig.ScrapeConfig to local ScrapeConfig
 	scrapeConfigs := make([]ScrapeConfig, len(networkScrapeConfigs))
@@ -244,8 +266,8 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 			},
 		},
 		Integrations: map[string]interface{}{
-			"agent":         map[string]bool{"enabled": false},
-			"node_exporter": map[string]bool{"enabled": true},
+			"agent":         ToIntegrate{Enabled: false},
+			"node_exporter": ToIntegrate{Enabled: true},
 		},
 	}
 }
@@ -260,6 +282,7 @@ func writeConfigToFile(config Config, filePath string) error {
 	}
 
 	data := buf.String()
+	// Optional: Perform any necessary string replacements or adjustments
 	fixedData := strings.ReplaceAll(data, "job_name", "job_name")
 	fixedData = strings.ReplaceAll(fixedData, "static_configs", "static_configs")
 
@@ -269,7 +292,7 @@ func writeConfigToFile(config Config, filePath string) error {
 func networkDiscovery(network string) ([]string, error) {
 	scrapeConfig, ok := networkConfigs[network]
 	if !ok {
-		return nil, fmt.Errorf("invalid network. Please choose from: ethereum, polkadot, hyperbridge")
+		return nil, fmt.Errorf("invalid network. Please choose from: ethereum, polkadot, hyperbridge, ssv")
 	}
 	return scrapeConfig.NetworkDiscovery()
 }
@@ -281,8 +304,10 @@ func generateNetworkConfig() Config {
 	cTelescopeUsername := viper.GetString("telescope-username")
 	cTelescopePassword := viper.GetString("telescope-password")
 	cRemoteWriteUrl := viper.GetString("remote-write-url")
-	isEnableLogs := viper.GetString("enable-logs")
-	cLogSinkURL := viper.GetString("logs-sink-url")
+	cLogsSinkURL := viper.GetString("logs-sink-url")
+	cLokiUsername := viper.GetString("telescope-loki-username")
+	cLokiPassword := viper.GetString("telescope-loki-password")
+	isEnableLogs := viper.GetBool("enable-logs")
 
 	ports, err := networkDiscovery(cNetwork)
 	handleErr(err, "Failed to discover blockchain port")
@@ -292,7 +317,6 @@ func generateNetworkConfig() Config {
 	}
 
 	networkConfig, ok := networkConfigs[cNetwork]
-	
 	if !ok {
 		log.Fatalf("Invalid network configuration for: %v", cNetwork)
 	}
@@ -317,7 +341,7 @@ func generateNetworkConfig() Config {
 			LogLevel: "info",
 		},
 		Metrics: MetricsConfig{
-			Wal_Directory: "/tmp/telescope", //TODO: make this configurable
+			Wal_Directory: "/tmp/telescope", // TODO: make this configurable
 			Global: GlobalConfig{
 				ScrapeInterval: "15s",
 				ExternalLabels: map[string]string{
@@ -348,17 +372,18 @@ func generateNetworkConfig() Config {
 		},
 	}
 
-	if isEnableLogs == "true" {
+	if isEnableLogs {
+		// Include only Loki-specific LogClient
 		config.Logs = LogsConfig{
 			Configs: []LogConfig{
 				{
 					Name: "telescope_logs",
 					Clients: []LogClient{
 						{
-							URL: cLogSinkURL,
+							URL: cLogsSinkURL, // Replace with your actual Loki URL if different
 							BasicAuth: BasicAuth{
-								Username: cTelescopeUsername,
-								Password: cTelescopePassword,
+								Username: cLokiUsername, // Loki Username
+								Password: cLokiPassword, // Loki Password
 							},
 							ExternalLabels: map[string]string{
 								"project_id":   cProjectId,
@@ -367,7 +392,7 @@ func generateNetworkConfig() Config {
 						},
 					},
 					Positions: Positions{
-						Filename: "/tmp/telescope_logs",
+						Filename: "/tmp/telescope_logs", // Ensure this path is writable
 					},
 				},
 			},
@@ -375,11 +400,9 @@ func generateNetworkConfig() Config {
 	}
 
 	return config
-
 }
 
 func LoadNetworkConfig() string {
-
 	config := generateNetworkConfig()
 
 	// Create a custom marshaler
@@ -404,7 +427,18 @@ func LoadNetworkConfig() string {
 }
 
 func checkRequiredFlags() error {
-	requiredFlags := []string{"metrics", "enable-logs", "network", "project-id", "project-name", "telescope-username", "telescope-password", "remote-write-url"}
+	requiredFlags := []string{
+		"metrics",
+		"enable-logs",
+		"network",
+		"project-id",
+		"project-name",
+		"telescope-username",
+		"telescope-password",
+		"remote-write-url",
+		"telescope-loki-username", // New required flag
+		"telescope-loki-password", // New required flag
+	}
 	missingFlags := []string{}
 
 	for _, flag := range requiredFlags {
@@ -435,9 +469,14 @@ func init() {
 	cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
 	cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
 
-	// Bind flags with viper
+	// Define new flags for Loki credentials
+	cmd.Flags().String("telescope-loki-username", "", "Specify the Loki username")   // New flag
+	cmd.Flags().String("telescope-loki-password", "", "Specify the Loki password")   // New flag
+
+	// Bind flags with Viper
 	viper.BindPFlag("config-file", cmd.Flags().Lookup("config-file"))
 	viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
+	viper.BindPFlag("enable-logs", cmd.Flags().Lookup("enable-logs"))
 	viper.BindPFlag("network", cmd.Flags().Lookup("network"))
 	viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
 	viper.BindPFlag("project-name", cmd.Flags().Lookup("project-name"))
@@ -445,7 +484,10 @@ func init() {
 	viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
 	viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
 	viper.BindPFlag("logs-sink-url", cmd.Flags().Lookup("logs-sink-url"))
-	viper.BindPFlag("enable-logs", cmd.Flags().Lookup("enable-logs"))
+
+	// Bind new Loki flags
+	viper.BindPFlag("telescope-loki-username", cmd.Flags().Lookup("telescope-loki-username")) // New binding
+	viper.BindPFlag("telescope-loki-password", cmd.Flags().Lookup("telescope-loki-password")) // New binding
 }
 
 func initConfig() {
@@ -474,6 +516,19 @@ func (c *TelescopeConfig) loadConfig() error {
 		return err
 	}
 
+	// Assign the fields from Viper to the struct
+	c.Metrics = viper.GetBool("metrics")
+	c.Logs = viper.GetBool("enable-logs")
+	c.Network = viper.GetString("network")
+	c.ProjectId = viper.GetString("project-id")
+	c.ProjectName = viper.GetString("project-name")
+	c.TelescopeUsername = viper.GetString("telescope-username")
+	c.TelescopePassword = viper.GetString("telescope-password")
+	c.RemoteWriteUrl = viper.GetString("remote-write-url")
+	c.LokiUsername = viper.GetString("telescope-loki-username") // New field
+	c.LokiPassword = viper.GetString("telescope-loki-password") // New field
+	c.LogsSinkURL = viper.GetString("logs-sink-url")             // Assign LogsSinkURL
+
 	return nil
 }
 
@@ -487,7 +542,6 @@ func agent(configPath string) {
 		// fs.String("telescope", configPath, "Path to configuration file")
 		// fs.Parse([]string{"--config.file=" + configPath}) // Ensure the flag is set
 		return config.Load(fs, []string{"-config.file", configPath}, log)
-
 	}
 	cfg, err := reloader(logger)
 	if err != nil {
