@@ -59,7 +59,7 @@ jobs:
           tags: |
             type=raw,value={{date 'YYYY-MM-DD'}}-{{sha}}
             type=ref,event=tag
-            ttype=edge
+            type=edge
 
       - name: free disk space
         run: |
