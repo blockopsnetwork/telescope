@@ -380,10 +380,10 @@ func generateNetworkConfig() Config {
 					Name: "telescope_logs",
 					Clients: []LogClient{
 						{
-							URL: cLogsSinkURL, // Replace with your actual Loki URL if different
+							URL: cLogsSinkURL,
 							BasicAuth: BasicAuth{
-								Username: cLokiUsername, // Loki Username
-								Password: cLokiPassword, // Loki Password
+								Username: cLokiUsername,
+								Password: cLokiPassword,
 							},
 							ExternalLabels: map[string]string{
 								"project_id":   cProjectId,
@@ -392,7 +392,7 @@ func generateNetworkConfig() Config {
 						},
 					},
 					Positions: Positions{
-						Filename: "/tmp/telescope_logs", // Ensure this path is writable
+						Filename: "/tmp/telescope_logs",
 					},
 				},
 			},
@@ -486,8 +486,8 @@ func init() {
 	viper.BindPFlag("logs-sink-url", cmd.Flags().Lookup("logs-sink-url"))
 
 	// Bind new Loki flags
-	viper.BindPFlag("telescope-loki-username", cmd.Flags().Lookup("telescope-loki-username")) // New binding
-	viper.BindPFlag("telescope-loki-password", cmd.Flags().Lookup("telescope-loki-password")) // New binding
+	viper.BindPFlag("telescope-loki-username", cmd.Flags().Lookup("telescope-loki-username"))
+	viper.BindPFlag("telescope-loki-password", cmd.Flags().Lookup("telescope-loki-password"))
 }
 
 func initConfig() {
@@ -505,7 +505,7 @@ func (c *TelescopeConfig) loadConfig() error {
 		cfgFile = viper.GetString("config-file")
 		viper.SetConfigFile(cfgFile)
 		if err := viper.ReadInConfig(); err != nil {
-			return fmt.Errorf("Error reading config file: %s", err)
+			return fmt.Errorf("error reading config file: %s", err)
 		}
 	} else {
 		LoadNetworkConfig()
@@ -525,9 +525,9 @@ func (c *TelescopeConfig) loadConfig() error {
 	c.TelescopeUsername = viper.GetString("telescope-username")
 	c.TelescopePassword = viper.GetString("telescope-password")
 	c.RemoteWriteUrl = viper.GetString("remote-write-url")
-	c.LokiUsername = viper.GetString("telescope-loki-username") // New field
-	c.LokiPassword = viper.GetString("telescope-loki-password") // New field
-	c.LogsSinkURL = viper.GetString("logs-sink-url")             // Assign LogsSinkURL
+	c.LokiUsername = viper.GetString("telescope-loki-username")
+	c.LokiPassword = viper.GetString("telescope-loki-password")
+	c.LogsSinkURL = viper.GetString("logs-sink-url")
 
 	return nil
 }
