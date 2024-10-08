@@ -62,7 +62,7 @@ var cmd = &cobra.Command{
         if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
             log.Fatalf("Failed to write config to file: %v", err)
         }
-
+		
         fmt.Printf("Configuration written to %s\n", configFilePath)
 
         agent(configFilePath)
