@@ -59,7 +59,7 @@ jobs:
           tags: |
             type=raw,value={{date 'YYYY-MM-DD'}}-{{sha}}
             type=ref,event=tag
-            type=dev
+            type=test
 
       - name: free disk space
         run: |
@@ -70,7 +70,7 @@ jobs:
         with:
           file: ./cmd/agent/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: test
           push: true
           # Compile Docker image only for AMD64 for a regular PR to save some CI time.
           platforms: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
