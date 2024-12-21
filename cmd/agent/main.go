@@ -2,13 +2,13 @@ package main
 
 import (
 
-    "bytes"
     "flag"
     "fmt"
-    "log"
     "net/url"
+    "sort"
     "os"
     "strings"
+    "github.com/spf13/pflag"
 
     networksConfig "github.com/grafana/agent/internal/static/config/networks"
 
@@ -36,58 +36,80 @@ import (
     _ "golang.org/x/crypto/x509roots/fallback"
 )
 
-var network string
-
 var cmd = &cobra.Command{
     Use:   "telescope",
     Short: "An All-in-One Web3 Observability tooling",
     Long:  `Gain full insights into the performance of your dApps, nodes and onchain events with Telescope.`,
     Run: func(cmd *cobra.Command, args []string) {
-        var config TelescopeConfig
+        defaultCfg := server.DefaultConfig()
+        logger := server.NewLogger(&defaultCfg)
 
+        // Check if config file is specified
+        configFile := viper.GetString("config-file")
+        if configFile != "" {
+            if err := validateConfigFile(configFile); err != nil {
+                level.Error(logger).Log("msg", "invalid config file", "err", err)
+                os.Exit(1)
+            }
+            level.Info(logger).Log("msg", "using config file", "path", configFile)
+            agent(configFile)
+            return
+        }
+
+        // Otherwise load config from flags/env
+        var config TelescopeConfig
         if err := config.loadConfig(); err != nil {
-            fmt.Println(err)
+            level.Error(logger).Log("msg", "failed to load config", "err", err)
             os.Exit(1)
         }
 
-        // Proceed to generate and write configuration, then start the agent
-        network := viper.GetString("network")
-        projectName := viper.GetString("project-name")
-        networkConfig := getNetworkConfig(network)
+        // Get network config and generate scrape configs
+        networkConfig := getNetworkConfig(config.Network)
+        level.Info(logger).Log("msg", "starting telescope agent", "network_config", networkConfig)
+        scrapeConfigs := networkConfig.GenerateScrapeConfigs(config.ProjectName, config.Network)
 
-        fmt.Println("Starting Telescope Agent with network config:", networkConfig)
-        scrapeConfigs := networkConfig.GenerateScrapeConfigs(projectName, network)
+        // Generate and write full config
         fullConfig := generateFullConfig(config, scrapeConfigs)
         configFilePath := "telescope_config.yaml"
         if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
-            log.Fatalf("Failed to write config to file: %v", err)
+            level.Error(logger).Log("msg", "failed to write config file", "path", configFilePath, "err", err)
+            os.Exit(1)
         }
-		
-        fmt.Printf("Configuration written to %s\n", configFilePath)
 
+        level.Info(logger).Log("msg", "configuration written", "path", configFilePath)
         agent(configFilePath)
     },
 }
 
-var helperFunction = func(cmd *cobra.Command, args []string) {
-    fmt.Println("Custom Help:")
-    fmt.Println("Usage: telescope start [flags]")
-    fmt.Println("\nFlags:")
-    fmt.Println("  --metrics\t\tEnable metrics")
-    fmt.Println("  --network\t\tSpecify the network")
-    fmt.Println("  --project-id\t\tSpecify the project ID")
-    fmt.Println("  --project-name\tSpecify the project name")
-    fmt.Println("  --telescope-username\tSpecify the telescope username")
-    fmt.Println("  --telescope-password\tSpecify the telescope password")
-    fmt.Println("  --remote-write-url\tSpecify the remote write URL")
-    fmt.Println("  --config-file\t\tSpecify the config file")
-    fmt.Println("  --enable-logs\t\tEnable logs")
-    fmt.Println("  --logs-sink-url\tSpecify the Log Sink URL")
-    fmt.Println("  --telescope-loki-username\tSpecify the Loki username")
-    fmt.Println("  --telescope-loki-password\tSpecify the Loki password")
+func getSupportedNetworks() []string {
+    networks := make([]string, 0, len(networkConfigs))
+    for network := range networkConfigs {
+        networks = append(networks, network)
+    }
+    sort.Strings(networks)
+    return networks
 }
 
-var cfgFile string
+var helperFunction = func(cmd *cobra.Command, args []string) {
+    defaultCfg := server.DefaultConfig()
+    logger := server.NewLogger(&defaultCfg)
+    level.Info(logger).Log("msg", "Telescope CLI Help")
+    level.Info(logger).Log("msg", "Available flags",
+        "metrics", "Enable metrics (bool)",
+        "network", fmt.Sprintf("Specify the network (%s)", strings.Join(getSupportedNetworks(), ", ")),
+        "project-id", "Specify the project ID",
+        "project-name", "Specify the project name",
+        "telescope-username", "Specify the telescope username",
+        "telescope-password", "Specify the telescope password",
+        "remote-write-url", "Specify the remote write URL",
+        "config-file", "Specify the config file",
+        "enable-logs", "Enable logs (bool)",
+        "logs-sink-url", "Specify the Log Sink URL",
+        "telescope-loki-username", "Specify the Loki username",
+        "telescope-loki-password", "Specify the Loki password",
+    )
+}
+
 
 var networkConfigs = map[string]networksConfig.NetworkConfig{
     "ethereum":    networksConfig.NewEthereumConfig(),
@@ -149,8 +171,8 @@ type StaticConfig struct {
 }
 
 type RemoteWrite struct {
-    URL       string            `yaml:"url"`
-    BasicAuth map[string]string `yaml:"basic_auth"`
+    URL       string    `yaml:"url"`
+    BasicAuth BasicAuth `yaml:"basic_auth"`
 }
 
 type LogsConfig struct {
@@ -189,7 +211,10 @@ type TelescopeConfig struct {
 
 func handleErr(err error, msg string) {
     if err != nil {
-        log.Fatalf("%s: %v", msg, err)
+        defaultCfg := server.DefaultConfig()
+        logger := server.NewLogger(&defaultCfg)
+        level.Error(logger).Log("msg", msg, "err", err)
+        os.Exit(1)
     }
 }
 
@@ -202,23 +227,126 @@ func toLowerAndEscape(input string) string {
 func getNetworkConfig(network string) networksConfig.NetworkConfig {
     config, exists := networkConfigs[network]
     if !exists {
-        handleErr(fmt.Errorf("unsupported network: %s", network), "Invalid network")
+        supportedNetworks := getSupportedNetworks()
+        handleErr(
+            fmt.Errorf("unsupported network %q, must be one of: %s", 
+                network, 
+                strings.Join(supportedNetworks, ", ")),
+            "Invalid network configuration",
+        )
     }
     return config
 }
 
+func (c *TelescopeConfig) validate() error {
+    // Validate URLs
+    if c.RemoteWriteUrl != "" {
+        if err := validateURL(c.RemoteWriteUrl, "remote write"); err != nil {
+            return err
+        }
+    }
+    
+    if c.LogsSinkURL != "" {
+        if err := validateURL(c.LogsSinkURL, "logs sink"); err != nil {
+            return err
+        }
+    }
+
+    // Validate other required fields
+    if c.ProjectId == "" {
+        return fmt.Errorf("project ID cannot be empty")
+    }
+
+    if c.ProjectName == "" {
+        return fmt.Errorf("project name cannot be empty")
+    }
+
+    // Validate Network is supported
+    if _, exists := networkConfigs[c.Network]; !exists {
+        supportedNetworks := getSupportedNetworks()
+        return fmt.Errorf("unsupported network %q, must be one of: %s", 
+            c.Network, 
+            strings.Join(supportedNetworks, ", "))
+    }
+    
+    return nil
+}
+
+func validateURL(urlStr, name string) error {
+    parsed, err := url.Parse(urlStr)
+    if err != nil {
+        return fmt.Errorf("invalid %s URL: %v", name, err)
+    }
+    if parsed.Scheme == "" {
+        return fmt.Errorf("%s URL must include scheme (http:// or https://)", name)
+    }
+    if parsed.Host == "" {
+        return fmt.Errorf("%s URL must include host", name)
+    }
+    return nil
+}
+
+func validateConfigFile(configFile string) error {
+    if configFile == "" {
+        return fmt.Errorf("config file path cannot be empty")
+    }
+
+    info, err := os.Stat(configFile)
+    if err != nil {
+        if os.IsNotExist(err) {
+            return fmt.Errorf("config file does not exist: %s", configFile)
+        }
+        return fmt.Errorf("error accessing config file: %w", err)
+    }
+
+    if info.IsDir() {
+        return fmt.Errorf("config file path points to a directory: %s", configFile)
+    }
+
+    return nil
+}
+
+func (c *TelescopeConfig) validateLogsConfig() error {
+    if !c.Logs {
+        return nil // Logs not enabled, no validation needed
+    }
+
+    if c.LogsSinkURL == "" {
+        return fmt.Errorf("logs-sink-url is required when logs are enabled")
+    }
+
+    if c.LokiUsername == "" {
+        return fmt.Errorf("telescope-loki-username is required when logs are enabled")
+    }
+
+    if c.LokiPassword == "" {
+        return fmt.Errorf("telescope-loki-password is required when logs are enabled")
+    }
+
+    return nil
+}
+
+func (c *TelescopeConfig) validateMetricsConfig() error {
+    if !c.Metrics {
+        return nil // Metrics not enabled, no validation needed
+    }
+
+    if c.TelescopeUsername == "" {
+        return fmt.Errorf("telescope-username is required when metrics are enabled")
+    }
+
+    if c.TelescopePassword == "" {
+        return fmt.Errorf("telescope-password is required when metrics are enabled")
+    }
+
+    if c.RemoteWriteUrl == "" {
+        return fmt.Errorf("remote-write-url is required when metrics are enabled")
+    }
+
+    return nil
+}
+
 func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksConfig.ScrapeConfig) Config {
-    cNetwork := viper.GetString("network")
-    cProjectId := viper.GetString("project-id")
-    cProjectName := viper.GetString("project-name")
-    cTelescopeUsername := viper.GetString("telescope-username")
-    cTelescopePassword := viper.GetString("telescope-password")
-    cRemoteWriteUrl := viper.GetString("remote-write-url")
-    // cLogsSinkURL := viper.GetString("logs-sink-url")
-    // cLokiUsername := viper.GetString("telescope-loki-username")
-    // cLokiPassword := viper.GetString("telescope-loki-password")
-
-    // Convert networksConfig.ScrapeConfig to local ScrapeConfig
     scrapeConfigs := make([]ScrapeConfig, len(networkScrapeConfigs))
     for i, nsc := range networkScrapeConfigs {
         scrapeConfigs[i] = ScrapeConfig{
@@ -231,132 +359,31 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
         }
     }
 
-    return Config{
+    cfg := Config{
         Server: ServerConfig{
             LogLevel: "info",
         },
         Metrics: MetricsConfig{
-            Wal_Directory: "/tmp/telescope", // TODO: make this configurable
+            Wal_Directory: "/tmp/telescope",
             Global: GlobalConfig{
                 ScrapeInterval: "15s",
                 ExternalLabels: map[string]string{
-                    "project_id":   cProjectId,
-                    "project_name": cProjectName,
+                    "project_id":   config.ProjectId,
+                    "project_name": config.ProjectName,
                 },
                 RemoteWrite: []RemoteWrite{
                     {
-                        URL: cRemoteWriteUrl,
-                        BasicAuth: map[string]string{
-                            "username": cTelescopeUsername,
-                            "password": cTelescopePassword,
+                        URL: config.RemoteWriteUrl,
+                        BasicAuth: BasicAuth{
+                            Username: config.TelescopeUsername,
+                            Password: config.TelescopePassword,
                         },
                     },
                 },
             },
             Configs: []MetricConfig{
                 {
-                    Name:          toLowerAndEscape(cProjectName + "_" + cNetwork + "_metrics"),
-                    HostFilter:    false,
-                    ScrapeConfigs: scrapeConfigs,
-                },
-            },
-        },
-        Integrations: map[string]interface{}{
-            "agent":         ToIntegrate{Enabled: false},
-            "node_exporter": ToIntegrate{Enabled: true},
-        },
-    }
-}
-
-func writeConfigToFile(config Config, filePath string) error {
-    var buf strings.Builder
-    encoder := yaml.NewEncoder(&buf)
-    encoder.SetIndent(2)
-
-    if err := encoder.Encode(&config); err != nil {
-        return fmt.Errorf("error marshaling to YAML: %v", err)
-    }
-
-    data := buf.String()
-    // Optional: Perform any necessary string replacements or adjustments
-    fixedData := strings.ReplaceAll(data, "job_name", "job_name")
-    fixedData = strings.ReplaceAll(fixedData, "static_configs", "static_configs")
-
-    return os.WriteFile(filePath, []byte(fixedData), 0644)
-}
-
-func networkDiscovery(network string) ([]string, error) {
-    scrapeConfig, ok := networkConfigs[network]
-    if !ok {
-        return nil, fmt.Errorf("invalid network. Please choose from: ethereum, polkadot, hyperbridge, ssv")
-    }
-    return scrapeConfig.NetworkDiscovery()
-}
-
-func generateNetworkConfig() Config {
-    cNetwork := viper.GetString("network")
-    cProjectId := viper.GetString("project-id")
-    cProjectName := viper.GetString("project-name")
-    cTelescopeUsername := viper.GetString("telescope-username")
-    cTelescopePassword := viper.GetString("telescope-password")
-    cRemoteWriteUrl := viper.GetString("remote-write-url")
-    cLogsSinkURL := viper.GetString("logs-sink-url")
-    cLokiUsername := viper.GetString("telescope-loki-username")
-    cLokiPassword := viper.GetString("telescope-loki-password")
-    isEnableLogs := viper.GetBool("enable-logs")
-
-    ports, err := networkDiscovery(cNetwork)
-    handleErr(err, "Failed to discover blockchain port")
-
-    for _, port := range ports {
-        viper.Set("scrape_port", port)
-    }
-
-    networkConfig, ok := networkConfigs[cNetwork]
-    if !ok {
-        log.Fatalf("Invalid network configuration for: %v", cNetwork)
-    }
-
-    networkScrapeConfigs := networkConfig.GenerateScrapeConfigs(cProjectName, cNetwork)
-
-    // Convert networksConfig.ScrapeConfig to local ScrapeConfig
-    scrapeConfigs := make([]ScrapeConfig, len(networkScrapeConfigs))
-    for i, nsc := range networkScrapeConfigs {
-        scrapeConfigs[i] = ScrapeConfig{
-            JobName: nsc.JobName,
-            StaticConfigs: []StaticConfig{
-                {
-                    Targets: nsc.StaticConfigs[0].Targets,
-                },
-            },
-        }
-    }
-
-    config := Config{
-        Server: ServerConfig{
-            LogLevel: "info",
-        },
-        Metrics: MetricsConfig{
-            Wal_Directory: "/tmp/telescope", // TODO: make this configurable
-            Global: GlobalConfig{
-                ScrapeInterval: "15s",
-                ExternalLabels: map[string]string{
-                    "project_id":   cProjectId,
-                    "project_name": cProjectName,
-                },
-                RemoteWrite: []RemoteWrite{
-                    {
-                        URL: cRemoteWriteUrl,
-                        BasicAuth: map[string]string{
-                            "username": cTelescopeUsername,
-                            "password": cTelescopePassword,
-                        },
-                    },
-                },
-            },
-            Configs: []MetricConfig{
-                {
-                    Name:          toLowerAndEscape(cProjectName + "_" + cNetwork + "_metrics"),
+                    Name:          toLowerAndEscape(config.ProjectName + "_" + config.Network + "_metrics"),
                     HostFilter:    false,
                     ScrapeConfigs: scrapeConfigs,
                 },
@@ -368,22 +395,21 @@ func generateNetworkConfig() Config {
         },
     }
 
-    if isEnableLogs {
-        // Include only Loki-specific LogClient
-        config.Logs = LogsConfig{
+    if config.Logs {
+        cfg.Logs = LogsConfig{
             Configs: []LogConfig{
                 {
                     Name: "telescope_logs",
                     Clients: []LogClient{
                         {
-                            URL: cLogsSinkURL,
+                            URL: config.LogsSinkURL,
                             BasicAuth: BasicAuth{
-                                Username: cLokiUsername,
-                                Password: cLokiPassword,
+                                Username: config.LokiUsername,
+                                Password: config.LokiPassword,
                             },
                             ExternalLabels: map[string]string{
-                                "project_id":   cProjectId,
-                                "project_name": cProjectName,
+                                "project_id":   config.ProjectId,
+                                "project_name": config.ProjectName,
                             },
                         },
                     },
@@ -395,126 +421,35 @@ func generateNetworkConfig() Config {
         }
     }
 
-    return config
+    return cfg
 }
 
-func LoadNetworkConfig() string {
-    config := generateNetworkConfig()
+func writeConfigToFile(config Config, filePath string) error {
+    if filePath == "" {
+        return fmt.Errorf("empty file path provided")
+    }
 
-    // Create a custom marshaler
-    var buf bytes.Buffer
+    var buf strings.Builder
     encoder := yaml.NewEncoder(&buf)
     encoder.SetIndent(2)
 
     if err := encoder.Encode(&config); err != nil {
-        log.Fatalf("error marshaling to YAML: %v", err)
+        return fmt.Errorf("error marshaling to YAML: %v", err)
     }
 
-    data := buf.String()
-    // fixedData := strings.ReplaceAll(string(data), "job_name", "job_name")
-    // fixedData = strings.ReplaceAll(fixedData, "static_configs", "static_configs")
-
-    configFilePath := "telescope_config.yaml"
-    if err := os.WriteFile(configFilePath, []byte(data), 0644); err != nil {
-        log.Fatalf("error writing to file: %v", err)
-    }
-
-    return configFilePath
-}
-
-func checkRequiredFlags() error {
-    requiredFlags := []string{
-        "metrics",
-        "enable-logs",
-        "network",
-        "project-id",
-        "project-name",
-        "telescope-username",
-        "telescope-password",
-        "remote-write-url",
-        "telescope-loki-username", // New required flag
-        "telescope-loki-password", // New required flag
-    }
-    missingFlags := []string{}
-
-    for _, flag := range requiredFlags {
-        if viper.GetString(flag) == "" && !viper.GetBool(flag) { // For bool flags
-            missingFlags = append(missingFlags, flag)
-        }
-    }
-
-    if len(missingFlags) > 0 && viper.GetString("config-file") == "" {
-        return fmt.Errorf("error: missing required flags: %s", strings.Join(missingFlags, ", "))
+    if err := os.WriteFile(filePath, []byte(buf.String()), 0644); err != nil {
+        return fmt.Errorf("error writing to file: %v", err)
     }
 
     return nil
 }
 
-func init() {
-    prometheus.MustRegister(build.NewCollector("agent"))
-    cobra.OnInitialize(initConfig)
-    cmd.SetHelpFunc(helperFunction)
-    cmd.Flags().StringVar(&cfgFile, "config-file", "", "Specify the config file")
-    cmd.Flags().Bool("metrics", true, "Enable metrics")
-    cmd.Flags().Bool("enable-logs", false, "Enable logs")
-    cmd.Flags().String("network", "", "Specify the network")
-    cmd.Flags().String("project-id", "", "Specify the project ID")
-    cmd.Flags().String("project-name", "", "Specify the project name")
-    cmd.Flags().String("telescope-username", "", "Specify the telescope username")
-    cmd.Flags().String("telescope-password", "", "Specify the telescope password")
-    cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
-    cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
-
-    // Define new flags for Loki credentials
-    cmd.Flags().String("telescope-loki-username", "", "Specify the Loki username")   // New flag
-    cmd.Flags().String("telescope-loki-password", "", "Specify the Loki password")   // New flag
-
-    // Bind flags with Viper
-    viper.BindPFlag("config-file", cmd.Flags().Lookup("config-file"))
-    viper.BindPFlag("metrics", cmd.Flags().Lookup("metrics"))
-    viper.BindPFlag("enable-logs", cmd.Flags().Lookup("enable-logs"))
-    viper.BindPFlag("network", cmd.Flags().Lookup("network"))
-    viper.BindPFlag("project-id", cmd.Flags().Lookup("project-id"))
-    viper.BindPFlag("project-name", cmd.Flags().Lookup("project-name"))
-    viper.BindPFlag("telescope-username", cmd.Flags().Lookup("telescope-username"))
-    viper.BindPFlag("telescope-password", cmd.Flags().Lookup("telescope-password"))
-    viper.BindPFlag("remote-write-url", cmd.Flags().Lookup("remote-write-url"))
-    viper.BindPFlag("logs-sink-url", cmd.Flags().Lookup("logs-sink-url"))
-
-    // Bind new Loki flags
-    viper.BindPFlag("telescope-loki-username", cmd.Flags().Lookup("telescope-loki-username")) // New binding
-    viper.BindPFlag("telescope-loki-password", cmd.Flags().Lookup("telescope-loki-password")) // New binding
-}
-
-func initConfig() {
-    if cfgFile != "" {
-        // Use config file from the flag.
-        viper.SetConfigFile(cfgFile)
-        handleErr(viper.ReadInConfig(), "Failed to read config file")
-    } else {
-        viper.AutomaticEnv() // read in environment variables that match
-    }
-}
-
 func (c *TelescopeConfig) loadConfig() error {
-    if viper.GetString("config-file") != "" {
-        cfgFile = viper.GetString("config-file")
-        viper.SetConfigFile(cfgFile)
-        if err := viper.ReadInConfig(); err != nil {
-            return fmt.Errorf("Error reading config file: %s", err)
-        }
-        log.Println("Configuration loaded from file:", cfgFile)
-    } else {
-        LoadNetworkConfig()
-        log.Println("Configuration generated and written to telescope_config.yaml")
-    }
-
-    // Check for required fields only if config-file is not provided
     if err := checkRequiredFlags(); err != nil {
-        return err
+        return fmt.Errorf("flag validation error: %w", err)
     }
 
-    // Assign the fields from Viper to the struct
+    // Load values from viper
     c.Metrics = viper.GetBool("metrics")
     c.Logs = viper.GetBool("enable-logs")
     c.Network = viper.GetString("network")
@@ -525,41 +460,140 @@ func (c *TelescopeConfig) loadConfig() error {
     c.RemoteWriteUrl = viper.GetString("remote-write-url")
     c.LokiUsername = viper.GetString("telescope-loki-username")
     c.LokiPassword = viper.GetString("telescope-loki-password")
-    c.LogsSinkURL = viper.GetString("logs-sink-url")     
+    c.LogsSinkURL = viper.GetString("logs-sink-url")
+
+    // Run all validations
+    if err := c.validate(); err != nil {
+        return fmt.Errorf("config validation error: %w", err)
+    }
+
+    if err := c.validateMetricsConfig(); err != nil {
+        return fmt.Errorf("metrics configuration error: %w", err)
+    }
+
+    if err := c.validateLogsConfig(); err != nil {
+        return fmt.Errorf("logs configuration error: %w", err)
+    }
 
     return nil
 }
 
-func agent(configPath string) {
 
+
+func checkRequiredFlags() error {
+    // Always required
+    baseFlags := []string{
+        "network",
+        "project-id",
+        "project-name",
+    }
+
+    // Required for metrics
+    metricsFlags := []string{
+        "telescope-username",
+        "telescope-password",
+        "remote-write-url",
+    }
+
+    // Required for logs
+    logsFlags := []string{
+        "logs-sink-url",
+        "telescope-loki-username",
+        "telescope-loki-password",
+    }
+
+    missingFlags := []string{}
+
+    // Check base flags
+    for _, flag := range baseFlags {
+        if viper.GetString(flag) == "" {
+            missingFlags = append(missingFlags, flag)
+        }
+    }
+
+    // Check metrics flags if metrics enabled
+    if viper.GetBool("metrics") {
+        for _, flag := range metricsFlags {
+            if viper.GetString(flag) == "" {
+                missingFlags = append(missingFlags, flag)
+            }
+        }
+    }
+
+    // Check logs flags if logs enabled
+    if viper.GetBool("enable-logs") {
+        for _, flag := range logsFlags {
+            if viper.GetString(flag) == "" {
+                missingFlags = append(missingFlags, flag)
+            }
+        }
+    }
+
+    if len(missingFlags) > 0 && viper.GetString("config-file") == "" {
+        return fmt.Errorf("missing required flags: %s", strings.Join(missingFlags, ", "))
+    }
+
+    return nil
+}
+
+func init() {
+    prometheus.MustRegister(build.NewCollector("agent"))
+    cobra.OnInitialize(initConfig)
+    cmd.SetHelpFunc(helperFunction)
+    
+    // Add and bind flags
+    cmd.Flags().String("config-file", "", "Specify the config file")  // Changed from StringVar
+    cmd.Flags().Bool("metrics", true, "Enable metrics")
+    cmd.Flags().Bool("enable-logs", false, "Enable logs")
+    cmd.Flags().String("network", "", "Specify the network")
+    cmd.Flags().String("project-id", "", "Specify the project ID")
+    cmd.Flags().String("project-name", "", "Specify the project name")
+    cmd.Flags().String("telescope-username", "", "Specify the telescope username")
+    cmd.Flags().String("telescope-password", "", "Specify the telescope password")
+    cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
+    cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
+    cmd.Flags().String("telescope-loki-username", "", "Specify the Loki username")
+    cmd.Flags().String("telescope-loki-password", "", "Specify the Loki password")
+
+    // Bind all flags to viper
+    cmd.Flags().VisitAll(func(f *pflag.Flag) {
+        viper.BindPFlag(f.Name, f)
+    })
+}
+
+func initConfig() {
+    viper.AutomaticEnv() // read in environment variables that match
+}
+
+func agent(configPath string) {
     defaultCfg := server.DefaultConfig()
     logger := server.NewLogger(&defaultCfg)
 
     reloader := func(log *server.Logger) (*config.Config, error) {
         fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-        // fs.String("telescope", configPath, "Path to configuration file")
-        // fs.Parse([]string{"--config.file=" + configPath}) // Ensure the flag is set
         return config.Load(fs, []string{"-config.file", configPath}, log)
     }
+
     cfg, err := reloader(logger)
     if err != nil {
-        log.Fatalln(err)
+        level.Error(logger).Log("msg", "failed to load config", "err", err)
+        os.Exit(1)
     }
 
-    // After this point we can start using go-kit logging.
     logger = server.NewLogger(cfg.Server)
     util_log.Logger = logger
 
-    level.Info(logger).Log("boringcrypto enabled", boringcrypto.Enabled)
+    level.Info(logger).Log("msg", "starting agent", "boringcrypto", boringcrypto.Enabled)
     ep, err := NewEntrypoint(logger, cfg, reloader)
     if err != nil {
-        level.Error(logger).Log("msg", "error creating the agent server entrypoint", "err", err)
+        level.Error(logger).Log("msg", "failed to create agent entrypoint", "err", err)
         os.Exit(1)
     }
 
     if err = ep.Start(); err != nil {
         level.Error(logger).Log("msg", "error running agent", "err", err)
-        // Don't os.Exit here; we want to do cleanup by stopping promMetrics
+        ep.Stop() // Ensure cleanup happens
+        os.Exit(1)
     }
 
     ep.Stop()
@@ -567,30 +601,9 @@ func agent(configPath string) {
 }
 
 func main() {
-	var config TelescopeConfig
-	var scrapeConfigs []networksConfig.ScrapeConfig
-
-	cobra.OnInitialize(initConfig)
-	if err := cmd.Execute(); err != nil {
-		os.Exit(1)
-	}
-
-	network = viper.GetString("network")
-	projectName := viper.GetString("project-name")
-	// if network == "" {
-	// 	log.Fatal("Unsupported network: network argument is missing")
-	// }
-	networkConfig := getNetworkConfig(network)
-
-	fmt.Println("Starting Telescope Agent", networkConfig)
-	scrapeConfigs = networkConfig.GenerateScrapeConfigs(projectName, network)
-	fullConfig := generateFullConfig(config, scrapeConfigs)
-	configFilePath := "telescope_config.yaml"
-	if err := writeConfigToFile(fullConfig, configFilePath); err != nil {
-		log.Fatalf("Failed to write config to file: %v", err)
-	}
-
-	fmt.Printf("Configuration written to %s\n", configFilePath)
-
-	agent(configFilePath)
+    cobra.OnInitialize(initConfig)
+    if err := cmd.Execute(); err != nil {
+        os.Exit(1)
+    }
 }
+
