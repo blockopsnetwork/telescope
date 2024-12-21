@@ -36,7 +36,7 @@ agent \
 Enable both metrics and logs:
 
 ```bash
-telescope \
+agent \
   --metrics \
   --enable-logs \
   --network=ethereum \
