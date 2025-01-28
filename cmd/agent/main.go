@@ -25,6 +25,7 @@ import (
 
 	_ "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
 	_ "github.com/prometheus/prometheus/discovery/install"
+	_ "github.com/grafana/agent/internal/static/integrations/cadvisor"
 
 	_ "github.com/grafana/agent/internal/static/integrations/install"
 	_ "golang.org/x/crypto/x509roots/fallback"
@@ -152,8 +153,15 @@ type BasicAuth struct {
 }
 
 type IntegrationsConfig struct {
-	Agent        ToIntegrate `yaml:"agent"`
-	NodeExporter ToIntegrate `yaml:"node_exporter"`
+    Agent        ToIntegrate         `yaml:"agent"`
+    NodeExporter ToIntegrate         `yaml:"node_exporter"`
+    Cadvisor     CadvisorIntegration `yaml:"cadvisor"`
+}
+
+// Add a new struct for cAdvisor specific configuration
+type CadvisorIntegration struct {
+    Enabled    bool `yaml:"enabled"`
+    DockerOnly bool `yaml:"docker_only"`
 }
 
 type ToIntegrate struct {
@@ -397,6 +405,10 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 		Integrations: map[string]interface{}{
 			"agent":         ToIntegrate{Enabled: false},
 			"node_exporter": ToIntegrate{Enabled: true},
+			"cadvisor": CadvisorIntegration{
+                Enabled:    false,
+                DockerOnly: true,
+            },
 		},
 	}
 
