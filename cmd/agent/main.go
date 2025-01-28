@@ -562,7 +562,7 @@ func init() {
 	cmd.SetHelpFunc(helperFunction)
 
 	// Add and bind flags
-	cmd.Flags().String("config-file", "", "Specify the config file") // Changed from StringVar
+	cmd.Flags().String("config-file", "", "Specify the config file")
 	cmd.Flags().Bool("metrics", true, "Enable metrics")
 	cmd.Flags().Bool("enable-logs", false, "Enable logs")
 	cmd.Flags().String("network", "", "Specify the network")
