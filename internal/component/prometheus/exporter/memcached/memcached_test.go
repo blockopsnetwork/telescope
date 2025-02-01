@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/common/config"
-	"github.com/grafana/agent/internal/static/integrations/memcached_exporter"
+	"github.com/blockopsnetwork/telescope/internal/component/common/config"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/memcached_exporter"
 	"github.com/grafana/river"
 	"github.com/stretchr/testify/assert"
 )

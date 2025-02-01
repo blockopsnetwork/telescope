@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/grafana/agent/internal/agentseed"
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/component/common/loki/client"
-	"github.com/grafana/agent/internal/component/common/loki/limit"
-	"github.com/grafana/agent/internal/component/common/loki/wal"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/agentseed"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki/client"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki/limit"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki/wal"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 )
 
 func init() {

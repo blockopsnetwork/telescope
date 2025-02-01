@@ -13,10 +13,10 @@ import (
 
 	"github.com/burningalchemist/sql_exporter"
 	"github.com/burningalchemist/sql_exporter/config"
-	"github.com/grafana/agent/internal/static/integrations"
-	integrations_v2 "github.com/grafana/agent/internal/static/integrations/v2"
-	"github.com/grafana/agent/internal/static/integrations/v2/metricsutils"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
+	integrations_v2 "github.com/blockopsnetwork/telescope/internal/static/integrations/v2"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/metricsutils"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/common/model"
 )
 

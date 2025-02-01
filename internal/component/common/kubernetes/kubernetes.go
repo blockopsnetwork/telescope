@@ -5,9 +5,9 @@ import (
 	"reflect"
 
 	"github.com/go-kit/log"
-	commoncfg "github.com/grafana/agent/internal/component/common/config"
-	"github.com/grafana/agent/internal/flow/logging/level"
-	"github.com/grafana/agent/internal/useragent"
+	commoncfg "github.com/blockopsnetwork/telescope/internal/component/common/config"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/useragent"
 	promconfig "github.com/prometheus/common/config"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"

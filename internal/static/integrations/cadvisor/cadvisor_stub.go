@@ -3,7 +3,7 @@
 package cadvisor //nolint:golint
 
 import (
-	"github.com/grafana/agent/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"

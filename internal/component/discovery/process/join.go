@@ -2,7 +2,7 @@
 
 package process
 
-import "github.com/grafana/agent/internal/component/discovery"
+import "github.com/blockopsnetwork/telescope/internal/component/discovery"
 
 func join(processes, containers []discovery.Target) []discovery.Target {
 	res := make([]discovery.Target, 0, len(processes)+len(containers))

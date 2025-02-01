@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/component"
-	filedetector "github.com/grafana/agent/internal/filedetector"
-	"github.com/grafana/agent/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	filedetector "github.com/blockopsnetwork/telescope/internal/filedetector"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
 	"github.com/grafana/river/vm"
 )
 

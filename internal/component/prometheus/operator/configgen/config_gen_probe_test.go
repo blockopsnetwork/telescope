@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/common/kubernetes"
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component/common/kubernetes"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	promopv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	commonConfig "github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"

@@ -7,9 +7,9 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/static/metrics"
-	"github.com/grafana/agent/internal/static/metrics/instance"
-	"github.com/grafana/agent/internal/static/server"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
 	"github.com/oklog/run"
 	config_util "github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"

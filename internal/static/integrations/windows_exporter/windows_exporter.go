@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/static/integrations/config"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/config"
 )
 
 // Integration is the windows_exporter integration. On non-Windows platforms,

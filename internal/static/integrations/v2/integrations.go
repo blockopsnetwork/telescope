@@ -25,11 +25,11 @@ import (
 	"net/url"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations/v2/autoscrape"
-	"github.com/grafana/agent/internal/static/logs"
-	"github.com/grafana/agent/internal/static/metrics"
-	"github.com/grafana/agent/internal/static/server"
-	"github.com/grafana/agent/internal/static/traces"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/autoscrape"
+	"github.com/blockopsnetwork/telescope/internal/static/logs"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
+	"github.com/blockopsnetwork/telescope/internal/static/traces"
 	"github.com/prometheus/prometheus/discovery"
 	"github.com/prometheus/prometheus/discovery/targetgroup"
 )

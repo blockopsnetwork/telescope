@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/metrics/instance"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/prometheus/scrape"
 	"github.com/prometheus/prometheus/storage"

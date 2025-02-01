@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/metadata"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/metadata"
 )
 
 type DocsGenerator interface {

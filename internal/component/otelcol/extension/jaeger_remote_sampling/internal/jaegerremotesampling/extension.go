@@ -13,8 +13,8 @@ import (
 	"go.opentelemetry.io/collector/extension"
 	"go.uber.org/zap"
 
-	"github.com/grafana/agent/internal/component/otelcol/extension/jaeger_remote_sampling/internal/jaegerremotesampling/internal"
-	"github.com/grafana/agent/internal/component/otelcol/extension/jaeger_remote_sampling/internal/strategy_store"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/extension/jaeger_remote_sampling/internal/jaegerremotesampling/internal"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/extension/jaeger_remote_sampling/internal/strategy_store"
 )
 
 var _ extension.Extension = (*jrsExtension)(nil)

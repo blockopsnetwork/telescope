@@ -6,14 +6,14 @@ import (
 	"fmt"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/component/otelcol/internal/fanoutconsumer"
-	"github.com/grafana/agent/internal/component/otelcol/internal/lazyconsumer"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/flow/logging/level"
-	promsdconsumer "github.com/grafana/agent/internal/static/traces/promsdprocessor/consumer"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/internal/fanoutconsumer"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/internal/lazyconsumer"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
+	promsdconsumer "github.com/blockopsnetwork/telescope/internal/static/traces/promsdprocessor/consumer"
 	"github.com/grafana/river"
 )
 

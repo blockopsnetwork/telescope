@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/grafana/agent/internal/static/integrations/gcp_exporter"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/gcp_exporter"
 )
 
 func TestConfig_Validate(t *testing.T) {

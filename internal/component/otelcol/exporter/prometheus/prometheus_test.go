@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/otelcol/exporter/prometheus"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/exporter/prometheus"
 	"github.com/grafana/river"
 	"github.com/prometheus/prometheus/storage"
 	"github.com/stretchr/testify/require"

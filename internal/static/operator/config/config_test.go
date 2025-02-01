@@ -11,11 +11,11 @@ import (
 	"k8s.io/utils/ptr"
 	k8s_yaml "sigs.k8s.io/yaml"
 
-	"github.com/grafana/agent/internal/static/operator/assets"
-	"github.com/grafana/agent/internal/util"
-	"github.com/grafana/agent/internal/util/subset"
+	"github.com/blockopsnetwork/telescope/internal/static/operator/assets"
+	"github.com/blockopsnetwork/telescope/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/util/subset"
 
-	gragent "github.com/grafana/agent/internal/static/operator/apis/monitoring/v1alpha1"
+	gragent "github.com/blockopsnetwork/telescope/internal/static/operator/apis/monitoring/v1alpha1"
 )
 
 func TestBuildConfigMetrics(t *testing.T) {

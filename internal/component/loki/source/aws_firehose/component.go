@@ -8,16 +8,16 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/prometheus/model/relabel"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	fnet "github.com/grafana/agent/internal/component/common/net"
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/loki/source/aws_firehose/internal"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	fnet "github.com/blockopsnetwork/telescope/internal/component/common/net"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/aws_firehose/internal"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/river/rivertypes"
 )
 

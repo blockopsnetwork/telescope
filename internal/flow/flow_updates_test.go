@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/flow/internal/testcomponents"
-	"github.com/grafana/agent/internal/flow/internal/worker"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/testcomponents"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/worker"
 	"github.com/stretchr/testify/require"
 )
 

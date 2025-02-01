@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
 	"github.com/grafana/vmware_exporter/vsphere"
 	config_util "github.com/prometheus/common/config"
 )

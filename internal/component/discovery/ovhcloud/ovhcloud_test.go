@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/discovery/ovhcloud"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery/ovhcloud"
 	"github.com/grafana/river"
 	"github.com/prometheus/common/model"
 	prom_ovh "github.com/prometheus/prometheus/discovery/ovhcloud"

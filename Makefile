@@ -2,8 +2,8 @@
 
 AGENT_IMAGE                             ?= blockopsnetwork/telescope:$(shell git describe --tags --abbrev=0)
 OPERATOR_IMAGE                          ?= blockopsnetwork/telescope-operator:latest
-AGENT_BINARY                            ?= build/agent
-OPERATOR_BINARY                         ?= build/agent-operator
+AGENT_BINARY                            ?= build/telescope
+OPERATOR_BINARY                         ?= build/telescope-operator
 AGENTLINT_BINARY                        ?= build/agentlint
 GOOS                                    ?= $(shell go env GOOS)
 GOARCH                                  ?= $(shell go env GOARCH)

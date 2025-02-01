@@ -8,7 +8,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/grafana/agent/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component"
 	"github.com/stretchr/testify/require"
 )
 

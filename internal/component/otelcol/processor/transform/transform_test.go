@@ -3,7 +3,7 @@ package transform_test
 import (
 	"testing"
 
-	"github.com/grafana/agent/internal/component/otelcol/processor/transform"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/processor/transform"
 	"github.com/grafana/river"
 	"github.com/mitchellh/mapstructure"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor"

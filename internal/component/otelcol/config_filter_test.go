@@ -5,7 +5,7 @@ import (
 
 	"k8s.io/utils/ptr"
 
-	"github.com/grafana/agent/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
 
 	"github.com/grafana/river"
 	"github.com/stretchr/testify/require"

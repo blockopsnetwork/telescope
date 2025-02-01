@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/flow/internal/importsource"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/importsource"
 	"github.com/grafana/river/ast"
 	"github.com/grafana/river/diag"
 )

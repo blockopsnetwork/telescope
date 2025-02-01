@@ -3,9 +3,9 @@ package otelcolconvert
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component/otelcol/auth/headers"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/auth/headers"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 	"github.com/grafana/river/rivertypes"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/headerssetterextension"
 	"go.opentelemetry.io/collector/component"

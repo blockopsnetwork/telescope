@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/alecthomas/units"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
 	"github.com/grafana/river"
 	"github.com/grafana/river/rivertypes"
 )

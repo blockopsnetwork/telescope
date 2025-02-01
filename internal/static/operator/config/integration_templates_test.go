@@ -3,9 +3,9 @@ package config
 import (
 	"testing"
 
-	gragent "github.com/grafana/agent/internal/static/operator/apis/monitoring/v1alpha1"
-	"github.com/grafana/agent/internal/util"
-	"github.com/grafana/agent/internal/util/subset"
+	gragent "github.com/blockopsnetwork/telescope/internal/static/operator/apis/monitoring/v1alpha1"
+	"github.com/blockopsnetwork/telescope/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/util/subset"
 	"github.com/stretchr/testify/require"
 	apiext_v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"sigs.k8s.io/yaml"

@@ -4,10 +4,10 @@ package attributes
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/component/otelcol/processor"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/processor"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 	"github.com/mitchellh/mapstructure"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor"
 	otelcomponent "go.opentelemetry.io/collector/component"

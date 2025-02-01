@@ -9,12 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/component/common/loki/positions"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki/positions"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
 	"github.com/grafana/tail/watch"
 	"github.com/prometheus/common/model"
 )

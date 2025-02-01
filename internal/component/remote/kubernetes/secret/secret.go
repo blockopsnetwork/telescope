@@ -1,9 +1,9 @@
 package secret
 
 import (
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/remote/kubernetes"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/remote/kubernetes"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 )
 
 func init() {

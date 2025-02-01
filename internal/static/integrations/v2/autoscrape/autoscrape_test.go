@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/static/metrics/instance"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/model"
 	prom_config "github.com/prometheus/prometheus/config"

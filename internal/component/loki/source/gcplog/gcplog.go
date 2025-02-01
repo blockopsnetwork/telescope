@@ -6,17 +6,17 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/prometheus/model/relabel"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/loki/source/gcplog/gcptypes"
-	gt "github.com/grafana/agent/internal/component/loki/source/gcplog/internal/gcplogtarget"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/gcplog/gcptypes"
+	gt "github.com/blockopsnetwork/telescope/internal/component/loki/source/gcplog/internal/gcplogtarget"
+	"github.com/blockopsnetwork/telescope/internal/util"
 )
 
 func init() {

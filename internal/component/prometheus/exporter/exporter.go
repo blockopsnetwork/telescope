@@ -9,11 +9,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/flow/logging/level"
-	http_service "github.com/grafana/agent/internal/service/http"
-	"github.com/grafana/agent/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
+	http_service "github.com/blockopsnetwork/telescope/internal/service/http"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
 	"github.com/prometheus/common/model"
 )
 

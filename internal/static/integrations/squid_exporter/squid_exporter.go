@@ -8,11 +8,11 @@ import (
 
 	se "github.com/boynux/squid-exporter/collector"
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
 	config_util "github.com/prometheus/common/config"
 
-	integrations_v2 "github.com/grafana/agent/internal/static/integrations/v2"
-	"github.com/grafana/agent/internal/static/integrations/v2/metricsutils"
+	integrations_v2 "github.com/blockopsnetwork/telescope/internal/static/integrations/v2"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/metricsutils"
 )
 
 var (

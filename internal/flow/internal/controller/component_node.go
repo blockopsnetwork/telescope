@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/grafana/agent/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component"
 )
 
 // ComponentNode is a generic representation of a Flow component.

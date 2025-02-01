@@ -1,8 +1,8 @@
 package openshift
 
 import (
-	"github.com/grafana/agent/internal/component/otelcol"
-	rac "github.com/grafana/agent/internal/component/otelcol/processor/resourcedetection/internal/resource_attribute_config"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	rac "github.com/blockopsnetwork/telescope/internal/component/otelcol/processor/resourcedetection/internal/resource_attribute_config"
 	"github.com/grafana/river"
 )
 

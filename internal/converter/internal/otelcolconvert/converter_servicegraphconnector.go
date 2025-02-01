@@ -3,10 +3,10 @@ package otelcolconvert
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/component/otelcol/connector/servicegraph"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/connector/servicegraph"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/connector/servicegraphconnector"
 	"go.opentelemetry.io/collector/component"
 )

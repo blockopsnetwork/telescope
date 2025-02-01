@@ -3,11 +3,11 @@ package build
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
-	"github.com/grafana/agent/internal/converter/internal/prometheusconvert"
-	"github.com/grafana/agent/internal/converter/internal/prometheusconvert/build"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/prometheusconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/prometheusconvert/build"
 
 	"github.com/grafana/loki/clients/pkg/promtail/scrapeconfig"
 	"github.com/prometheus/common/model"

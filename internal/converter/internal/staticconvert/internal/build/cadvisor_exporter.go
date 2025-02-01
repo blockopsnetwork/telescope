@@ -3,9 +3,9 @@ package build
 import (
 	"time"
 
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/cadvisor"
-	cadvisor_integration "github.com/grafana/agent/internal/static/integrations/cadvisor"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/cadvisor"
+	cadvisor_integration "github.com/blockopsnetwork/telescope/internal/static/integrations/cadvisor"
 )
 
 func (b *ConfigBuilder) appendCadvisorExporter(config *cadvisor_integration.Config, instanceKey *string) discovery.Exports {

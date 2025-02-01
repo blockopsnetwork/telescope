@@ -4,9 +4,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/grafana/agent/internal/converter/internal/staticconvert"
-	"github.com/grafana/agent/internal/converter/internal/test_common"
-	_ "github.com/grafana/agent/internal/static/metrics/instance" // Imported to override default values via the init function.
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/staticconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/test_common"
+	_ "github.com/blockopsnetwork/telescope/internal/static/metrics/instance" // Imported to override default values via the init function.
 )
 
 func TestConvert(t *testing.T) {

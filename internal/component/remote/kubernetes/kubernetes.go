@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-kit/log"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/kubernetes"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/kubernetes"
 	"github.com/grafana/river/rivertypes"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"

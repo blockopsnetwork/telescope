@@ -3,9 +3,9 @@ package build
 import (
 	"reflect"
 
-	"github.com/grafana/agent/internal/converter/internal/common"
-	"github.com/grafana/agent/internal/service/http"
-	"github.com/grafana/agent/internal/static/server"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/service/http"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
 )
 
 func (b *ConfigBuilder) appendServer(config *server.Config) {

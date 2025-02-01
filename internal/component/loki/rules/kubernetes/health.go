@@ -3,7 +3,7 @@ package rules
 import (
 	"time"
 
-	"github.com/grafana/agent/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component"
 )
 
 func (c *Component) reportUnhealthy(err error) {

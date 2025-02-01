@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
 	"github.com/prometheus-community/windows_exporter/pkg/collector"
 )
 

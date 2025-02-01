@@ -1,10 +1,10 @@
 package build
 
 import (
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/self"
-	agent_exporter "github.com/grafana/agent/internal/static/integrations/agent"
-	agent_exporter_v2 "github.com/grafana/agent/internal/static/integrations/v2/agent"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/self"
+	agent_exporter "github.com/blockopsnetwork/telescope/internal/static/integrations/agent"
+	agent_exporter_v2 "github.com/blockopsnetwork/telescope/internal/static/integrations/v2/agent"
 )
 
 func (b *ConfigBuilder) appendAgentExporter(config *agent_exporter.Config) discovery.Exports {

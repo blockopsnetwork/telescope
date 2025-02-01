@@ -14,9 +14,9 @@ import (
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
 
-	gragent "github.com/grafana/agent/internal/static/operator/apis/monitoring/v1alpha1"
-	"github.com/grafana/agent/internal/static/operator/assets"
-	"github.com/grafana/agent/internal/util"
+	gragent "github.com/blockopsnetwork/telescope/internal/static/operator/apis/monitoring/v1alpha1"
+	"github.com/blockopsnetwork/telescope/internal/static/operator/assets"
+	"github.com/blockopsnetwork/telescope/internal/util"
 )
 
 func TestExternalLabels(t *testing.T) {

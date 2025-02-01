@@ -1,7 +1,7 @@
 package promtailconvert
 
 import (
-	"github.com/grafana/agent/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
 	promtailcfg "github.com/grafana/loki/clients/pkg/promtail/config"
 )
 
@@ -25,7 +25,7 @@ func validateTopLevelConfig(cfg *promtailcfg.Config, diags *diag.Diagnostics) {
 		)
 	}
 
-	// Not yet supported, see https://github.com/grafana/agent/issues/4342. It's an error since we want to
+	// Not yet supported, see https://github.com/blockopsnetwork/telescope/issues/4342. It's an error since we want to
 	// err on the safe side.
 	//TODO(thampiotr): seems like it's possible to support this using loki.process component
 	if cfg.LimitsConfig != DefaultLimitsConfig() {

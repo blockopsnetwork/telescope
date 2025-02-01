@@ -9,14 +9,14 @@ import (
 	"sort"
 	"strings"
 
-	networksConfig "github.com/grafana/agent/internal/static/config/networks"
+	networksConfig "github.com/blockopsnetwork/telescope/internal/static/config/networks"
 
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/boringcrypto"
-	"github.com/grafana/agent/internal/build"
-	"github.com/grafana/agent/internal/static/config"
-	"github.com/grafana/agent/internal/static/server"
-	util_log "github.com/grafana/agent/internal/util/log"
+	"github.com/blockopsnetwork/telescope/internal/boringcrypto"
+	"github.com/blockopsnetwork/telescope/internal/build"
+	"github.com/blockopsnetwork/telescope/internal/static/config"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
+	util_log "github.com/blockopsnetwork/telescope/internal/util/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -25,9 +25,9 @@ import (
 
 	_ "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
 	_ "github.com/prometheus/prometheus/discovery/install"
-	_ "github.com/grafana/agent/internal/static/integrations/cadvisor"
+	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/cadvisor"
 
-	_ "github.com/grafana/agent/internal/static/integrations/install"
+	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/install"
 	_ "golang.org/x/crypto/x509roots/fallback"
 )
 

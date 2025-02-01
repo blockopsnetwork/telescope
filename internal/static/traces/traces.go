@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/logs"
-	"github.com/grafana/agent/internal/static/metrics/instance"
-	"github.com/grafana/agent/internal/util/zapadapter"
+	"github.com/blockopsnetwork/telescope/internal/static/logs"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/util/zapadapter"
 	prom_client "github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )

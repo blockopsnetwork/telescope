@@ -16,10 +16,10 @@ import (
 	"go.uber.org/atomic"
 	"google.golang.org/grpc"
 
-	"github.com/grafana/agent/internal/static/metrics/cluster"
-	"github.com/grafana/agent/internal/static/metrics/cluster/client"
-	"github.com/grafana/agent/internal/static/metrics/instance"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/cluster"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/cluster/client"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/prometheus/discovery"
 )
 

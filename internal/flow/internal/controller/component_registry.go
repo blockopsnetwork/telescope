@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 )
 
 // ComponentRegistry is a collection of registered components.
@@ -19,7 +19,7 @@ type defaultComponentRegistry struct {
 }
 
 // NewDefaultComponentRegistry creates a new [ComponentRegistry] which gets
-// components registered to github.com/grafana/agent/component.
+// components registered to github.com/blockopsnetwork/telescope/component.
 func NewDefaultComponentRegistry(minStability featuregate.Stability) ComponentRegistry {
 	return defaultComponentRegistry{
 		minStability: minStability,

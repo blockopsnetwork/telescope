@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/component/common/kubernetes"
-	lokiClient "github.com/grafana/agent/internal/loki/client"
+	"github.com/blockopsnetwork/telescope/internal/component/common/kubernetes"
+	lokiClient "github.com/blockopsnetwork/telescope/internal/loki/client"
 	v1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	promListers "github.com/prometheus-operator/prometheus-operator/pkg/client/listers/monitoring/v1"
 	"github.com/prometheus/prometheus/model/rulefmt"

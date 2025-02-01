@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/assert"
 
-	"github.com/grafana/agent/internal/component/common/loki/client/fake"
-	"github.com/grafana/agent/internal/component/loki/source/gcplog/gcptypes"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki/client/fake"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/gcplog/gcptypes"
 )
 
 func TestPullTarget_RunStop(t *testing.T) {

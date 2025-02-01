@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations/config"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/config"
 )
 
 // Config provides the configuration and constructor for an integration.

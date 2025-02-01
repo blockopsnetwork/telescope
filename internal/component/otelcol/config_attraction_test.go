@@ -3,7 +3,7 @@ package otelcol_test
 import (
 	"testing"
 
-	"github.com/grafana/agent/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
 	"github.com/stretchr/testify/require"
 )
 

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/alecthomas/units"
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/component/otelcol/auth"
-	"github.com/grafana/agent/internal/component/otelcol/exporter"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/auth"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/exporter"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 	"github.com/grafana/river"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/loadbalancingexporter"
 	otelcomponent "go.opentelemetry.io/collector/component"
@@ -32,7 +32,7 @@ func init() {
 		Build: func(opts component.Options, args component.Arguments) (component.Component, error) {
 			fact := loadbalancingexporter.NewFactory()
 			//TODO(ptodev): LB exporter cannot yet work with metrics due to a limitation in the Agent:
-			// https://github.com/grafana/agent/pull/5684
+			// https://github.com/blockopsnetwork/telescope/pull/5684
 			// Once the limitation is removed, we may be able to remove the need for exporter.TypeSignal altogether.
 			return exporter.New(opts, fact, args.(Arguments), exporter.TypeLogs|exporter.TypeTraces)
 		},

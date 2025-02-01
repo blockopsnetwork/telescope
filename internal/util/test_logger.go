@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/flow/logging"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging"
 	"github.com/stretchr/testify/require"
 )
 

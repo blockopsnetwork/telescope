@@ -3,8 +3,8 @@ package java
 import (
 	"time"
 
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/pyroscope"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/pyroscope"
 )
 
 type Arguments struct {

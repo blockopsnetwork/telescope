@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/grafana/agent/internal/flow/tracing"
+	"github.com/blockopsnetwork/telescope/internal/flow/tracing"
 	"github.com/grafana/river/ast"
 	"github.com/grafana/river/vm"
 	"go.opentelemetry.io/otel/trace"

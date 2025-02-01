@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/grafana/agent/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
 	"github.com/grafana/river/token"
 	"github.com/grafana/river/token/builder"
 	"github.com/mitchellh/mapstructure"

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	process_exporter "github.com/grafana/agent/internal/static/integrations/process_exporter"
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	process_exporter "github.com/blockopsnetwork/telescope/internal/static/integrations/process_exporter"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/stretchr/testify/require"

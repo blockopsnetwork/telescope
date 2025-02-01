@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/otelcolconvert"
-	"github.com/grafana/agent/internal/static/traces"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/otelcolconvert"
+	"github.com/blockopsnetwork/telescope/internal/static/traces"
 	otel_component "go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter/loggingexporter"
 	"go.opentelemetry.io/collector/otelcol"

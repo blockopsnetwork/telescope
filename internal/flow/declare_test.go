@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/flow"
-	"github.com/grafana/agent/internal/flow/internal/testcomponents"
-	"github.com/grafana/agent/internal/flow/logging"
-	"github.com/grafana/agent/internal/service"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/flow"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/testcomponents"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging"
+	"github.com/blockopsnetwork/telescope/internal/service"
 	"github.com/stretchr/testify/require"
 )
 

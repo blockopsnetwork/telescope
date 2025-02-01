@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/grafana/agent/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
 	"github.com/stretchr/testify/assert"
 )
 

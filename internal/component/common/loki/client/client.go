@@ -13,15 +13,15 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/flow/logging/level"
-	"github.com/grafana/agent/internal/useragent"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/useragent"
 	"github.com/grafana/dskit/backoff"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
 
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	lokiutil "github.com/grafana/loki/pkg/util"
 )
 

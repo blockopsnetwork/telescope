@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/grafana/agent/internal/static/metrics/cluster/configapi"
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/cluster/configapi"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 	"gopkg.in/yaml.v2"
 )
 

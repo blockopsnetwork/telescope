@@ -3,7 +3,7 @@ package testcomponents
 import (
 	"context"
 
-	"github.com/grafana/agent/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component"
 )
 
 // Fake is a fake component instance which invokes fields when its methods are

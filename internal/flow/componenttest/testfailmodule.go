@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/grafana/agent/internal/component"
-	mod "github.com/grafana/agent/internal/component/module"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	mod "github.com/blockopsnetwork/telescope/internal/component/module"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 )
 
 func init() {

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/static/config/features"
-	"github.com/grafana/agent/internal/static/server"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/config/features"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/common/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

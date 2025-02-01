@@ -8,12 +8,12 @@ import (
 
 	"context"
 
-	"github.com/grafana/agent/internal/component"
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/prometheus"
-	"github.com/grafana/agent/internal/flow/componenttest"
-	"github.com/grafana/agent/internal/service/labelstore"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus"
+	"github.com/blockopsnetwork/telescope/internal/flow/componenttest"
+	"github.com/blockopsnetwork/telescope/internal/service/labelstore"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/river"
 	prom "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/prometheus/model/labels"

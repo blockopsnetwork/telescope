@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/component/loki/process/metric"
-	"github.com/grafana/agent/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/process/metric"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/model"
 )

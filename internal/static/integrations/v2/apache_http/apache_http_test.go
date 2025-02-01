@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	integrations_v2 "github.com/grafana/agent/internal/static/integrations/v2"
+	integrations_v2 "github.com/blockopsnetwork/telescope/internal/static/integrations/v2"
 	"github.com/stretchr/testify/require"
 )
 

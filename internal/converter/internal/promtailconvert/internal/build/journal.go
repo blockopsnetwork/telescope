@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	flowrelabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/loki/source/journal"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	flowrelabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/journal"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 )
 
 func (s *ScrapeConfigBuilder) AppendJournalConfig() {

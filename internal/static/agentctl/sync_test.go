@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/grafana/agent/internal/static/metrics/cluster/configapi"
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/cluster/configapi"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 	"github.com/stretchr/testify/require"
 )
 

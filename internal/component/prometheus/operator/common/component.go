@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/prometheus/operator"
-	"github.com/grafana/agent/internal/flow/logging/level"
-	"github.com/grafana/agent/internal/service/cluster"
-	"github.com/grafana/agent/internal/service/labelstore"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/operator"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/service/cluster"
+	"github.com/blockopsnetwork/telescope/internal/service/labelstore"
 	"gopkg.in/yaml.v3"
 )
 
@@ -105,7 +105,7 @@ func (c *Component) Run(ctx context.Context) error {
 // Update implements component.Component.
 func (c *Component) Update(args component.Arguments) error {
 	// TODO(jcreixell): Initialize manager here so we can return errors back early to the caller.
-	// See https://github.com/grafana/agent/pull/2688#discussion_r1152384425
+	// See https://github.com/blockopsnetwork/telescope/pull/2688#discussion_r1152384425
 	c.mut.Lock()
 	cfg := args.(operator.Arguments)
 	c.config = &cfg

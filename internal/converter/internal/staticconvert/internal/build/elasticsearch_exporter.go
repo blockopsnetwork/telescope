@@ -1,10 +1,10 @@
 package build
 
 import (
-	commonCfg "github.com/grafana/agent/internal/component/common/config"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/elasticsearch"
-	"github.com/grafana/agent/internal/static/integrations/elasticsearch_exporter"
+	commonCfg "github.com/blockopsnetwork/telescope/internal/component/common/config"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/elasticsearch"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/elasticsearch_exporter"
 	"github.com/grafana/river/rivertypes"
 )
 

@@ -11,9 +11,9 @@ import (
 
 	"github.com/go-kit/log"
 	gokitlevel "github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/flow/logging"
-	flowlevel "github.com/grafana/agent/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging"
+	flowlevel "github.com/blockopsnetwork/telescope/internal/flow/logging/level"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,7 +21,7 @@ import (
 $ go test -count=1 -benchmem ./internal/flow/logging -run ^$ -bench BenchmarkLogging_
 goos: darwin
 goarch: arm64
-pkg: github.com/grafana/agent/internal/flow/logging
+pkg: github.com/blockopsnetwork/telescope/internal/flow/logging
 BenchmarkLogging_NoLevel_Prints-8             	  722358	      1524 ns/op	     368 B/op	      11 allocs/op
 BenchmarkLogging_NoLevel_Drops-8              	47103154	        25.59 ns/op	       8 B/op	       0 allocs/op
 BenchmarkLogging_GoKitLevel_Drops_Sprintf-8   	 3585387	       332.1 ns/op	     320 B/op	       8 allocs/op

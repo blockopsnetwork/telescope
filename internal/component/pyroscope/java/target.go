@@ -3,7 +3,7 @@ package java
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
 )
 
 const (
