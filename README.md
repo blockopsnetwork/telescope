@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h1 align="center">BlocksOp Network</h1>
+<h1 align="center">Telescope</h1>
 
 - [Summary](#summary)
 - [Language](#language)
@@ -23,7 +23,7 @@ Using Command Line Flags
 Basic usage with metrics enabled:
 
 ```bash
-agent \
+telescope \
   --metrics \
   --network=ethereum \
   --project-id=my-project \
@@ -36,7 +36,7 @@ agent \
 Enable both metrics and logs:
 
 ```bash
-agent \
+telescope \
   --metrics \
   --enable-logs \
   --network=ethereum \
@@ -55,7 +55,7 @@ agent \
 Create a YAML configuration file and run:
 
 ```bash
-agent --config-file=telescope_config.yaml
+telescope --config-file=telescope_config.yaml
 ```
 
 Example configuration file:
