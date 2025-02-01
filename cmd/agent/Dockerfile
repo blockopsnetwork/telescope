@@ -46,7 +46,7 @@ RUN <<EOF
 EOF
 
 COPY --from=build /src/agent/build/telescope /bin/telescope
-COPY /cmd/agent/agent-local-config.yaml /etc/agent/agent.yaml
+COPY /cmd/agent/agent-local-config.yaml /etc/telescope/telescope.yaml
 
 # Create telescope agent user in container, but do not set it as default
 RUN groupadd --gid $UID $USERNAME
@@ -56,4 +56,4 @@ RUN chown -R $USERNAME:$USERNAME /bin/telescope
 
 ENTRYPOINT ["/bin/telescope"]
 ENV AGENT_DEPLOY_MODE=docker
-CMD ["--config.file=/etc/agent/agent.yaml", "--metrics.wal-directory=/etc/agent/data"]
+CMD ["--config-file=/etc/telescope/telescope.yaml", "--metrics.wal-directory=/etc/agent/data"]
