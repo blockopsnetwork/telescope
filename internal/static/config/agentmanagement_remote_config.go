@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"text/template"
 
-	"github.com/grafana/agent/internal/static/integrations"
-	"github.com/grafana/agent/internal/static/logs"
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/logs"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 	"github.com/grafana/loki/clients/pkg/promtail/scrapeconfig"
 	"github.com/prometheus/common/model"
 	pc "github.com/prometheus/prometheus/config"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/grafana/agent/internal/static/integrations/config"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/config"
 )
 
 // StubIntegration implements a no-op integration for use on platforms not supported by an integration

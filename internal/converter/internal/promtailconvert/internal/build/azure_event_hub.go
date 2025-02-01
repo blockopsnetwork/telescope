@@ -1,9 +1,9 @@
 package build
 
 import (
-	"github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/loki/source/azure_event_hubs"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/azure_event_hubs"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 )
 
 func (s *ScrapeConfigBuilder) AppendAzureEventHubs() {

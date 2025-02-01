@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations/v2/autoscrape"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/autoscrape"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/common/model"
 	prom_config "github.com/prometheus/prometheus/config"
 	"github.com/prometheus/prometheus/discovery"

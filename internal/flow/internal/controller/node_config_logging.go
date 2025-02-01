@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/flow/logging"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging"
 	"github.com/grafana/river/ast"
 	"github.com/grafana/river/vm"
 )

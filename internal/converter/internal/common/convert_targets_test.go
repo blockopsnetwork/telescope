@@ -3,8 +3,8 @@ package common_test
 import (
 	"testing"
 
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 	"github.com/grafana/river/token/builder"
 	"github.com/stretchr/testify/require"
 )

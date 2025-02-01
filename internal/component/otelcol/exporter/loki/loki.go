@@ -5,12 +5,12 @@ import (
 	"context"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/component/otelcol/exporter/loki/internal/convert"
-	"github.com/grafana/agent/internal/component/otelcol/internal/lazyconsumer"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/exporter/loki/internal/convert"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/internal/lazyconsumer"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 )
 
 func init() {

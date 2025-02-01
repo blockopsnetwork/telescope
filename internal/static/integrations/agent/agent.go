@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations"
-	"github.com/grafana/agent/internal/static/integrations/config"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/config"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

@@ -8,11 +8,11 @@ import (
 	"path"
 
 	"github.com/gorilla/mux"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/service"
-	http_service "github.com/grafana/agent/internal/service/http"
-	"github.com/grafana/agent/internal/web/api"
-	"github.com/grafana/agent/internal/web/ui"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/service"
+	http_service "github.com/blockopsnetwork/telescope/internal/service/http"
+	"github.com/blockopsnetwork/telescope/internal/web/api"
+	"github.com/blockopsnetwork/telescope/internal/web/ui"
 )
 
 // ServiceName defines the name used for the UI service.

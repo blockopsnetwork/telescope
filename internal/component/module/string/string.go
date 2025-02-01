@@ -3,9 +3,9 @@ package string
 import (
 	"context"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/module"
-	"github.com/grafana/agent/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/module"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
 	"github.com/grafana/river/rivertypes"
 )
 

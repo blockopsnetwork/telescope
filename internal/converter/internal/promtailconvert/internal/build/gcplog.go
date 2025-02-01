@@ -1,11 +1,11 @@
 package build
 
 import (
-	"github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/loki/source/gcplog"
-	"github.com/grafana/agent/internal/component/loki/source/gcplog/gcptypes"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/gcplog"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/gcplog/gcptypes"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 )
 
 func (s *ScrapeConfigBuilder) AppendGCPLog() {

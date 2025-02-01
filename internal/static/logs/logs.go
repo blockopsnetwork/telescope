@@ -11,9 +11,9 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/agentseed"
-	"github.com/grafana/agent/internal/useragent"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/agentseed"
+	"github.com/blockopsnetwork/telescope/internal/useragent"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/loki/clients/pkg/promtail"
 	"github.com/grafana/loki/clients/pkg/promtail/api"
 	"github.com/grafana/loki/clients/pkg/promtail/client"

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/otelcol/connector/servicegraph"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol/connector/servicegraph"
 	"github.com/grafana/river"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/connector/servicegraphconnector"
 	"github.com/stretchr/testify/require"

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/static/integrations/cadvisor"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/cadvisor"
 	"github.com/grafana/river"
 	"github.com/stretchr/testify/require"
 )

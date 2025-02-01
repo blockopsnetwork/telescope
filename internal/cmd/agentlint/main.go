@@ -3,8 +3,8 @@
 package main
 
 import (
-	"github.com/grafana/agent/internal/cmd/agentlint/internal/findcomponents"
-	"github.com/grafana/agent/internal/cmd/agentlint/internal/rivertags"
+	"github.com/blockopsnetwork/telescope/internal/cmd/agentlint/internal/findcomponents"
+	"github.com/blockopsnetwork/telescope/internal/cmd/agentlint/internal/rivertags"
 	"golang.org/x/tools/go/analysis/multichecker"
 )
 

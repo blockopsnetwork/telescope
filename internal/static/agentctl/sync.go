@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/static/client"
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/client"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 )
 
 // ConfigSync loads YAML files from a directory and syncs them to the

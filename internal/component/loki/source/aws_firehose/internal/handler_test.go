@@ -22,7 +22,7 @@ import (
 	"github.com/prometheus/prometheus/model/relabel"
 	"github.com/stretchr/testify/require"
 
-	"github.com/grafana/agent/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
 )
 
 const (

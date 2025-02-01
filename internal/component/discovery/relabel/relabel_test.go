@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/discovery/relabel"
-	"github.com/grafana/agent/internal/flow/componenttest"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery/relabel"
+	"github.com/blockopsnetwork/telescope/internal/flow/componenttest"
 	"github.com/grafana/river"
 	"github.com/stretchr/testify/require"
 )

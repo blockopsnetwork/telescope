@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/grafana/agent/internal/component"
-	_ "github.com/grafana/agent/internal/component/all"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/component/pyroscope"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	_ "github.com/blockopsnetwork/telescope/internal/component/all"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/component/pyroscope"
 	"github.com/prometheus/prometheus/storage"
 )
 

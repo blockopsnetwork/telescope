@@ -16,9 +16,9 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-sourcemap/sourcemap"
-	"github.com/grafana/agent/internal/component/faro/receiver/internal/payload"
-	"github.com/grafana/agent/internal/flow/logging/level"
-	"github.com/grafana/agent/internal/util/wildcard"
+	"github.com/blockopsnetwork/telescope/internal/component/faro/receiver/internal/payload"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/util/wildcard"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vincent-petithory/dataurl"
 )

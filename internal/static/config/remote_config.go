@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/grafana/agent/internal/static/config/instrumentation"
+	"github.com/blockopsnetwork/telescope/internal/static/config/instrumentation"
 	"github.com/prometheus/common/config"
 )
 

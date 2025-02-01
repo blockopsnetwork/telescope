@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/service"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/service"
 )
 
 // splitURLPath splits a path from a URL into two parts: a component ID and the

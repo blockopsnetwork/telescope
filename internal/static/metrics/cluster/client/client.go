@@ -5,8 +5,8 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/grafana/agent/internal/static/agentproto"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/agentproto"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/dskit/grpcclient"
 	"github.com/grafana/dskit/middleware"
 	otgrpc "github.com/opentracing-contrib/go-grpc"

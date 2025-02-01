@@ -14,7 +14,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/gorilla/mux"
-	"github.com/grafana/agent/internal/static/integrations/v2/autoscrape"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/autoscrape"
 	"github.com/prometheus/prometheus/discovery"
 	http_sd "github.com/prometheus/prometheus/discovery/http"
 	"go.uber.org/atomic"
@@ -232,7 +232,7 @@ func (c *controller) Handler(prefix string) (http.Handler, error) {
 		// The reason these two are separated is if you have two instance names and one is a prefix of another
 		// ie localhost and localhost2, localhost2 will never get called because localhost will always get precedence
 		// add / fixes this, but to keep old behavior we need to ensure /localhost and localhost2 also work, hence
-		// the second handlefunc below this one. https://github.com/grafana/agent/issues/1718
+		// the second handlefunc below this one. https://github.com/blockopsnetwork/telescope/issues/1718
 		hfunc := func(rw http.ResponseWriter, r *http.Request) {
 			if !ci.Running() {
 				http.Error(rw, fmt.Sprintf("%s integration intance %q not running", id.Name, id.Identifier), http.StatusServiceUnavailable)

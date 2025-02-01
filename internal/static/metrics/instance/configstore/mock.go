@@ -3,7 +3,7 @@ package configstore
 import (
 	"context"
 
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 )
 
 // Mock is a Mock Store. Useful primarily for testing.

@@ -16,8 +16,8 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/static/metrics/instance"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/dskit/kv"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -25,7 +25,7 @@ import (
 
 /***********************************************************************************************************************
 The consul code skipping the cortex handler is due to performance issue with a large number of configs and overloading
-consul. See issue https://github.com/grafana/agent/issues/789. The long term method will be to refactor and extract
+consul. See issue https://github.com/blockopsnetwork/telescope/issues/789. The long term method will be to refactor and extract
 the cortex code so other stores can also benefit from this. @mattdurham
 ***********************************************************************************************************************/
 

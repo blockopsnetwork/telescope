@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	commonCfg "github.com/grafana/agent/internal/component/common/config"
-	"github.com/grafana/agent/internal/static/integrations/elasticsearch_exporter"
+	commonCfg "github.com/blockopsnetwork/telescope/internal/component/common/config"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/elasticsearch_exporter"
 	"github.com/grafana/river"
 	"github.com/grafana/river/rivertypes"
 	promCfg "github.com/prometheus/common/config"

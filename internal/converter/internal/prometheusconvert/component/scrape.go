@@ -7,12 +7,12 @@ import (
 
 	"golang.org/x/exp/maps"
 
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/scrape"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
-	"github.com/grafana/agent/internal/converter/internal/prometheusconvert/build"
-	"github.com/grafana/agent/internal/service/cluster"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/scrape"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/prometheusconvert/build"
+	"github.com/blockopsnetwork/telescope/internal/service/cluster"
 	prom_config "github.com/prometheus/prometheus/config"
 	prom_discovery "github.com/prometheus/prometheus/discovery"
 	"github.com/prometheus/prometheus/storage"
@@ -30,7 +30,7 @@ func AppendPrometheusScrape(pb *build.PrometheusBlocks, scrapeConfig *prom_confi
 func ValidatePrometheusScrape(scrapeConfig *prom_config.ScrapeConfig) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	// https://github.com/grafana/agent/pull/5972#discussion_r1441980155
+	// https://github.com/blockopsnetwork/telescope/pull/5972#discussion_r1441980155
 	diags.AddAll(common.ValidateSupported(common.NotEquals, scrapeConfig.TrackTimestampsStaleness, false, "scrape_configs track_timestamps_staleness", ""))
 	// https://github.com/prometheus/prometheus/commit/40240c9c1cb290fe95f1e61886b23fab860aeacd
 	diags.AddAll(common.ValidateSupported(common.NotEquals, scrapeConfig.NativeHistogramBucketLimit, uint(0), "scrape_configs native_histogram_bucket_limit", ""))

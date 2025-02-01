@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/grafana/agent/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
 	"github.com/grafana/river/token/builder"
 )
 

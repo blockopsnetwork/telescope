@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	st "github.com/grafana/agent/internal/component/loki/source/syslog/internal/syslogtarget"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/flow/logging/level"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	st "github.com/blockopsnetwork/telescope/internal/component/loki/source/syslog/internal/syslogtarget"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging/level"
 	"github.com/prometheus/prometheus/model/relabel"
 )
 

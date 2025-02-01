@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/units"
-	"github.com/grafana/agent/internal/component/common/loki"
-	"github.com/grafana/agent/internal/component/faro/receiver"
-	"github.com/grafana/agent/internal/component/otelcol"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
-	app_agent_receiver_v2 "github.com/grafana/agent/internal/static/integrations/v2/app_agent_receiver"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/faro/receiver"
+	"github.com/blockopsnetwork/telescope/internal/component/otelcol"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
+	app_agent_receiver_v2 "github.com/blockopsnetwork/telescope/internal/static/integrations/v2/app_agent_receiver"
 	"github.com/grafana/river/rivertypes"
 	"github.com/grafana/river/scanner"
 )

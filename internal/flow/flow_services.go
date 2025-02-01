@@ -3,10 +3,10 @@ package flow
 import (
 	"context"
 
-	"github.com/grafana/agent/internal/flow/internal/controller"
-	"github.com/grafana/agent/internal/flow/internal/dag"
-	"github.com/grafana/agent/internal/flow/internal/worker"
-	"github.com/grafana/agent/internal/service"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/controller"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/dag"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/worker"
+	"github.com/blockopsnetwork/telescope/internal/service"
 )
 
 // GetServiceConsumers implements [service.Host]. It returns a slice of

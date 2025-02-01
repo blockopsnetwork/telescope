@@ -1,4 +1,4 @@
-module github.com/grafana/agent
+module github.com/blockopsnetwork/telescope
 
 go 1.22.1
 

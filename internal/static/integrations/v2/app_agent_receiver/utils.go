@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/grafana/agent/internal/util/wildcard"
+	"github.com/blockopsnetwork/telescope/internal/util/wildcard"
 	om "github.com/wk8/go-ordered-map"
 )
 

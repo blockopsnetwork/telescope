@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/common/config"
+	"github.com/blockopsnetwork/telescope/internal/component/common/config"
 	"github.com/grafana/river"
 	"github.com/grafana/river/rivertypes"
 	promcfg "github.com/prometheus/common/config"

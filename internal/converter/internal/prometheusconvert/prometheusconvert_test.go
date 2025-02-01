@@ -3,9 +3,9 @@ package prometheusconvert_test
 import (
 	"testing"
 
-	"github.com/grafana/agent/internal/converter/internal/prometheusconvert"
-	"github.com/grafana/agent/internal/converter/internal/test_common"
-	_ "github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/prometheusconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/test_common"
+	_ "github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 )
 
 func TestConvert(t *testing.T) {

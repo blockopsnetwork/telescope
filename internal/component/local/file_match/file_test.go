@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
 
 	"context"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
 )

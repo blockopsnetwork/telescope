@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

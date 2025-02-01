@@ -6,13 +6,13 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/component/common/loki"
-	fnet "github.com/grafana/agent/internal/component/common/net"
-	"github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/loki/source/api/internal/lokipush"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
+	fnet "github.com/blockopsnetwork/telescope/internal/component/common/net"
+	"github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/loki/source/api/internal/lokipush"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/model"
 )
@@ -60,7 +60,7 @@ type Component struct {
 	server    *lokipush.PushAPIServer
 
 	// Use separate receivers mutex to address potential deadlock when Update drains the current server.
-	// e.g. https://github.com/grafana/agent/issues/3391
+	// e.g. https://github.com/blockopsnetwork/telescope/issues/3391
 	receiversMut sync.RWMutex
 	receivers    []loki.LogsReceiver
 }

@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/grafana/agent/internal/component/metadata"
+	"github.com/blockopsnetwork/telescope/internal/component/metadata"
 	"golang.org/x/exp/maps"
 )
 

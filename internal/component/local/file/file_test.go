@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component/local/file"
-	filedetector "github.com/grafana/agent/internal/filedetector"
-	"github.com/grafana/agent/internal/flow/componenttest"
+	"github.com/blockopsnetwork/telescope/internal/component/local/file"
+	filedetector "github.com/blockopsnetwork/telescope/internal/filedetector"
+	"github.com/blockopsnetwork/telescope/internal/flow/componenttest"
 	"github.com/grafana/river/rivertypes"
 	"github.com/stretchr/testify/require"
 )

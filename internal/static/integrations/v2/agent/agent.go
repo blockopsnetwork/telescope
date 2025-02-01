@@ -5,9 +5,9 @@ package agent
 
 import (
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/static/integrations/v2"
-	"github.com/grafana/agent/internal/static/integrations/v2/common"
-	"github.com/grafana/agent/internal/static/integrations/v2/metricsutils"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/common"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/metricsutils"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

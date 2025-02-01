@@ -10,21 +10,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/flow"
-	"github.com/grafana/agent/internal/flow/internal/testcomponents"
-	"github.com/grafana/agent/internal/flow/logging"
-	"github.com/grafana/agent/internal/service"
-	cluster_service "github.com/grafana/agent/internal/service/cluster"
-	http_service "github.com/grafana/agent/internal/service/http"
-	"github.com/grafana/agent/internal/service/labelstore"
-	otel_service "github.com/grafana/agent/internal/service/otel"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/flow"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/testcomponents"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging"
+	"github.com/blockopsnetwork/telescope/internal/service"
+	cluster_service "github.com/blockopsnetwork/telescope/internal/service/cluster"
+	http_service "github.com/blockopsnetwork/telescope/internal/service/http"
+	"github.com/blockopsnetwork/telescope/internal/service/labelstore"
+	otel_service "github.com/blockopsnetwork/telescope/internal/service/otel"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 
-	_ "github.com/grafana/agent/internal/component/module/string"
+	_ "github.com/blockopsnetwork/telescope/internal/component/module/string"
 )
 
 func TestUpdates_EmptyModule(t *testing.T) {

@@ -3,7 +3,7 @@ package useragent
 import (
 	"testing"
 
-	"github.com/grafana/agent/internal/build"
+	"github.com/blockopsnetwork/telescope/internal/build"
 	"github.com/stretchr/testify/require"
 )
 

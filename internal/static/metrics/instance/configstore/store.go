@@ -5,7 +5,7 @@ package configstore
 import (
 	"context"
 
-	"github.com/grafana/agent/internal/static/metrics/instance"
+	"github.com/blockopsnetwork/telescope/internal/static/metrics/instance"
 )
 
 // Store is some interface to retrieving instance configurations.

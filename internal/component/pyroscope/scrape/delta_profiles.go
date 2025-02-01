@@ -8,8 +8,8 @@ import (
 	"io"
 	"sync"
 
-	"github.com/grafana/agent/internal/component/pyroscope"
-	"github.com/grafana/agent/internal/component/pyroscope/scrape/internal/fastdelta"
+	"github.com/blockopsnetwork/telescope/internal/component/pyroscope"
+	"github.com/blockopsnetwork/telescope/internal/component/pyroscope/scrape/internal/fastdelta"
 	"github.com/klauspost/compress/gzip"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/labels"

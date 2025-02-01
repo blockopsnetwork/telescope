@@ -3,9 +3,9 @@ package build
 import (
 	"strings"
 
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/windows"
-	"github.com/grafana/agent/internal/static/integrations/windows_exporter"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/windows"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/windows_exporter"
 )
 
 func (b *ConfigBuilder) appendWindowsExporter(config *windows_exporter.Config, instanceKey *string) discovery.Exports {

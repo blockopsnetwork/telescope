@@ -3,8 +3,8 @@ package integrations
 import (
 	"testing"
 
-	v1 "github.com/grafana/agent/internal/static/integrations"
-	"github.com/grafana/agent/internal/static/integrations/v2/common"
+	v1 "github.com/blockopsnetwork/telescope/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/v2/common"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
 )

@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/build"
-	"github.com/grafana/agent/internal/static/integrations/config"
+	"github.com/blockopsnetwork/telescope/internal/build"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/node_exporter/collector"

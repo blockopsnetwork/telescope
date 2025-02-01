@@ -12,8 +12,8 @@ import (
 
 	"github.com/docker/go-connections/nat"
 	"github.com/go-kit/log"
-	"github.com/grafana/agent/internal/flow/componenttest"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/flow/componenttest"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/river"
 	"github.com/grafana/river/rivertypes"
 	"github.com/stretchr/testify/require"

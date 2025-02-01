@@ -31,7 +31,7 @@ import (
 // invoked after all other routes have been registered.
 //
 // RegisterRoutes is not intended for public use and will only work properly
-// when called from github.com/grafana/agent.
+// when called from github.com/blockopsnetwork/telescope.
 func RegisterRoutes(pathPrefix string, router *mux.Router) {
 	if !strings.HasSuffix(pathPrefix, "/") {
 		pathPrefix = pathPrefix + "/"

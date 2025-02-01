@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/static/operator/logutil"
-	"github.com/grafana/agent/internal/util"
-	"github.com/grafana/agent/internal/util/k8s"
+	"github.com/blockopsnetwork/telescope/internal/static/operator/logutil"
+	"github.com/blockopsnetwork/telescope/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/util/k8s"
 	"github.com/stretchr/testify/require"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 

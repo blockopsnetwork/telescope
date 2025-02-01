@@ -1,9 +1,9 @@
 package build
 
 import (
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/unix"
-	"github.com/grafana/agent/internal/static/integrations/node_exporter"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/unix"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/node_exporter"
 )
 
 func (b *ConfigBuilder) appendNodeExporter(config *node_exporter.Config, instanceKey *string) discovery.Exports {

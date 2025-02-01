@@ -5,11 +5,11 @@ package converter
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/otelcolconvert"
-	"github.com/grafana/agent/internal/converter/internal/prometheusconvert"
-	"github.com/grafana/agent/internal/converter/internal/promtailconvert"
-	"github.com/grafana/agent/internal/converter/internal/staticconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/otelcolconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/prometheusconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/promtailconvert"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/staticconvert"
 )
 
 // Input represents the type of config file being fed into the converter.

@@ -1,10 +1,10 @@
 package build
 
 import (
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/apache"
-	"github.com/grafana/agent/internal/static/integrations/apache_http"
-	apache_exporter_v2 "github.com/grafana/agent/internal/static/integrations/v2/apache_http"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/apache"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/apache_http"
+	apache_exporter_v2 "github.com/blockopsnetwork/telescope/internal/static/integrations/v2/apache_http"
 )
 
 func (b *ConfigBuilder) appendApacheExporter(config *apache_http.Config) discovery.Exports {

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	promsdconsumer "github.com/grafana/agent/internal/static/traces/promsdprocessor/consumer"
+	promsdconsumer "github.com/blockopsnetwork/telescope/internal/static/traces/promsdprocessor/consumer"
 	"github.com/mitchellh/mapstructure"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/loadbalancingexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusexporter"
@@ -40,14 +40,14 @@ import (
 	"go.uber.org/multierr"
 	"gopkg.in/yaml.v2"
 
-	"github.com/grafana/agent/internal/static/logs"
-	"github.com/grafana/agent/internal/static/traces/automaticloggingprocessor"
-	"github.com/grafana/agent/internal/static/traces/noopreceiver"
-	"github.com/grafana/agent/internal/static/traces/promsdprocessor"
-	"github.com/grafana/agent/internal/static/traces/pushreceiver"
-	"github.com/grafana/agent/internal/static/traces/remotewriteexporter"
-	"github.com/grafana/agent/internal/static/traces/servicegraphprocessor"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/logs"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/automaticloggingprocessor"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/noopreceiver"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/promsdprocessor"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/pushreceiver"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/remotewriteexporter"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/servicegraphprocessor"
+	"github.com/blockopsnetwork/telescope/internal/util"
 )
 
 const (

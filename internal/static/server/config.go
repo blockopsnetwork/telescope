@@ -3,7 +3,7 @@ package server
 import (
 	"flag"
 
-	"github.com/grafana/agent/internal/flow/logging"
+	"github.com/blockopsnetwork/telescope/internal/flow/logging"
 	"github.com/grafana/dskit/log"
 )
 

@@ -3,9 +3,9 @@ package flow
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component"
-	"github.com/grafana/agent/internal/flow/internal/controller"
-	"github.com/grafana/agent/internal/flow/internal/dag"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/controller"
+	"github.com/blockopsnetwork/telescope/internal/flow/internal/dag"
 )
 
 // GetComponent implements [component.Provider].

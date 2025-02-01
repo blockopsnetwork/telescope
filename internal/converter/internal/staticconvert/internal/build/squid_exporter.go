@@ -1,9 +1,9 @@
 package build
 
 import (
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/component/prometheus/exporter/squid"
-	"github.com/grafana/agent/internal/static/integrations/squid_exporter"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter/squid"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/squid_exporter"
 	"github.com/grafana/river/rivertypes"
 )
 

@@ -6,9 +6,9 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/component/discovery"
-	promsdconsumer "github.com/grafana/agent/internal/static/traces/promsdprocessor/consumer"
-	util "github.com/grafana/agent/internal/util/log"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	promsdconsumer "github.com/blockopsnetwork/telescope/internal/static/traces/promsdprocessor/consumer"
+	util "github.com/blockopsnetwork/telescope/internal/util/log"
 	"github.com/prometheus/prometheus/config"
 	promdiscovery "github.com/prometheus/prometheus/discovery"
 	"github.com/prometheus/prometheus/discovery/targetgroup"

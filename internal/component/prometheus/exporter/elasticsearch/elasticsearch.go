@@ -3,12 +3,12 @@ package elasticsearch
 import (
 	"time"
 
-	"github.com/grafana/agent/internal/component"
-	commonCfg "github.com/grafana/agent/internal/component/common/config"
-	"github.com/grafana/agent/internal/component/prometheus/exporter"
-	"github.com/grafana/agent/internal/featuregate"
-	"github.com/grafana/agent/internal/static/integrations"
-	"github.com/grafana/agent/internal/static/integrations/elasticsearch_exporter"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	commonCfg "github.com/blockopsnetwork/telescope/internal/component/common/config"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/exporter"
+	"github.com/blockopsnetwork/telescope/internal/featuregate"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations"
+	"github.com/blockopsnetwork/telescope/internal/static/integrations/elasticsearch_exporter"
 )
 
 func init() {

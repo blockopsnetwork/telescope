@@ -3,8 +3,8 @@ package build
 import (
 	"strings"
 
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/static/config"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/static/config"
 	"github.com/grafana/river/token/builder"
 )
 

@@ -3,9 +3,9 @@ package build
 import (
 	"time"
 
-	"github.com/grafana/agent/internal/component/discovery/consulagent"
-	"github.com/grafana/agent/internal/converter/diag"
-	"github.com/grafana/agent/internal/converter/internal/common"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery/consulagent"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/converter/internal/common"
 	promtail_consulagent "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
 	"github.com/grafana/river/rivertypes"
 )

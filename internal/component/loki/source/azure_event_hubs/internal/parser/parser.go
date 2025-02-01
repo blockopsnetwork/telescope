@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/IBM/sarama"
-	"github.com/grafana/agent/internal/component/common/loki"
+	"github.com/blockopsnetwork/telescope/internal/component/common/loki"
 	"github.com/grafana/loki/pkg/logproto"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/labels"

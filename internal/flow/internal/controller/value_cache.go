@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/grafana/agent/internal/component"
+	"github.com/blockopsnetwork/telescope/internal/component"
 	"github.com/grafana/river/vm"
 )
 

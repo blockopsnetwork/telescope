@@ -7,10 +7,10 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/grafana/agent/internal/build"
-	"github.com/grafana/agent/internal/static/operator"
-	"github.com/grafana/agent/internal/static/operator/logutil"
-	util_log "github.com/grafana/agent/internal/util/log"
+	"github.com/blockopsnetwork/telescope/internal/build"
+	"github.com/blockopsnetwork/telescope/internal/static/operator"
+	"github.com/blockopsnetwork/telescope/internal/static/operator/logutil"
+	util_log "github.com/blockopsnetwork/telescope/internal/util/log"
 	controller "sigs.k8s.io/controller-runtime"
 
 	// Needed for clients.

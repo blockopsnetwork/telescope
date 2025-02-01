@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/grafana/agent/internal/static/server"
-	"github.com/grafana/agent/internal/static/traces/traceutils"
-	"github.com/grafana/agent/internal/util"
+	"github.com/blockopsnetwork/telescope/internal/static/server"
+	"github.com/blockopsnetwork/telescope/internal/static/traces/traceutils"
+	"github.com/blockopsnetwork/telescope/internal/util"
 	"github.com/grafana/dskit/log"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"

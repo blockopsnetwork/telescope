@@ -3,7 +3,7 @@ package flowmode
 import (
 	"fmt"
 
-	"github.com/grafana/agent/internal/component/prometheus/remotewrite"
+	"github.com/blockopsnetwork/telescope/internal/component/prometheus/remotewrite"
 	"github.com/spf13/cobra"
 )
 

@@ -10,10 +10,10 @@ import (
 	"github.com/grafana/river/printer"
 	"github.com/grafana/river/scanner"
 
-	"github.com/grafana/agent/internal/component"
-	flow_relabel "github.com/grafana/agent/internal/component/common/relabel"
-	"github.com/grafana/agent/internal/component/discovery"
-	"github.com/grafana/agent/internal/converter/diag"
+	"github.com/blockopsnetwork/telescope/internal/component"
+	flow_relabel "github.com/blockopsnetwork/telescope/internal/component/common/relabel"
+	"github.com/blockopsnetwork/telescope/internal/component/discovery"
+	"github.com/blockopsnetwork/telescope/internal/converter/diag"
 	"github.com/grafana/river/rivertypes"
 	"github.com/grafana/river/token/builder"
 )

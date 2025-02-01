@@ -5,7 +5,7 @@ package main
 import (
 	"testing"
 
-	"github.com/grafana/agent/internal/cmd/integration-tests/common"
+	"github.com/blockopsnetwork/telescope/internal/cmd/integration-tests/common"
 )
 
 func TestScrapePromMetrics(t *testing.T) {
