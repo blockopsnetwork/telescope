@@ -15,13 +15,17 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+
     goos:
       - linux
+      - darwin
+
     goarch:
       - amd64
       - arm64
+
     goamd64:
-      - v1 
+      - v1
     main: ./cmd/agent/
     ldflags:
       - -s -w -X main.version={{.Version}}
@@ -36,8 +40,8 @@ archives:
       - README.md
 
 checksum:
-  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
-  algorithm: sha256      
+  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
+  algorithm: sha256
 
 changelog:
   sort: asc
