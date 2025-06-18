@@ -574,6 +574,7 @@ func init() {
 	cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
 	cmd.Flags().String("telescope-loki-username", "", "Specify the Loki username")
 	cmd.Flags().String("telescope-loki-password", "", "Specify the Loki password")
+	cmd.Flags().String("enable-features", "", "Comma-delimited list of features to enable (e.g., integrations-next)")
 
 	// Bind all flags to viper
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
@@ -592,7 +593,13 @@ func agent(configPath string) {
 
 	reloader := func(log *server.Logger) (*config.Config, error) {
 		fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-		return config.Load(fs, []string{"-config.file", configPath}, log)
+		// Add enable-features flag support for v2 integrations
+		args := []string{"-config.file", configPath}
+		enableFeatures := viper.GetString("enable-features")
+		if enableFeatures != "" {
+			args = append(args, "-enable-features", enableFeatures)
+		}
+		return config.Load(fs, args, log)
 	}
 
 	cfg, err := reloader(logger)

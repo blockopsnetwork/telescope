@@ -54,21 +54,17 @@ type Integration struct {
 	netMetrics     jobs.Net
 	diskUsage      disk.UsageMetrics
 
-	// Add registry for metrics handler
-	metricsRegistry *prometheus.Registry
+	// Track if metrics are already registered
+	metricsRegistered bool
 }
 
 // New creates a new ethereum integration
 func New(log log.Logger, cfg *Config, globals v2integrations.Globals) *Integration {
-	// Create a new registry for metrics
-	registry := prometheus.NewRegistry()
-
 	return &Integration{
-		log:             log,
-		cfg:             cfg,
-		reg:             registry,
-		metricsRegistry: registry,
-		globals:         globals,
+		log:     log,
+		cfg:     cfg,
+		reg:     prometheus.DefaultRegisterer,
+		globals: globals,
 	}
 }
 
@@ -76,6 +72,13 @@ func New(log log.Logger, cfg *Config, globals v2integrations.Globals) *Integrati
 func (i *Integration) RunIntegration(ctx context.Context) error {
 	if !i.cfg.Enabled {
 		level.Info(i.log).Log("msg", "ethereum integration disabled")
+		return nil
+	}
+
+	// Prevent double initialization
+	if i.metricsRegistered {
+		level.Info(i.log).Log("msg", "ethereum integration already running")
+		<-ctx.Done()
 		return nil
 	}
 
@@ -94,7 +97,7 @@ func (i *Integration) RunIntegration(ctx context.Context) error {
 		// Register consensus metrics if available
 		if i.beaconClient != nil {
 			if collector, ok := i.beaconClient.(prometheus.Collector); ok {
-				if err := i.metricsRegistry.Register(collector); err != nil {
+				if err := i.reg.Register(collector); err != nil {
 					level.Error(i.log).Log("msg", "failed to register consensus metrics", "err", err)
 				}
 			}
@@ -108,13 +111,18 @@ func (i *Integration) RunIntegration(ctx context.Context) error {
 		// Register disk usage metrics
 		if i.diskUsage != nil {
 			if collector, ok := i.diskUsage.(prometheus.Collector); ok {
-				if err := i.metricsRegistry.Register(collector); err != nil {
+				if err := i.reg.Register(collector); err != nil {
 					level.Error(i.log).Log("msg", "failed to register disk usage metrics", "err", err)
 				}
 			}
 		}
 	}
 
+	// Mark as registered to prevent duplicate setup
+	i.metricsRegistered = true
+	
+	// Wait for context cancellation
+	<-ctx.Done()
 	return nil
 }
 
@@ -137,77 +145,85 @@ func (i *Integration) setupExecutionClient(ctx context.Context) error {
 	logrusLogger.SetOutput(log.NewStdlibAdapter(i.log))
 	internalAPI := api.NewExecutionClient(ctx, logrusLogger, i.cfg.Execution.URL)
 
-	// Create const labels
+	// Create const labels matching the original exporter exactly
 	constLabels := make(prometheus.Labels)
 	constLabels["ethereum_role"] = "execution"
 	constLabels["node_name"] = "ethereum"
 
-	// Create and register metrics collectors
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"eth"}); able {
-		i.syncMetrics = jobs.NewSyncStatus(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(
-			i.syncMetrics.Percentage,
-			i.syncMetrics.StartingBlock,
-			i.syncMetrics.CurrentBlock,
-			i.syncMetrics.IsSyncing,
-			i.syncMetrics.HighestBlock,
-		)
+	// Initialize all metrics collectors exactly like the original exporter
+	i.syncMetrics = jobs.NewSyncStatus(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+	i.generalMetrics = jobs.NewGeneralMetrics(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+	i.txpoolMetrics = jobs.NewTXPool(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+	i.adminMetrics = jobs.NewAdmin(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+	i.blockMetrics = jobs.NewBlockMetrics(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+	i.web3Metrics = jobs.NewWeb3(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+	i.netMetrics = jobs.NewNet(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth_exe", constLabels)
+
+	// Enable and register metrics based on modules - exactly like the original
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.syncMetrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling sync status metrics")
+		i.reg.MustRegister(i.syncMetrics.Percentage)
+		i.reg.MustRegister(i.syncMetrics.StartingBlock)
+		i.reg.MustRegister(i.syncMetrics.CurrentBlock)
+		i.reg.MustRegister(i.syncMetrics.IsSyncing)
+		i.reg.MustRegister(i.syncMetrics.HighestBlock)
 		go i.syncMetrics.Start(ctx)
 	}
 
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"eth", "net"}); able {
-		i.generalMetrics = jobs.NewGeneralMetrics(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(
-			i.generalMetrics.NetworkID,
-			i.generalMetrics.GasPrice,
-			i.generalMetrics.ChainID,
-		)
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.generalMetrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling general metrics")
+		i.reg.MustRegister(i.generalMetrics.NetworkID)
+		i.reg.MustRegister(i.generalMetrics.GasPrice)
+		i.reg.MustRegister(i.generalMetrics.ChainID)
 		go i.generalMetrics.Start(ctx)
 	}
 
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"txpool"}); able {
-		i.txpoolMetrics = jobs.NewTXPool(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(i.txpoolMetrics.Transactions)
-		go i.txpoolMetrics.Start(ctx)
-	}
-
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"admin"}); able {
-		i.adminMetrics = jobs.NewAdmin(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(
-			i.adminMetrics.NodeInfo,
-			i.adminMetrics.Port,
-			i.adminMetrics.Peers,
-		)
-		go i.adminMetrics.Start(ctx)
-	}
-
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"eth", "net"}); able {
-		i.blockMetrics = jobs.NewBlockMetrics(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(
-			i.blockMetrics.MostRecentBlockNumber,
-			i.blockMetrics.HeadBlockSize,
-			i.blockMetrics.HeadGasLimit,
-			i.blockMetrics.HeadGasUsed,
-			i.blockMetrics.HeadTransactionCount,
-			i.blockMetrics.HeadBaseFeePerGas,
-			i.blockMetrics.SafeBaseFeePerGas,
-			i.blockMetrics.SafeBlockSize,
-			i.blockMetrics.SafeGasLimit,
-			i.blockMetrics.SafeGasUsed,
-			i.blockMetrics.SafeTransactionCount,
-		)
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.blockMetrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling block metrics")
+		i.reg.MustRegister(i.blockMetrics.MostRecentBlockNumber)
+		i.reg.MustRegister(i.blockMetrics.HeadBlockSize)
+		i.reg.MustRegister(i.blockMetrics.HeadGasLimit)
+		i.reg.MustRegister(i.blockMetrics.HeadGasUsed)
+		i.reg.MustRegister(i.blockMetrics.HeadTransactionCount)
+		i.reg.MustRegister(i.blockMetrics.HeadBaseFeePerGas)
+		i.reg.MustRegister(i.blockMetrics.SafeBaseFeePerGas)
+		i.reg.MustRegister(i.blockMetrics.SafeBlockSize)
+		i.reg.MustRegister(i.blockMetrics.SafeGasLimit)
+		i.reg.MustRegister(i.blockMetrics.SafeGasUsed)
+		i.reg.MustRegister(i.blockMetrics.SafeTransactionCount)
 		go i.blockMetrics.Start(ctx)
 	}
 
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"web3"}); able {
-		i.web3Metrics = jobs.NewWeb3(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(i.web3Metrics.ClientVersion)
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.txpoolMetrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling txpool metrics")
+		i.reg.MustRegister(i.txpoolMetrics.Transactions)
+		go i.txpoolMetrics.Start(ctx)
+	}
+
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.adminMetrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling admin metrics")
+		i.reg.MustRegister(i.adminMetrics.NodeInfo)
+		i.reg.MustRegister(i.adminMetrics.Port)
+		i.reg.MustRegister(i.adminMetrics.Peers)
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					level.Error(i.log).Log("msg", "admin metrics crashed", "err", r)
+				}
+			}()
+			i.adminMetrics.Start(ctx)
+		}()
+	}
+
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.web3Metrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling web3 metrics")
+		i.reg.MustRegister(i.web3Metrics.ClientVersion)
 		go i.web3Metrics.Start(ctx)
 	}
 
-	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, []string{"net"}); able {
-		i.netMetrics = jobs.NewNet(i.ethClient, internalAPI, i.ethRPCClient, logrusLogger, "eth", constLabels)
-		i.metricsRegistry.MustRegister(i.netMetrics.PeerCount)
+	if able := jobs.ExporterCanRun(i.cfg.Execution.Modules, i.netMetrics.RequiredModules()); able {
+		level.Info(i.log).Log("msg", "Enabling net metrics")
+		i.reg.MustRegister(i.netMetrics.PeerCount)
 		go i.netMetrics.Start(ctx)
 	}
 
@@ -314,7 +330,7 @@ func (i *Integration) Stop() {
 // Handler implements v2integrations.HTTPIntegration
 func (i *Integration) Handler(prefix string) (http.Handler, error) {
 	mux := http.NewServeMux()
-	mux.Handle(prefix+"/metrics", promhttp.HandlerFor(i.metricsRegistry, promhttp.HandlerOpts{}))
+	mux.Handle(prefix+"/metrics", promhttp.Handler())
 	return mux, nil
 }
 
