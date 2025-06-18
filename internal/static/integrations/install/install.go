@@ -38,6 +38,7 @@ import (
 	// v2 integrations
 	//
 
+	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/ethereum"              // register ethereum
 	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/v2/agent"              // register agent
 	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/v2/apache_http"        // register apache_exporter
 	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/v2/app_agent_receiver" // register app_agent_receiver
