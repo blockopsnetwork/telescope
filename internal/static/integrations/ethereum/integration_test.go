@@ -78,6 +78,34 @@ func TestIntegration_DiskUsage(t *testing.T) {
 	integration.Stop()
 }
 
+func TestIntegration_ConsensusClient(t *testing.T) {
+	cfg := &Config{
+		Enabled: true,
+		Consensus: ConsensusConfig{
+			Enabled: true,
+			URL:     "http://localhost:5052", // This should be a mock server in real tests
+			EventStream: EventStreamConfig{
+				Enabled: true,
+				Topics:  []string{"head", "finalized_checkpoint"},
+			},
+		},
+	}
+	logger := log.NewNopLogger()
+	reg := prometheus.NewRegistry()
+
+	integration := New(logger, cfg, reg)
+
+	// Start the integration
+	err := integration.Run(context.Background())
+	require.Error(t, err) // Should error because we can't connect to the client
+	assert.Contains(t, err.Error(), "failed to connect to consensus client")
+
+	// Verify no metrics were registered
+	metrics, err := reg.Gather()
+	require.NoError(t, err)
+	assert.Empty(t, metrics)
+}
+
 func TestIntegration_InvalidConfig(t *testing.T) {
 	tests := []struct {
 		name string
