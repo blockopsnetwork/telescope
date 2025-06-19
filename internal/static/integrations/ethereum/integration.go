@@ -17,7 +17,6 @@ import (
 	v2integrations "github.com/blockopsnetwork/telescope/internal/static/integrations/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	promConfig "github.com/prometheus/prometheus/config"
 	"github.com/prometheus/prometheus/discovery"
 	"github.com/prometheus/prometheus/discovery/targetgroup"
 	"github.com/prometheus/common/model"
@@ -60,6 +59,8 @@ type Integration struct {
 
 // New creates a new ethereum integration
 func New(log log.Logger, cfg *Config, globals v2integrations.Globals) *Integration {
+	// Use a separate registry for this integration to avoid duplicate metrics
+	// Metrics will be exposed via HTTP handler and scraped by autoscrape
 	return &Integration{
 		log:     log,
 		cfg:     cfg,
@@ -94,13 +95,8 @@ func (i *Integration) RunIntegration(ctx context.Context) error {
 		if err := i.setupConsensusClient(ctx); err != nil {
 			return fmt.Errorf("failed to setup consensus client: %w", err)
 		}
-		// Register and start consensus metrics if available
+		// Start consensus client - metrics are auto-registered by the beacon library
 		if i.beaconClient != nil {
-			if collector, ok := i.beaconClient.(prometheus.Collector); ok {
-				if err := i.reg.Register(collector); err != nil {
-					level.Error(i.log).Log("msg", "failed to register consensus metrics", "err", err)
-				}
-			}
 			// Start the consensus client to begin collecting metrics
 			if starter, ok := i.beaconClient.(interface{ StartAsync(context.Context) }); ok {
 				go starter.StartAsync(ctx)
@@ -334,7 +330,8 @@ func (i *Integration) Stop() {
 // Handler implements v2integrations.HTTPIntegration
 func (i *Integration) Handler(prefix string) (http.Handler, error) {
 	mux := http.NewServeMux()
-	mux.Handle(prefix+"/metrics", promhttp.Handler())
+	// Use the global registry since autoscrape is disabled
+    mux.Handle(prefix+"/metrics", promhttp.Handler())
 	return mux, nil
 }
 
@@ -355,23 +352,6 @@ func (i *Integration) Targets(ep v2integrations.Endpoint) []*targetgroup.Group {
 
 // ScrapeConfigs implements v2integrations.MetricsIntegration
 func (i *Integration) ScrapeConfigs(sd discovery.Configs) []*autoscrape.ScrapeConfig {
-	// Check if autoscrape is enabled
-	if !*i.cfg.Common.Autoscrape.Enable {
-		return nil
-	}
-
-	// Create scrape config based on the default
-	cfg := promConfig.DefaultScrapeConfig
-	cfg.JobName = fmt.Sprintf("ethereum/%s", i.cfg.Name())
-	cfg.Scheme = i.globals.AgentBaseURL.Scheme
-	cfg.ServiceDiscoveryConfigs = sd
-	cfg.ScrapeInterval = i.cfg.Common.Autoscrape.ScrapeInterval
-	cfg.ScrapeTimeout = i.cfg.Common.Autoscrape.ScrapeTimeout
-	cfg.RelabelConfigs = i.cfg.Common.Autoscrape.RelabelConfigs
-	cfg.MetricRelabelConfigs = i.cfg.Common.Autoscrape.MetricRelabelConfigs
-
-	return []*autoscrape.ScrapeConfig{{
-		Instance: i.cfg.Common.Autoscrape.MetricsInstance,
-		Config:   cfg,
-	}}
+	// Disable autoscrape to avoid duplicate metrics since we register directly to global registry
+   return nil
 }
