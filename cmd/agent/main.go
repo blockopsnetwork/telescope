@@ -86,25 +86,6 @@ func getSupportedNetworks() []string {
 	return networks
 }
 
-var helperFunction = func(cmd *cobra.Command, args []string) {
-	defaultCfg := server.DefaultConfig()
-	logger := server.NewLogger(&defaultCfg)
-	level.Info(logger).Log("msg", "Telescope CLI Help")
-	level.Info(logger).Log("msg", "Available flags",
-		"metrics", "Enable metrics (bool)",
-		"network", fmt.Sprintf("Specify the network (%s)", strings.Join(getSupportedNetworks(), ", ")),
-		"project-id", "Specify the project ID",
-		"project-name", "Specify the project name",
-		"telescope-username", "Specify the telescope username",
-		"telescope-password", "Specify the telescope password",
-		"remote-write-url", "Specify the remote write URL",
-		"config-file", "Specify the config file",
-		"enable-logs", "Enable logs (bool)",
-		"logs-sink-url", "Specify the Log Sink URL",
-		"telescope-loki-username", "Specify the Loki username",
-		"telescope-loki-password", "Specify the Loki password",
-	)
-}
 
 var networkConfigs = map[string]networksConfig.NetworkConfig{
 	"ethereum":    networksConfig.NewEthereumConfig(),
@@ -209,6 +190,12 @@ type TelescopeConfig struct {
 	LokiUsername      string
 	LokiPassword      string
 	LogsSinkURL       string
+	// Ethereum integration fields
+	EthereumEnabled         bool
+	EthereumExecutionURL    string
+	EthereumConsensusURL    string
+	EthereumMonitoredDirs   []string
+	EthereumExecutionModules []string
 }
 
 func handleErr(err error, msg string) {
@@ -372,6 +359,71 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 		}
 	}
 
+	metricsInstanceName := toLowerAndEscape(config.ProjectName + "_" + config.Network + "_metrics")
+	integrations := map[string]interface{}{
+		"agent": map[string]interface{}{
+			"autoscrape": map[string]interface{}{
+				"enable":           true,
+				"metrics_instance": metricsInstanceName,
+			},
+		},
+		"node_exporter": map[string]interface{}{
+			"autoscrape": map[string]interface{}{
+				"enable":           true,
+				"metrics_instance": metricsInstanceName,
+			},
+		},
+	}
+
+	// Add Ethereum integration if enabled
+	if config.EthereumEnabled || config.EthereumExecutionURL != "" || config.EthereumConsensusURL != "" {
+
+		ethereumConfig := map[string]interface{}{
+			"instance": "ethereum_node_1",
+			"enabled":  true,
+			"autoscrape": map[string]interface{}{
+				"enable":           true,
+				"metrics_instance": metricsInstanceName,
+			},
+		}
+
+		// Add execution config if URL provided
+		if config.EthereumExecutionURL != "" {
+			modules := config.EthereumExecutionModules
+			if len(modules) == 0 {
+				modules = []string{"sync", "eth", "net", "web3", "txpool"}
+			}
+			ethereumConfig["execution"] = map[string]interface{}{
+				"enabled": true,
+				"url":     config.EthereumExecutionURL,
+				"modules": modules,
+			}
+		}
+
+		// Add consensus config if URL provided
+		if config.EthereumConsensusURL != "" {
+			ethereumConfig["consensus"] = map[string]interface{}{
+				"enabled": true,
+				"url":     config.EthereumConsensusURL,
+				"event_stream": map[string]interface{}{
+					"enabled": true,
+					"topics":  []string{"head", "finalized_checkpoint"},
+				},
+			}
+		}
+
+		// Add disk usage config if directories provided
+		if len(config.EthereumMonitoredDirs) > 0 {
+			ethereumConfig["disk_usage"] = map[string]interface{}{
+				"enabled":     true,
+				"directories": config.EthereumMonitoredDirs,
+				"interval":    "5m",
+			}
+		}
+
+		integrations["ethereum_configs"] = []interface{}{ethereumConfig}
+	}
+
 	cfg := Config{
 		Server: ServerConfig{
 			LogLevel: "info",
@@ -402,14 +454,7 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 				},
 			},
 		},
-		Integrations: map[string]interface{}{
-			"agent":         ToIntegrate{Enabled: false},
-			"node_exporter": ToIntegrate{Enabled: true},
-			"cadvisor": CadvisorIntegration{
-                Enabled:    false,
-                DockerOnly: true,
-            },
-		},
+		Integrations: integrations,
 	}
 
 	if config.Logs {
@@ -481,6 +526,13 @@ func (c *TelescopeConfig) loadConfig() error {
 	c.LokiUsername = viper.GetString("telescope-loki-username")
 	c.LokiPassword = viper.GetString("telescope-loki-password")
 	c.LogsSinkURL = viper.GetString("logs-sink-url")
+	
+	// Load Ethereum integration values
+	c.EthereumEnabled = viper.GetBool("ethereum-enabled")
+	c.EthereumExecutionURL = viper.GetString("ethereum-execution-url")
+	c.EthereumConsensusURL = viper.GetString("ethereum-consensus-url")
+	c.EthereumMonitoredDirs = viper.GetStringSlice("ethereum-monitored-dirs")
+	c.EthereumExecutionModules = viper.GetStringSlice("ethereum-execution-modules")
 
 	// Run all validations
 	if err := c.validate(); err != nil {
@@ -495,6 +547,43 @@ func (c *TelescopeConfig) loadConfig() error {
 		return fmt.Errorf("logs configuration error: %w", err)
 	}
 
+	if err := c.validateEthereumConfig(); err != nil {
+		return fmt.Errorf("ethereum configuration error: %w", err)
+	}
+
+	return nil
+}
+
+// validates ethereum integration configuration.
+// Ensures that if ethereum flags are provided, integrations-next feature is enabled.
+func (c *TelescopeConfig) validateEthereumConfig() error {
+	// Check if any ethereum flags are provided
+	ethereumEnabled := c.EthereumEnabled || c.EthereumExecutionURL != "" || c.EthereumConsensusURL != "" || len(c.EthereumMonitoredDirs) > 0
+	
+	if ethereumEnabled {
+		enableFeatures := viper.GetString("enable-features")
+		if !strings.Contains(enableFeatures, "integrations-next") {
+			return fmt.Errorf("ethereum integration requires --enable-features integrations-next flag to be specified")
+		}
+		
+		// Validate that at least one ethereum component is configured
+		if c.EthereumExecutionURL == "" && c.EthereumConsensusURL == "" && len(c.EthereumMonitoredDirs) == 0 {
+			return fmt.Errorf("when ethereum integration is enabled, at least one of --ethereum-execution-url, --ethereum-consensus-url, or --ethereum-monitored-dirs must be provided")
+		}
+		
+		// Validate URLs if provided
+		if c.EthereumExecutionURL != "" {
+			if err := validateURL(c.EthereumExecutionURL, "ethereum execution"); err != nil {
+				return err
+			}
+		}
+		if c.EthereumConsensusURL != "" {
+			if err := validateURL(c.EthereumConsensusURL, "ethereum consensus"); err != nil {
+				return err
+			}
+		}
+	}
+	
 	return nil
 }
 
@@ -559,22 +648,61 @@ func checkRequiredFlags() error {
 func init() {
 	prometheus.MustRegister(build.NewCollector("agent"))
 	cobra.OnInitialize(initConfig)
-	cmd.SetHelpFunc(helperFunction)
 
-	// Add and bind flags
-	cmd.Flags().String("config-file", "", "Specify the config file")
-	cmd.Flags().Bool("metrics", true, "Enable metrics")
-	cmd.Flags().Bool("enable-logs", false, "Enable logs")
-	cmd.Flags().String("network", "", "Specify the network")
-	cmd.Flags().String("project-id", "", "Specify the project ID")
-	cmd.Flags().String("project-name", "", "Specify the project name")
-	cmd.Flags().String("telescope-username", "", "Specify the telescope username")
-	cmd.Flags().String("telescope-password", "", "Specify the telescope password")
-	cmd.Flags().String("remote-write-url", "", "Specify the remote write URL")
-	cmd.Flags().String("logs-sink-url", "", "Specify the Log Sink URL")
-	cmd.Flags().String("telescope-loki-username", "", "Specify the Loki username")
-	cmd.Flags().String("telescope-loki-password", "", "Specify the Loki password")
-	cmd.Flags().String("enable-features", "", "Comma-delimited list of features to enable (e.g., integrations-next)")
+	// Set command description and examples
+	cmd.Use = "telescope"
+	cmd.Short = "Telescope monitoring agent"
+	cmd.Long = `Telescope is a monitoring agent that collects metrics and logs from various sources
+and forwards them to remote endpoints. It supports multiple integrations including
+Ethereum blockchain monitoring, system metrics, and custom applications.
+
+IMPORTANT: Ethereum integration requires --enable-features integrations-next`
+
+	cmd.Example = `  # Basic metrics collection
+  telescope --network=ethereum --project-id=my-project --project-name=my-project \
+            --telescope-username=user --telescope-password=pass \
+            --remote-write-url=https://prometheus.example.com/api/v1/write
+
+  # With Ethereum integration  
+  telescope --enable-features integrations-next --network=ethereum \
+            --project-id=my-project --project-name=my-project \
+            --telescope-username=user --telescope-password=pass \
+            --remote-write-url=https://prometheus.example.com/api/v1/write \
+            --ethereum-execution-url=http://localhost:8545 \
+            --ethereum-consensus-url=http://localhost:5052`
+
+	// Basic configuration flags
+	cmd.Flags().String("config-file", "", "Config file path (alternative to using flags)")
+	cmd.Flags().String("network", "", fmt.Sprintf("Target network (%s)", strings.Join(getSupportedNetworks(), ", ")))
+	cmd.Flags().String("project-id", "", "Project identifier")
+	cmd.Flags().String("project-name", "", "Project name for labeling")
+
+	// Metrics configuration flags  
+	cmd.Flags().Bool("metrics", true, "Enable metrics collection")
+	cmd.Flags().String("telescope-username", "", "Username for remote write authentication")
+	cmd.Flags().String("telescope-password", "", "Password for remote write authentication")
+	cmd.Flags().String("remote-write-url", "", "Prometheus remote write endpoint URL")
+
+	// Logs configuration flags
+	cmd.Flags().Bool("enable-logs", false, "Enable log collection")
+	cmd.Flags().String("logs-sink-url", "", "Log sink endpoint URL")
+	cmd.Flags().String("telescope-loki-username", "", "Username for Loki authentication")
+	cmd.Flags().String("telescope-loki-password", "", "Password for Loki authentication")
+
+	// Feature flags
+	cmd.Flags().String("enable-features", "", "Experimental features (comma-separated, e.g., integrations-next)")
+	
+	// Ethereum integration flags
+	cmd.Flags().Bool("ethereum-enabled", false, "Enable Ethereum metrics collection")
+	cmd.Flags().String("ethereum-execution-url", "", "Ethereum execution node URL (e.g., http://localhost:8545)")
+	cmd.Flags().String("ethereum-consensus-url", "", "Ethereum consensus node URL (e.g., http://localhost:5052)")
+	cmd.Flags().StringSlice("ethereum-monitored-dirs", []string{}, "Directories to monitor for disk usage (comma-separated)")
+	cmd.Flags().StringSlice("ethereum-execution-modules", []string{"sync", "eth", "net", "web3", "txpool"}, "Execution modules to enable (comma-separated)")
+
+	// Mark required flags
+	cmd.MarkFlagRequired("network")
+	cmd.MarkFlagRequired("project-id") 
+	cmd.MarkFlagRequired("project-name")
 
 	// Bind all flags to viper
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
