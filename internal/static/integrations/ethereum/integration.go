@@ -94,12 +94,16 @@ func (i *Integration) RunIntegration(ctx context.Context) error {
 		if err := i.setupConsensusClient(ctx); err != nil {
 			return fmt.Errorf("failed to setup consensus client: %w", err)
 		}
-		// Register consensus metrics if available
+		// Register and start consensus metrics if available
 		if i.beaconClient != nil {
 			if collector, ok := i.beaconClient.(prometheus.Collector); ok {
 				if err := i.reg.Register(collector); err != nil {
 					level.Error(i.log).Log("msg", "failed to register consensus metrics", "err", err)
 				}
+			}
+			// Start the consensus client to begin collecting metrics
+			if starter, ok := i.beaconClient.(interface{ StartAsync(context.Context) }); ok {
+				go starter.StartAsync(ctx)
 			}
 		}
 	}
