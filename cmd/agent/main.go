@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	networksConfig "github.com/blockopsnetwork/telescope/internal/static/config/networks"
 
@@ -60,7 +61,7 @@ var cmd = &cobra.Command{
 
 		// Get network config and generate scrape configs
 		networkConfig := getNetworkConfig(config.Network)
-		level.Info(logger).Log("msg", "starting telescope agent", "network_config", networkConfig)
+		level.Info(logger).Log("msg", "starting telescope agent", "network", config.Network)
 		scrapeConfigs := networkConfig.GenerateScrapeConfigs(config.ProjectName, config.Network)
 
 		// Generate and write full config
@@ -191,11 +192,13 @@ type TelescopeConfig struct {
 	LokiPassword      string
 	LogsSinkURL       string
 	// Ethereum integration fields
-	EthereumEnabled         bool
-	EthereumExecutionURL    string
-	EthereumConsensusURL    string
-	EthereumMonitoredDirs   []string
-	EthereumExecutionModules []string
+	EthereumEnabled            bool
+	EthereumExecutionURL       string
+	EthereumConsensusURL       string
+	EthereumExecutionModules   []string
+	EthereumDiskUsageEnabled   bool
+	EthereumDiskUsageDirs      []string
+	EthereumDiskUsageInterval  string
 }
 
 func handleErr(err error, msg string) {
@@ -376,7 +379,7 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 	}
 
 	// Add Ethereum integration if enabled
-	if config.EthereumEnabled || config.EthereumExecutionURL != "" || config.EthereumConsensusURL != "" {
+	if config.EthereumEnabled || config.EthereumExecutionURL != "" || config.EthereumConsensusURL != "" || config.EthereumDiskUsageEnabled {
 
 		ethereumConfig := map[string]interface{}{
 			"instance": "ethereum_node_1",
@@ -412,12 +415,16 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 			}
 		}
 
-		// Add disk usage config if directories provided
-		if len(config.EthereumMonitoredDirs) > 0 {
+		// Add disk usage config if enabled
+		if config.EthereumDiskUsageEnabled {
+			interval := config.EthereumDiskUsageInterval
+			if interval == "" {
+				interval = "5m" // default
+			}
 			ethereumConfig["disk_usage"] = map[string]interface{}{
 				"enabled":     true,
-				"directories": config.EthereumMonitoredDirs,
-				"interval":    "5m",
+				"directories": config.EthereumDiskUsageDirs,
+				"interval":    interval,
 			}
 		}
 
@@ -531,8 +538,10 @@ func (c *TelescopeConfig) loadConfig() error {
 	c.EthereumEnabled = viper.GetBool("ethereum-enabled")
 	c.EthereumExecutionURL = viper.GetString("ethereum-execution-url")
 	c.EthereumConsensusURL = viper.GetString("ethereum-consensus-url")
-	c.EthereumMonitoredDirs = viper.GetStringSlice("ethereum-monitored-dirs")
 	c.EthereumExecutionModules = viper.GetStringSlice("ethereum-execution-modules")
+	c.EthereumDiskUsageEnabled = viper.GetBool("ethereum-disk-usage-enabled")
+	c.EthereumDiskUsageDirs = viper.GetStringSlice("ethereum-disk-usage-dirs")
+	c.EthereumDiskUsageInterval = viper.GetString("ethereum-disk-usage-interval")
 
 	// Run all validations
 	if err := c.validate(); err != nil {
@@ -558,7 +567,7 @@ func (c *TelescopeConfig) loadConfig() error {
 // Ensures that if ethereum flags are provided, integrations-next feature is enabled.
 func (c *TelescopeConfig) validateEthereumConfig() error {
 	// Check if any ethereum flags are provided
-	ethereumEnabled := c.EthereumEnabled || c.EthereumExecutionURL != "" || c.EthereumConsensusURL != "" || len(c.EthereumMonitoredDirs) > 0
+	ethereumEnabled := c.EthereumEnabled || c.EthereumExecutionURL != "" || c.EthereumConsensusURL != "" || c.EthereumDiskUsageEnabled
 	
 	if ethereumEnabled {
 		enableFeatures := viper.GetString("enable-features")
@@ -567,8 +576,8 @@ func (c *TelescopeConfig) validateEthereumConfig() error {
 		}
 		
 		// Validate that at least one ethereum component is configured
-		if c.EthereumExecutionURL == "" && c.EthereumConsensusURL == "" && len(c.EthereumMonitoredDirs) == 0 {
-			return fmt.Errorf("when ethereum integration is enabled, at least one of --ethereum-execution-url, --ethereum-consensus-url, or --ethereum-monitored-dirs must be provided")
+		if c.EthereumExecutionURL == "" && c.EthereumConsensusURL == "" && !c.EthereumDiskUsageEnabled {
+			return fmt.Errorf("when ethereum integration is enabled, at least one of --ethereum-execution-url, --ethereum-consensus-url, or --ethereum-disk-usage-enabled must be provided")
 		}
 		
 		// Validate URLs if provided
@@ -580,6 +589,19 @@ func (c *TelescopeConfig) validateEthereumConfig() error {
 		if c.EthereumConsensusURL != "" {
 			if err := validateURL(c.EthereumConsensusURL, "ethereum consensus"); err != nil {
 				return err
+			}
+		}
+		
+		// Validate disk usage configuration
+		if c.EthereumDiskUsageEnabled {
+			if len(c.EthereumDiskUsageDirs) == 0 {
+				return fmt.Errorf("when --ethereum-disk-usage-enabled is true, --ethereum-disk-usage-dirs must be provided")
+			}
+			// Validate interval format
+			if c.EthereumDiskUsageInterval != "" {
+				if _, err := time.ParseDuration(c.EthereumDiskUsageInterval); err != nil {
+					return fmt.Errorf("invalid --ethereum-disk-usage-interval format: %w", err)
+				}
 			}
 		}
 	}
@@ -669,7 +691,17 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
             --telescope-username=user --telescope-password=pass \
             --remote-write-url=https://prometheus.example.com/api/v1/write \
             --ethereum-execution-url=http://localhost:8545 \
-            --ethereum-consensus-url=http://localhost:5052`
+            --ethereum-consensus-url=http://localhost:5052
+
+  # With disk usage monitoring (separate from node_exporter)
+  telescope --enable-features integrations-next --network=ssv \
+            --project-id=my-project --project-name=my-project \
+            --telescope-username=user --telescope-password=pass \
+            --remote-write-url=https://prometheus.example.com/api/v1/write \
+            --ethereum-execution-url=http://localhost:8545 \
+            --ethereum-disk-usage-enabled \
+            --ethereum-disk-usage-dirs=/data/ethereum,/data/consensus \
+            --ethereum-disk-usage-interval=10m`
 
 	// Basic configuration flags
 	cmd.Flags().String("config-file", "", "Config file path (alternative to using flags)")
@@ -696,8 +728,10 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
 	cmd.Flags().Bool("ethereum-enabled", false, "Enable Ethereum metrics collection")
 	cmd.Flags().String("ethereum-execution-url", "", "Ethereum execution node URL (e.g., http://localhost:8545)")
 	cmd.Flags().String("ethereum-consensus-url", "", "Ethereum consensus node URL (e.g., http://localhost:5052)")
-	cmd.Flags().StringSlice("ethereum-monitored-dirs", []string{}, "Directories to monitor for disk usage (comma-separated)")
 	cmd.Flags().StringSlice("ethereum-execution-modules", []string{"sync", "eth", "net", "web3", "txpool"}, "Execution modules to enable (comma-separated)")
+	cmd.Flags().Bool("ethereum-disk-usage-enabled", false, "Enable Ethereum disk usage monitoring")
+	cmd.Flags().StringSlice("ethereum-disk-usage-dirs", []string{}, "Directories to monitor for Ethereum disk usage (comma-separated)")
+	cmd.Flags().String("ethereum-disk-usage-interval", "5m", "Interval for disk usage collection (e.g., 1h, 5m, 30s)")
 
 	// Mark required flags
 	cmd.MarkFlagRequired("network")
