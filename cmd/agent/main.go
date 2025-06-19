@@ -660,7 +660,8 @@ func checkRequiredFlags() error {
 		}
 	}
 
-	if len(missingFlags) > 0 && viper.GetString("config-file") == "" {
+	// Only require flags if no config file is provided
+	if viper.GetString("config-file") == "" && len(missingFlags) > 0 {
 		return fmt.Errorf("missing required flags: %s", strings.Join(missingFlags, ", "))
 	}
 
@@ -733,10 +734,9 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
 	cmd.Flags().StringSlice("ethereum-disk-usage-dirs", []string{}, "Directories to monitor for Ethereum disk usage (comma-separated)")
 	cmd.Flags().String("ethereum-disk-usage-interval", "5m", "Interval for disk usage collection (e.g., 1h, 5m, 30s)")
 
-	// Mark required flags
-	cmd.MarkFlagRequired("network")
-	cmd.MarkFlagRequired("project-id") 
-	cmd.MarkFlagRequired("project-name")
+	// Note: We don't mark flags as required here because when using --config-file,
+	// these values should come from the config file, not command line flags.
+	// Required flag validation is handled in checkRequiredFlags() function.
 
 	// Bind all flags to viper
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {

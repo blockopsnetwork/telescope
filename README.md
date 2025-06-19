@@ -1,10 +1,10 @@
+# Telescope
+
 <p align="center">
   <a href="https://app.blockops.network" title="Blockops Network">
     <img src="./assets/img/blockops-logo.png" alt="Blockops-Network-logo" width="244" />
   </a>
 </p>
-
-<h1 align="center">Telescope</h1>
 
 - [Summary](#summary)
 - [Usage](#usage)
@@ -229,14 +229,13 @@ Telescope supports the following blockchain networks:
 
 Use the `--network` flag to specify which network configuration to use.
 
-
-
 ## Language
+
 - Golang
 
 ## Contributing
-We would love to work with anyone who can contribute their work and improve this project. The details will be shared soon.
 
+We would love to work with anyone who can contribute their work and improve this project. The details will be shared soon.
 
 ## License
 
