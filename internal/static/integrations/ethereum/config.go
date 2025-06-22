@@ -26,11 +26,6 @@ var DefaultConfig = Config{
 			Topics:  []string{},
 		},
 	},
-	DiskUsage: DiskUsageConfig{
-		Enabled:     false,
-		Directories: []string{"/var/lib/ethereum"},
-		Interval:    "5m",
-	},
 }
 
 // Config holds the configuration for the ethereum integration
@@ -43,9 +38,6 @@ type Config struct {
 
 	// Consensus client configuration
 	Consensus ConsensusConfig `yaml:"consensus"`
-
-	// Disk usage monitoring configuration
-	DiskUsage DiskUsageConfig `yaml:"disk_usage"`
 }
 
 // ExecutionConfig holds the configuration for the execution client
@@ -72,12 +64,6 @@ type EventStreamConfig struct {
 	Topics  []string `yaml:"topics"`
 }
 
-// DiskUsageConfig holds the configuration for disk usage monitoring
-type DiskUsageConfig struct {
-	Enabled     bool     `yaml:"enabled"`
-	Directories []string `yaml:"directories"`
-	Interval    string   `yaml:"interval"`
-}
 
 // Name returns the name of the integration
 func (c *Config) Name() string {

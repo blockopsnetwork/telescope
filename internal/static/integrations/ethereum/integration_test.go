@@ -101,53 +101,12 @@ func TestIntegration_ConsensusClient_InvalidURL(t *testing.T) {
 	integration.Stop()
 }
 
-func TestIntegration_DiskUsage_ValidPath(t *testing.T) {
-	cfg := &Config{
-		Enabled: true,
-		Common:  common.MetricsConfig{},
-		DiskUsage: DiskUsageConfig{
-			Enabled:     true,
-			Directories: []string{"/tmp"},
-			Interval:    "100ms", // Short interval for testing
-		},
-	}
-	logger := log.NewNopLogger()
-	globals := createTestGlobals()
-
-	integration := New(logger, cfg, globals)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	// Start the integration in a goroutine
-	go func() {
-		_ = integration.RunIntegration(ctx)
-	}()
-
-	// Give some time for metrics to be collected
-	time.Sleep(200 * time.Millisecond)
-
-	// Clean up
-	integration.Stop()
-}
 
 func TestIntegration_InvalidConfig(t *testing.T) {
 	tests := []struct {
 		name string
 		cfg  *Config
 	}{
-		{
-			name: "invalid disk usage interval",
-			cfg: &Config{
-				Enabled: true,
-				Common:  common.MetricsConfig{},
-				DiskUsage: DiskUsageConfig{
-					Enabled:     true,
-					Directories: []string{"/tmp"},
-					Interval:    "invalid",
-				},
-			},
-		},
 		{
 			name: "empty execution URL",
 			cfg: &Config{
@@ -195,11 +154,6 @@ func TestIntegration_Stop(t *testing.T) {
 	cfg := &Config{
 		Enabled: true,
 		Common:  common.MetricsConfig{},
-		DiskUsage: DiskUsageConfig{
-			Enabled:     true,
-			Directories: []string{"/tmp"},
-			Interval:    "100ms",
-		},
 	}
 	logger := log.NewNopLogger()
 	globals := createTestGlobals()

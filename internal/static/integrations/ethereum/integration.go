@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethpandaops/beacon/pkg/beacon"
-	"github.com/ethpandaops/ethereum-metrics-exporter/pkg/exporter/disk"
 	"github.com/ethpandaops/ethereum-metrics-exporter/pkg/exporter/execution/api"
 	"github.com/ethpandaops/ethereum-metrics-exporter/pkg/exporter/execution/jobs"
 	"github.com/go-kit/log"
@@ -51,7 +49,6 @@ type Integration struct {
 	blockMetrics   jobs.BlockMetrics
 	web3Metrics    jobs.Web3
 	netMetrics     jobs.Net
-	diskUsage      disk.UsageMetrics
 
 	// Track if metrics are already registered
 	metricsRegistered bool
@@ -104,19 +101,6 @@ func (i *Integration) RunIntegration(ctx context.Context) error {
 		}
 	}
 
-	if i.cfg.DiskUsage.Enabled {
-		if err := i.setupDiskUsage(ctx); err != nil {
-			return fmt.Errorf("failed to setup disk usage: %w", err)
-		}
-		// Register disk usage metrics
-		if i.diskUsage != nil {
-			if collector, ok := i.diskUsage.(prometheus.Collector); ok {
-				if err := i.reg.Register(collector); err != nil {
-					level.Error(i.log).Log("msg", "failed to register disk usage metrics", "err", err)
-				}
-			}
-		}
-	}
 
 	// Mark as registered to prevent duplicate setup
 	i.metricsRegistered = true
@@ -254,61 +238,6 @@ func (i *Integration) setupConsensusClient(ctx context.Context) error {
 	return nil
 }
 
-type diskUsageWrapper struct {
-	disk.UsageMetrics
-	metrics prometheus.Collector
-}
-
-func (d *diskUsageWrapper) Collect(ch chan<- prometheus.Metric) {
-	if d.metrics != nil {
-		d.metrics.Collect(ch)
-	}
-}
-
-func (d *diskUsageWrapper) Describe(ch chan<- *prometheus.Desc) {
-	if d.metrics != nil {
-		d.metrics.Describe(ch)
-	}
-}
-
-func (i *Integration) setupDiskUsage(ctx context.Context) error {
-	level.Info(i.log).Log("msg", "setting up disk usage monitoring", "directories", i.cfg.DiskUsage.Directories)
-
-	interval, err := time.ParseDuration(i.cfg.DiskUsage.Interval)
-	if err != nil {
-		return fmt.Errorf("invalid disk usage interval: %w", err)
-	}
-
-	// Create a logrus logger from our go-kit logger
-	logrusLogger := logrus.New()
-	logrusLogger.SetOutput(log.NewStdlibAdapter(i.log))
-
-	diskUsage, err := disk.NewUsage(
-		ctx,
-		logrusLogger,
-		"eth_disk",
-		i.cfg.DiskUsage.Directories,
-		interval,
-	)
-	if err != nil {
-		return err
-	}
-
-	// Get the metrics collector from the diskUsage instance, if possible
-	var metricsCollector prometheus.Collector
-	if mGetter, ok := diskUsage.(interface{ MetricsCollector() prometheus.Collector }); ok {
-		metricsCollector = mGetter.MetricsCollector()
-	}
-
-	i.diskUsage = &diskUsageWrapper{
-		UsageMetrics: diskUsage,
-		metrics:      metricsCollector,
-	}
-
-	go diskUsage.StartAsync(ctx)
-
-	return nil
-}
 
 // Stop stops the integration
 func (i *Integration) Stop() {
@@ -318,11 +247,6 @@ func (i *Integration) Stop() {
 	if i.beaconClient != nil {
 		if stopper, ok := i.beaconClient.(interface{ Stop(context.Context) error }); ok {
 			_ = stopper.Stop(context.Background())
-		}
-	}
-	if i.diskUsage != nil {
-		if stopper, ok := i.diskUsage.(interface{ Stop() }); ok {
-			stopper.Stop()
 		}
 	}
 }

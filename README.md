@@ -98,24 +98,6 @@ telescope \
   --ethereum-consensus-url=http://localhost:5052
 ```
 
-#### Ethereum Integration with Disk Usage Monitoring
-
-Enable separate disk usage monitoring (useful when node_exporter is not available):
-
-```bash
-telescope \
-  --enable-features integrations-next \
-  --network=ssv \
-  --project-id=my-project \
-  --project-name=my-project \
-  --telescope-username=user \
-  --telescope-password=pass \
-  --remote-write-url=https://prometheus.example.com/api/v1/write \
-  --ethereum-execution-url=http://localhost:8545 \
-  --ethereum-disk-usage-enabled \
-  --ethereum-disk-usage-dirs=/data/ethereum,/data/consensus \
-  --ethereum-disk-usage-interval=10m
-```
 
 #### Available Ethereum Flags
 
@@ -125,13 +107,8 @@ telescope \
 | `--ethereum-execution-url` | Ethereum execution node URL | - | No¹ |
 | `--ethereum-consensus-url` | Ethereum consensus node URL | - | No¹ |
 | `--ethereum-execution-modules` | Execution modules to enable | `sync,eth,net,web3,txpool` | No |
-| `--ethereum-disk-usage-enabled` | Enable disk usage monitoring | `false` | No |
-| `--ethereum-disk-usage-dirs` | Directories to monitor | - | Yes² |
-| `--ethereum-disk-usage-interval` | Disk usage collection interval | `5m` | No |
 
-¹ At least one of `--ethereum-execution-url`, `--ethereum-consensus-url`, or `--ethereum-disk-usage-enabled` must be provided when using Ethereum integration.
-
-² Required when `--ethereum-disk-usage-enabled` is true.
+¹ At least one of `--ethereum-execution-url` or `--ethereum-consensus-url` must be provided when using Ethereum integration.
 
 #### Collected Metrics
 
@@ -139,7 +116,6 @@ The Ethereum integration collects metrics with the `eth_exe_` prefix for executi
 
 - **Execution Layer**: Block height, peer count, sync status, transaction pool metrics, and more
 - **Consensus Layer**: Validator metrics, attestation performance, sync committee participation
-- **Disk Usage**: Directory size monitoring with configurable intervals
 
 ### Using Configuration File
 
@@ -212,10 +188,6 @@ integrations:
         event_stream:
           enabled: true
           topics: ["head", "finalized_checkpoint"]
-      disk_usage:
-        enabled: true
-        directories: ["/data/ethereum", "/data/consensus"]
-        interval: "5m"
 ```
 
 ## Supported Networks
