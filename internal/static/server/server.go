@@ -311,7 +311,15 @@ func newHTTPServer(l log.Logger, g prometheus.Gatherer, opts *Flags, m *metrics)
 		router.Handle("/metrics", promhttp.HandlerFor(g, promhttp.HandlerOpts{
 			EnableOpenMetrics: true,
 		}))
-		router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
+
+		// Create a subrouter for pprof to avoid conflicts
+		pprofRouter := router.PathPrefix("/debug/pprof").Subrouter()
+		pprofRouter.HandleFunc("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/debug/pprof/", http.StatusMovedPermanently)
+		}))
+		pprofRouter.HandleFunc("/{path:.*}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.DefaultServeMux.ServeHTTP(w, r)
+		}))
 	}
 
 	var sourceIPs *middleware.SourceIPExtractor

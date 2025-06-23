@@ -1,13 +1,19 @@
+# Telescope
+
 <p align="center">
   <a href="https://app.blockops.network" title="Blockops Network">
     <img src="./assets/img/blockops-logo.png" alt="Blockops-Network-logo" width="244" />
   </a>
 </p>
 
-<h1 align="center">Telescope</h1>
-
 - [Summary](#summary)
+- [Usage](#usage)
+  - [Basic Configuration](#basic-configuration)
+  - [Ethereum Integration](#ethereum-integration)
+  - [Using Configuration File](#using-configuration-file)
+- [Supported Networks](#supported-networks)
 - [Language](#language)
+- [Contributing](#contributing)
 - [License](#license)
 
 
@@ -19,7 +25,8 @@ An All-in-One Web3 Observability tooling that collects metrics and logs from blo
 
 Telescope can be configured either through command line flags or a YAML configuration file.
 
-Using Command Line Flags
+### Basic Configuration
+
 Basic usage with metrics enabled:
 
 ```bash
@@ -50,7 +57,67 @@ telescope \
   --telescope-loki-password=loki-pass
 ```
 
-#### Using Configuration File
+### Ethereum Integration
+
+Telescope includes native Ethereum blockchain metrics collection that replaces the need for running a separate `ethereum-metrics-exporter`. This integration supports both execution and consensus layer monitoring.
+
+**⚠️ Important**: Ethereum integration requires the `--enable-features integrations-next` flag.
+
+#### Basic Ethereum Integration
+
+Monitor Ethereum execution and consensus nodes:
+
+```bash
+telescope \
+  --enable-features integrations-next \
+  --network=ethereum \
+  --project-id=my-project \
+  --project-name=my-project \
+  --telescope-username=user \
+  --telescope-password=pass \
+  --remote-write-url=https://prometheus.example.com/api/v1/write \
+  --ethereum-execution-url=http://localhost:8545 \
+  --ethereum-consensus-url=http://localhost:5052
+```
+
+#### Ethereum Integration with Custom Modules
+
+Configure which execution client modules to monitor:
+
+```bash
+telescope \
+  --enable-features integrations-next \
+  --network=ethereum \
+  --project-id=my-project \
+  --project-name=my-project \
+  --telescope-username=user \
+  --telescope-password=pass \
+  --remote-write-url=https://prometheus.example.com/api/v1/write \
+  --ethereum-execution-url=http://localhost:8545 \
+  --ethereum-execution-modules=sync,eth,net,web3,txpool \
+  --ethereum-consensus-url=http://localhost:5052
+```
+
+
+#### Available Ethereum Flags
+
+| Flag | Description | Default | Required |
+|------|-------------|---------|----------|
+| `--ethereum-enabled` | Enable Ethereum metrics collection | `false` | No |
+| `--ethereum-execution-url` | Ethereum execution node URL | - | No¹ |
+| `--ethereum-consensus-url` | Ethereum consensus node URL | - | No¹ |
+| `--ethereum-execution-modules` | Execution modules to enable | `sync,eth,net,web3,txpool` | No |
+
+¹ At least one of `--ethereum-execution-url` or `--ethereum-consensus-url` must be provided when using Ethereum integration.
+
+#### Collected Metrics
+
+The Ethereum integration collects metrics with the `eth_exe_` prefix for execution layer and `eth_con_` prefix for consensus layer, including:
+
+- **Execution Layer**: Block height, peer count, sync status, transaction pool metrics, and more
+- **Consensus Layer**: Validator metrics, attestation performance, sync committee participation
+
+### Using Configuration File
 
 Create a YAML configuration file and run:
 
@@ -97,19 +164,50 @@ logs:
         filename: /tmp/telescope_logs
 integrations:
   agent:
-    enabled: false
+    autoscrape:
+      enable: true
+      metrics_instance: "my-name_ethereum_metrics"
   node_exporter:
-    enabled: true
+    autoscrape:
+      enable: true
+      metrics_instance: "my-name_ethereum_metrics"
+  # Optional: Ethereum integration (requires --enable-features integrations-next)
+  ethereum_configs:
+    - instance: "ethereum_node_1"
+      enabled: true
+      autoscrape:
+        enable: true
+        metrics_instance: "my-name_ethereum_metrics"
+      execution:
+        enabled: true
+        url: "http://localhost:8545"
+        modules: ["sync", "eth", "net", "web3", "txpool"]
+      consensus:
+        enabled: true
+        url: "http://localhost:5052"
+        event_stream:
+          enabled: true
+          topics: ["head", "finalized_checkpoint"]
 ```
 
+## Supported Networks
 
+Telescope supports the following blockchain networks:
+
+- **ethereum**: Ethereum mainnet and testnets
+- **polkadot**: Polkadot ecosystem
+- **hyperbridge**: Hyperbridge network
+- **ssv**: Secret Shared Validators (SSV) network
+
+Use the `--network` flag to specify which network configuration to use.
 
 ## Language
+
 - Golang
 
 ## Contributing
-We would love to work with anyone who can contribute their work and improve this project. The details will be shared soon.
 
+We would love to work with anyone who can contribute their work and improve this project. The details will be shared soon.
 
 ## License
 
