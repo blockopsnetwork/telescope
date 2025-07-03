@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	_ "net/http/pprof" // anonymous import to get the pprof handler registered
+	// _ "net/http/pprof" // commented out to avoid conflict with godeltaprof
 	"sync"
 
 	"github.com/go-kit/log"
