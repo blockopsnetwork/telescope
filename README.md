@@ -9,6 +9,8 @@
 - [Summary](#summary)
 - [Usage](#usage)
   - [Basic Configuration](#basic-configuration)
+  - [Auto-Discovery and Configuration Generation](#auto-discovery-and-configuration-generation)
+  - [Logs Collection](#logs-collection)
   - [Ethereum Integration](#ethereum-integration)
   - [Using Configuration File](#using-configuration-file)
 - [Supported Networks](#supported-networks)
@@ -27,35 +29,156 @@ Telescope can be configured either through command line flags or a YAML configur
 
 ### Basic Configuration
 
-Basic usage with metrics enabled:
+Basic usage with metrics enabled and auto-discovery:
 
 ```bash
 telescope \
-  --metrics \
   --network=ethereum \
   --project-id=my-project \
-  --project-name=my-name \
+  --project-name=my-project \
   --telescope-username=user \
   --telescope-password=pass \
-  --remote-write-url=https://metrics.example.com
+  --remote-write-url=https://prometheus.example.com/api/v1/write
 ```
 
-Enable both metrics and logs:
+Enable both metrics and logs with auto-discovery:
 
 ```bash
 telescope \
-  --metrics \
-  --enable-logs \
   --network=ethereum \
   --project-id=my-project \
-  --project-name=my-name \
+  --project-name=my-project \
   --telescope-username=user \
   --telescope-password=pass \
-  --remote-write-url=https://metrics.example.com \
-  --logs-sink-url=https://logs.example.com \
-  --telescope-loki-username=loki-user \
-  --telescope-loki-password=loki-pass
+  --remote-write-url=https://prometheus.example.com/api/v1/write \
+  --enable-logs=true \
+  --logs-sink-url=https://loki.example.com/loki/api/v1/push \
+  --telescope-loki-username=user \
+  --telescope-loki-password=pass
 ```
+
+For Docker environments with container log collection:
+
+```bash
+telescope \
+  --network=ethereum \
+  --project-id=my-project \
+  --project-name=my-project \
+  --telescope-username=user \
+  --telescope-password=pass \
+  --remote-write-url=https://prometheus.example.com/api/v1/write \
+  --enable-logs=true \
+  --enable-docker-logs=true \
+  --logs-sink-url=https://loki.example.com/loki/api/v1/push \
+  --telescope-loki-username=user \
+  --telescope-loki-password=pass
+```
+
+### Auto-Discovery and Configuration Generation
+
+Telescope features intelligent auto-discovery and configuration generation that automatically creates comprehensive monitoring configurations based on your network and requirements. Instead of manually writing complex YAML configurations, you can use command-line flags and Telescope will generate the complete configuration automatically.
+
+#### How Auto-Discovery Works
+
+1. **Network Detection**: Based on the `--network` flag, Telescope automatically discovers and configures appropriate scrape targets for your blockchain network
+2. **Service Configuration**: Automatically configures metrics collection, log aggregation, and integrations based on enabled features
+3. **Target Generation**: Creates scrape configs with proper job names, targets, and labeling for your infrastructure
+
+#### Generated Configuration File
+
+When you run Telescope with command-line flags, it automatically generates a `telescope_config.yaml` file containing:
+
+- **Metrics Configuration**: Prometheus-compatible scrape configs with proper intervals and labeling
+- **Logs Configuration**: Loki client configuration and log collection rules
+- **Integration Configuration**: Enabled integrations (Node Exporter, Ethereum, etc.) with autoscrape
+- **Network-Specific Targets**: Automatically discovered endpoints based on your network choice
+
+Example of auto-generated configuration for Polkadot:
+
+```bash
+telescope --network=polkadot --project-id=test --project-name=test \
+    --telescope-username=user --telescope-password=pass \
+    --remote-write-url=https://example.com/write \
+    --enable-features integrations-next
+```
+
+This generates a complete configuration with:
+- Polkadot relay chain monitoring (port 30333)
+- Parachain monitoring (port 9933)  
+- Node exporter integration
+- Proper labeling and external labels
+
+#### Supported Auto-Discovery Networks
+
+| Network | Targets Discovered | Default Ports |
+|---------|-------------------|---------------|
+| `ethereum` | Execution + Consensus nodes | 6060, 8008 |
+| `polkadot` | Relay chain + Parachains | 30333, 9933 |
+| `hyperbridge` | Hyperbridge node | 8080 |
+| `ssv` | Execution + Consensus + MEV-Boost + SSV-DKG + SSV node | 6060, 8008, 18550, 3030, 13000 |
+
+### Logs Collection
+
+Telescope supports comprehensive log collection with automatic configuration generation. You can enable basic log collection or advanced Docker container log scraping.
+
+#### Basic Log Collection
+
+Enable basic log collection to send application logs to Loki:
+
+```bash
+telescope \
+  --enable-logs=true \
+  --logs-sink-url=https://loki.example.com/loki/api/v1/push \
+  --telescope-loki-username=user \
+  --telescope-loki-password=pass \
+  --network=ethereum \
+  --project-id=my-project \
+  --project-name=my-project
+```
+
+#### Docker Container Log Scraping
+
+For containerized environments, enable Docker log scraping to automatically collect logs from all Docker containers:
+
+```bash
+telescope \
+  --enable-logs=true \
+  --enable-docker-logs=true \
+  --logs-sink-url=https://loki.example.com/loki/api/v1/push \
+  --telescope-loki-username=user \
+  --telescope-loki-password=pass \
+  --docker-host=unix:///var/run/docker.sock \
+  --network=ethereum \
+  --project-id=my-project \
+  --project-name=my-project
+```
+
+#### Generated Log Configuration
+
+When Docker logs are enabled, Telescope automatically generates:
+
+- **Docker Service Discovery**: Connects to Docker daemon for container discovery
+- **Comprehensive Relabeling**: Extracts container metadata as labels
+- **Label Mapping**: Maps Docker labels to log labels for filtering and organization
+
+The generated configuration includes relabel rules for:
+- Container name and log stream
+- Custom Docker labels (network, client_name, group, host_type, etc.)
+- Project identification labels
+- Instance and location labels
+
+#### Available Log Flags
+
+| Flag | Description | Default | Required |
+|------|-------------|---------|----------|
+| `--enable-logs` | Enable log collection | `false` | No |
+| `--logs-sink-url` | Loki endpoint URL | - | Yes¹ |
+| `--telescope-loki-username` | Loki authentication username | - | No |
+| `--telescope-loki-password` | Loki authentication password | - | No |
+| `--enable-docker-logs` | Enable Docker container log scraping | `false` | No |
+| `--docker-host` | Docker daemon socket | `unix:///var/run/docker.sock` | No |
+
+¹ Required when `--enable-logs=true`
 
 ### Ethereum Integration
 
