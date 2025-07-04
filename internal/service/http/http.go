@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	_ "net/http/pprof" // Register pprof handlers
+	// _ "net/http/pprof" // commented out to avoid conflict with godeltaprof
 	"path"
 	"sort"
 	"strings"
