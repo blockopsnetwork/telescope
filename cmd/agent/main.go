@@ -163,9 +163,10 @@ type LogsConfig struct {
 }
 
 type LogConfig struct {
-	Name      string      `yaml:"name"`
-	Clients   []LogClient `yaml:"clients"`
-	Positions Positions   `yaml:"positions"`
+	Name          string           `yaml:"name"`
+	Clients       []LogClient      `yaml:"clients"`
+	Positions     Positions        `yaml:"positions"`
+	ScrapeConfigs []LogScrapeConfig `yaml:"scrape_configs,omitempty"`
 }
 
 type Positions struct {
@@ -176,6 +177,24 @@ type LogClient struct {
 	URL            string            `yaml:"url"`
 	BasicAuth      BasicAuth         `yaml:"basic_auth"`
 	ExternalLabels map[string]string `yaml:"external_labels"`
+}
+
+type LogScrapeConfig struct {
+	JobName         string            `yaml:"job_name"`
+	DockerSDConfigs []DockerSDConfig  `yaml:"docker_sd_configs,omitempty"`
+	RelabelConfigs  []RelabelConfig   `yaml:"relabel_configs,omitempty"`
+}
+
+type DockerSDConfig struct {
+	Host            string   `yaml:"host"`
+	RefreshInterval string   `yaml:"refresh_interval"`
+	Filters         []string `yaml:"filters,omitempty"`
+}
+
+type RelabelConfig struct {
+	SourceLabels []string `yaml:"source_labels,omitempty"`
+	Regex        string   `yaml:"regex,omitempty"`
+	TargetLabel  string   `yaml:"target_label,omitempty"`
 }
 
 type TelescopeConfig struct {
@@ -190,6 +209,9 @@ type TelescopeConfig struct {
 	LokiUsername      string
 	LokiPassword      string
 	LogsSinkURL       string
+	// Docker logs configuration
+	EnableDockerLogs  bool
+	DockerHost        string
 	// Ethereum integration fields
 	EthereumEnabled            bool
 	EthereumExecutionURL       string
@@ -449,28 +471,91 @@ func generateFullConfig(config TelescopeConfig, networkScrapeConfigs []networksC
 	}
 
 	if config.Logs {
-		cfg.Logs = LogsConfig{
-			Configs: []LogConfig{
+		logConfig := LogConfig{
+			Name: "telescope_logs",
+			Clients: []LogClient{
 				{
-					Name: "telescope_logs",
-					Clients: []LogClient{
-						{
-							URL: config.LogsSinkURL,
-							BasicAuth: BasicAuth{
-								Username: config.LokiUsername,
-								Password: config.LokiPassword,
-							},
-							ExternalLabels: map[string]string{
-								"project_id":   config.ProjectId,
-								"project_name": config.ProjectName,
-							},
-						},
+					URL: config.LogsSinkURL,
+					BasicAuth: BasicAuth{
+						Username: config.LokiUsername,
+						Password: config.LokiPassword,
 					},
-					Positions: Positions{
-						Filename: "/tmp/telescope_logs",
+					ExternalLabels: map[string]string{
+						"project_id":   config.ProjectId,
+						"project_name": config.ProjectName,
 					},
 				},
 			},
+			Positions: Positions{
+				Filename: "/tmp/telescope_logs",
+			},
+		}
+
+		// Add Docker log scraping if enabled
+		if config.EnableDockerLogs {
+			logConfig.ScrapeConfigs = []LogScrapeConfig{
+				{
+					JobName: fmt.Sprintf("%s_docker_logs", toLowerAndEscape(config.ProjectName)),
+					DockerSDConfigs: []DockerSDConfig{
+						{
+							Host:            config.DockerHost,
+							RefreshInterval: "5s",
+							Filters:         []string{},
+						},
+					},
+					RelabelConfigs: []RelabelConfig{
+						{
+							SourceLabels: []string{"__meta_docker_container_name"},
+							Regex:        "/(.*)",
+							TargetLabel:  "container",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_log_stream"},
+							TargetLabel:  "logstream",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_scrape_location"},
+							TargetLabel:  "job",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_scrape_location"},
+							TargetLabel:  "scrape_location",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_instance"},
+							TargetLabel:  "instance",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_network"},
+							TargetLabel:  "network",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_client_name"},
+							TargetLabel:  "client_name",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_group"},
+							TargetLabel:  "group",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_host_type"},
+							TargetLabel:  "host_type",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_project_name"},
+							TargetLabel:  "project_name",
+						},
+						{
+							SourceLabels: []string{"__meta_docker_container_label_project_id"},
+							TargetLabel:  "project_id",
+						},
+					},
+				},
+			}
+		}
+
+		cfg.Logs = LogsConfig{
+			Configs: []LogConfig{logConfig},
 		}
 	}
 
@@ -517,6 +602,8 @@ func (c *TelescopeConfig) loadConfig() error {
 	c.LokiUsername = viper.GetString("telescope-loki-username")
 	c.LokiPassword = viper.GetString("telescope-loki-password")
 	c.LogsSinkURL = viper.GetString("logs-sink-url")
+	c.EnableDockerLogs = viper.GetBool("enable-docker-logs")
+	c.DockerHost = viper.GetString("docker-host")
 	
 	// Load Ethereum integration values
 	c.EthereumEnabled = viper.GetBool("ethereum-enabled")
@@ -688,6 +775,8 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
 	cmd.Flags().String("logs-sink-url", "", "Log sink endpoint URL")
 	cmd.Flags().String("telescope-loki-username", "", "Username for Loki authentication")
 	cmd.Flags().String("telescope-loki-password", "", "Password for Loki authentication")
+	cmd.Flags().Bool("enable-docker-logs", false, "Enable Docker container log scraping")
+	cmd.Flags().String("docker-host", "unix:///var/run/docker.sock", "Docker daemon socket")
 
 	// Feature flags
 	cmd.Flags().String("enable-features", "", "Experimental features (comma-separated, e.g., integrations-next)")
@@ -700,9 +789,7 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
 
 	// Note: We don't mark flags as required here because when using --config-file,
 	// these values should come from the config file, not command line flags.
-	// Required flag validation is handled in checkRequiredFlags() function.
-
-	// Bind all flags to viper
+	// Required\
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
 		viper.BindPFlag(f.Name, f)
 	})
