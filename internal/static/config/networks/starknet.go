@@ -22,6 +22,7 @@ func NewStarknetConfig() *StarknetConfig {
 			{Type: "consensus", Port: 8008},
 			{Type: "juno", Port: 9090},
 			{Type: "pathfinder", Port: 9090},
+			{Type: "starknet-attestation", Port: 9090},
 		},
 	}
 }
