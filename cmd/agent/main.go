@@ -3,29 +3,30 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/spf13/pflag"
 	"net/url"
 	"os"
 	"sort"
 	"strings"
 
+	"github.com/spf13/pflag"
+
 	networksConfig "github.com/blockopsnetwork/telescope/internal/static/config/networks"
 
-	"github.com/go-kit/log/level"
 	"github.com/blockopsnetwork/telescope/internal/boringcrypto"
 	"github.com/blockopsnetwork/telescope/internal/build"
 	"github.com/blockopsnetwork/telescope/internal/static/config"
 	"github.com/blockopsnetwork/telescope/internal/static/server"
 	util_log "github.com/blockopsnetwork/telescope/internal/util/log"
+	"github.com/go-kit/log/level"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 
 	"github.com/prometheus/client_golang/prometheus"
 
+	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/cadvisor"
 	_ "github.com/grafana/loki/clients/pkg/promtail/discovery/consulagent"
 	_ "github.com/prometheus/prometheus/discovery/install"
-	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/cadvisor"
 
 	_ "github.com/blockopsnetwork/telescope/internal/static/integrations/install"
 	_ "golang.org/x/crypto/x509roots/fallback"
@@ -92,6 +93,7 @@ var networkConfigs = map[string]networksConfig.NetworkConfig{
 	"polkadot":    networksConfig.NewPolkadotConfig(),
 	"hyperbridge": networksConfig.NewHyperbridgeConfig(),
 	"ssv":         networksConfig.NewSSVConfig(),
+	"starknet":    networksConfig.NewStarknetConfig(),
 }
 
 type Config struct {
@@ -604,7 +606,7 @@ func (c *TelescopeConfig) loadConfig() error {
 	c.LogsSinkURL = viper.GetString("logs-sink-url")
 	c.EnableDockerLogs = viper.GetBool("enable-docker-logs")
 	c.DockerHost = viper.GetString("docker-host")
-	
+
 	// Load Ethereum integration values
 	c.EthereumEnabled = viper.GetBool("ethereum-enabled")
 	c.EthereumExecutionURL = viper.GetString("ethereum-execution-url")
@@ -636,18 +638,18 @@ func (c *TelescopeConfig) loadConfig() error {
 func (c *TelescopeConfig) validateEthereumConfig() error {
 	// Check if any ethereum flags are provided
 	ethereumEnabled := c.EthereumEnabled || c.EthereumExecutionURL != "" || c.EthereumConsensusURL != ""
-	
+
 	if ethereumEnabled {
 		enableFeatures := viper.GetString("enable-features")
 		if !strings.Contains(enableFeatures, "integrations-next") {
 			return fmt.Errorf("ethereum integration requires --enable-features integrations-next flag to be specified")
 		}
-		
+
 		// Validate that at least one ethereum component is configured
 		if c.EthereumExecutionURL == "" && c.EthereumConsensusURL == "" {
 			return fmt.Errorf("when ethereum integration is enabled, at least one of --ethereum-execution-url or --ethereum-consensus-url must be provided")
 		}
-		
+
 		// Validate URLs if provided
 		if c.EthereumExecutionURL != "" {
 			if err := validateURL(c.EthereumExecutionURL, "ethereum execution"); err != nil {
@@ -659,9 +661,9 @@ func (c *TelescopeConfig) validateEthereumConfig() error {
 				return err
 			}
 		}
-		
+
 	}
-	
+
 	return nil
 }
 
@@ -742,7 +744,7 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
             --telescope-username=user --telescope-password=pass \
             --remote-write-url=https://prometheus.example.com/api/v1/write
 
-  # With Ethereum integration  
+  # With Ethereum integration
   telescope --enable-features integrations-next --network=ethereum \
             --project-id=my-project --project-name=my-project \
             --telescope-username=user --telescope-password=pass \
@@ -764,7 +766,7 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
 	cmd.Flags().String("project-id", "", "Project identifier")
 	cmd.Flags().String("project-name", "", "Project name for labeling")
 
-	// Metrics configuration flags  
+	// Metrics configuration flags
 	cmd.Flags().Bool("metrics", true, "Enable metrics collection")
 	cmd.Flags().String("telescope-username", "", "Username for remote write authentication")
 	cmd.Flags().String("telescope-password", "", "Password for remote write authentication")
@@ -780,7 +782,7 @@ IMPORTANT: Ethereum integration requires --enable-features integrations-next`
 
 	// Feature flags
 	cmd.Flags().String("enable-features", "", "Experimental features (comma-separated, e.g., integrations-next)")
-	
+
 	// Ethereum integration flags
 	cmd.Flags().Bool("ethereum-enabled", false, "Enable Ethereum metrics collection")
 	cmd.Flags().String("ethereum-execution-url", "", "Ethereum execution node URL (e.g., http://localhost:8545)")
