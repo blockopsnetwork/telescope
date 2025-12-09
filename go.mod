@@ -659,6 +659,7 @@ require (
 	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect
+	github.com/distribution/reference v0.6.0 // indirect
 	github.com/drone/envsubst v1.0.3 // indirect
 	github.com/emicklei/dot v1.6.4 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
@@ -690,6 +691,7 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
+	github.com/moby/sys/user v0.4.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/ecsutil v0.96.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.96.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.96.0 // indirect
@@ -784,6 +786,11 @@ replace (
 
 // TODO(rfratto): remove forks when changes are merged upstream
 replace (
+	// Force Docker SDK to v25+ to fix API version mismatch with newer Docker daemons.
+	// Docker v29+ requires minimum API version 1.44, but SDK v24.x defaults to 1.43.
+	// See: https://github.com/moby/moby/issues/45935
+	github.com/docker/docker => github.com/docker/docker v25.0.6+incompatible
+
 	// TODO(tpaschalis) this is to remove global instantiation of plugins
 	// and allow non-singleton components.
 	// https://github.com/grafana/cadvisor/tree/grafana-v0.47-noglobals
