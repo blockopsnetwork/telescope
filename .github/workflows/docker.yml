@@ -67,7 +67,7 @@ jobs:
             make cleanup-action
 
       - name: Build telescope image and push to DockerHub
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: ./cmd/agent/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
